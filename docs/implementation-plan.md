@@ -134,18 +134,18 @@ ruff check src/
 - `src/shared/utils/logger.py`
 
 **Implementação:**
-- [ ] Classe `StructuredLogger` com formato JSON
-- [ ] Suporte a níveis: DEBUG, INFO, WARNING, ERROR
-- [ ] Context injection (correlation_id, module, event)
-- [ ] Output para console e arquivo com rotação
-- [ ] Função helper `get_logger(module_name)`
+- [X] Classe `StructuredLogger` com formato JSON
+- [X] Suporte a níveis: DEBUG, INFO, WARNING, ERROR
+- [X] Context injection (correlation_id, module, event)
+- [X] Output para console e arquivo com rotação
+- [X] Função helper `get_logger(module_name)`
 
 **Testes:**
-- [ ] `tests/unit/shared/utils/test_logger.py`
-- [ ] Validar formato JSON
-- [ ] Validar níveis de log
-- [ ] Validar context injection
-- [ ] Validar rotação de arquivos
+- [X] `tests/unit/shared/utils/test_logger.py`
+- [X] Validar formato JSON
+- [X] Validar níveis de log
+- [X] Validar context injection
+- [X] Validar rotação de arquivos
 
 **Exemplo de uso:**
 ```python
@@ -159,19 +159,19 @@ logger.info("Invoice created", data={"invoice_id": "123", "amount": 500.00})
 - `src/shared/utils/errors.py`
 
 **Implementação:**
-- [ ] `StarkBankError` - Base exception
-- [ ] `RetriableError` - Erros que permitem retry
-- [ ] `NonRetriableError` - Erros que não permitem retry
-- [ ] `ValidationError` - Erros de validação
-- [ ] `AuthenticationError` - Erros de autenticação
-- [ ] `NotFoundError` - Recurso não encontrado
-- [ ] `TimeoutError` - Timeout de operação
-- [ ] `RateLimitError` - Rate limit excedido
+- [X] `StarkBankError` - Base exception
+- [X] `RetriableError` - Erros que permitem retry
+- [X] `NonRetriableError` - Erros que não permitem retry
+- [X] `ValidationError` - Erros de validação
+- [X] `AuthenticationError` - Erros de autenticação
+- [X] `NotFoundError` - Recurso não encontrado
+- [X] `TimeoutError` - Timeout de operação
+- [X] `RateLimitError` - Rate limit excedido
 
 **Testes:**
-- [ ] `tests/unit/shared/utils/test_errors.py`
-- [ ] Validar hierarquia de exceções
-- [ ] Validar mensagens de erro
+- [X] `tests/unit/shared/utils/test_errors.py`
+- [X] Validar hierarquia de exceções
+- [X] Validar mensagens de erro
 
 ### 1.3. Validators
 
@@ -179,19 +179,19 @@ logger.info("Invoice created", data={"invoice_id": "123", "amount": 500.00})
 - `src/shared/utils/validators.py`
 
 **Implementação:**
-- [ ] `validate_cpf(cpf: str) -> bool` - usando validate-docbr
-- [ ] `validate_cnpj(cnpj: str) -> bool` - usando validate-docbr
-- [ ] `validate_tax_id(tax_id: str) -> bool` - detecta e valida CPF ou CNPJ
-- [ ] `format_cpf(cpf: str) -> str` - formata com pontos e traços
-- [ ] `format_cnpj(cnpj: str) -> str` - formata com pontos e traços
-- [ ] `clean_tax_id(tax_id: str) -> str` - remove formatação
+- [X] `validate_cpf(cpf: str) -> bool` - usando validate-docbr
+- [X] `validate_cnpj(cnpj: str) -> bool` - usando validate-docbr
+- [X] `validate_tax_id(tax_id: str) -> bool` - detecta e valida CPF ou CNPJ
+- [X] `format_cpf(cpf: str) -> str` - formata com pontos e traços
+- [X] `format_cnpj(cnpj: str) -> str` - formata com pontos e traços
+- [X] `clean_tax_id(tax_id: str) -> str` - remove formatação
 
 **Testes:**
-- [ ] `tests/unit/shared/utils/test_validators.py`
-- [ ] Testes com CPFs válidos e inválidos
-- [ ] Testes com CNPJs válidos e inválidos
-- [ ] Testes de formatação
-- [ ] Edge cases (None, vazio, caracteres especiais)
+- [X] `tests/unit/shared/utils/test_validators.py`
+- [X] Testes com CPFs válidos e inválidos
+- [X] Testes com CNPJs válidos e inválidos
+- [X] Testes de formatação
+- [X] Edge cases (None, vazio, caracteres especiais)
 
 ### 1.4. Data Generator
 
@@ -199,20 +199,20 @@ logger.info("Invoice created", data={"invoice_id": "123", "amount": 500.00})
 - `src/shared/utils/data_generator.py`
 
 **Implementação:**
-- [ ] Classe `DataGenerator` wrapper do Faker
-- [ ] `generate_valid_cpf() -> str` - CPF válido
-- [ ] `generate_valid_cnpj() -> str` - CNPJ válido
-- [ ] `generate_person_data() -> dict` - nome, CPF, email
-- [ ] `generate_company_data() -> dict` - nome, CNPJ, email
-- [ ] `generate_customer_data(prefer_cpf: bool = True) -> dict` - 70% CPF, 30% CNPJ
-- [ ] Configuração de locale pt_BR
+- [X] Classe `DataGenerator` wrapper do Faker
+- [X] `generate_valid_cpf() -> str` - CPF válido
+- [X] `generate_valid_cnpj() -> str` - CNPJ válido
+- [X] `generate_person_data() -> dict` - nome, CPF, email
+- [X] `generate_company_data() -> dict` - nome, CNPJ, email
+- [X] `generate_customer_data(prefer_cpf: bool = True) -> dict` - 70% CPF, 30% CNPJ
+- [X] Configuração de locale pt_BR
 
 **Testes:**
-- [ ] `tests/unit/shared/utils/test_data_generator.py`
-- [ ] Validar CPFs gerados
-- [ ] Validar CNPJs gerados
-- [ ] Validar distribuição CPF/CNPJ (estatística)
-- [ ] Validar formato de emails
+- [X] `tests/unit/shared/utils/test_data_generator.py`
+- [X] Validar CPFs gerados
+- [X] Validar CNPJs gerados
+- [X] Validar distribuição CPF/CNPJ (estatística)
+- [X] Validar formato de emails
 
 ### 1.5. Database Layer
 
@@ -225,41 +225,41 @@ logger.info("Invoice created", data={"invoice_id": "123", "amount": 500.00})
 **Implementação:**
 
 **connection.py:**
-- [ ] `DatabaseConnection` - Singleton pattern
-- [ ] Connection pool com SQLite
-- [ ] WAL mode habilitado
-- [ ] Timeout configurável
-- [ ] Context manager para transações
-- [ ] Função `get_db() -> sqlite3.Connection`
+- [X] `DatabaseConnection` - Singleton pattern
+- [X] Connection pool com SQLite
+- [X] WAL mode habilitado
+- [X] Timeout configurável
+- [X] Context manager para transações
+- [X] Função `get_db() -> sqlite3.Connection`
 
 **migrations.py:**
-- [ ] `MigrationRunner` - executa migrations
-- [ ] Tabela `schema_migrations` para controle
-- [ ] `run_migrations()` - aplica migrations pendentes
-- [ ] `rollback_migration()` - rollback de migration
+- [X] `MigrationRunner` - executa migrations
+- [X] Tabela `schema_migrations` para controle
+- [X] `run_migrations()` - aplica migrations pendentes
+- [X] `rollback_migration()` - rollback de migration
 
 **001_initial_schema.sql:**
-- [ ] Tabela `invoices` - conforme arquitetura
-- [ ] Tabela `transfers` - conforme arquitetura
-- [ ] Tabela `events_log` - conforme arquitetura
-- [ ] Índices necessários
-- [ ] Constraints (FK, UNIQUE)
+- [X] Tabela `invoices` - conforme arquitetura
+- [X] Tabela `transfers` - conforme arquitetura
+- [X] Tabela `events_log` - conforme arquitetura
+- [X] Índices necessários
+- [X] Constraints (FK, UNIQUE)
 
 **base_repository.py:**
-- [ ] `BaseRepository` - classe abstrata
-- [ ] Métodos base: `_execute()`, `_fetch_one()`, `_fetch_all()`
-- [ ] Context manager para transações
-- [ ] Logging de queries
-- [ ] Exception handling
+- [X] `BaseRepository` - classe abstrata
+- [X] Métodos base: `_execute()`, `_fetch_one()`, `_fetch_all()`
+- [X] Context manager para transações
+- [X] Logging de queries
+- [X] Exception handling
 
 **Testes:**
-- [ ] `tests/unit/shared/database/test_connection.py`
-- [ ] `tests/unit/shared/database/test_migrations.py`
-- [ ] Validar singleton pattern
-- [ ] Validar WAL mode
-- [ ] Validar transações
-- [ ] Validar migrations (apply/rollback)
-- [ ] Usar in-memory database (`:memory:`)
+- [X] `tests/unit/shared/database/test_connection.py`
+- [X] `tests/unit/shared/database/test_migrations.py`
+- [X] Validar singleton pattern
+- [X] Validar WAL mode
+- [X] Validar transações
+- [X] Validar migrations (apply/rollback)
+- [X] Usar in-memory database (`:memory:`)
 
 ### 1.6. Event Bus
 
@@ -271,34 +271,34 @@ logger.info("Invoice created", data={"invoice_id": "123", "amount": 500.00})
 **Implementação:**
 
 **types.py:**
-- [ ] Dataclass `Event` - event_id, event_type, payload, metadata, timestamp
-- [ ] Enum `EventType` - todos tipos de eventos do sistema
-- [ ] Type hints para handlers: `EventHandler = Callable[[Event], None]`
+- [X] Dataclass `Event` - event_id, event_type, payload, metadata, timestamp
+- [X] Enum `EventType` - todos tipos de eventos do sistema
+- [X] Type hints para handlers: `EventHandler = Callable[[Event], None]`
 
 **bus.py:**
-- [ ] Classe `EventBus` - Singleton pattern
-- [ ] `subscribe(event_type: str, handler: EventHandler) -> None`
-- [ ] `unsubscribe(event_type: str, handler: EventHandler) -> None`
-- [ ] `publish(event_type: str, payload: dict, metadata: dict = None) -> None`
-- [ ] Registry de handlers: `Dict[str, List[EventHandler]]`
-- [ ] Logging de todos eventos publicados
-- [ ] Exception handling em handlers (não deve quebrar publicação)
+- [X] Classe `EventBus` - Singleton pattern
+- [X] `subscribe(event_type: str, handler: EventHandler) -> None`
+- [X] `unsubscribe(event_type: str, handler: EventHandler) -> None`
+- [X] `publish(event_type: str, payload: dict, metadata: dict = None) -> None`
+- [X] Registry de handlers: `Dict[str, List[EventHandler]]`
+- [X] Logging de todos eventos publicados
+- [X] Exception handling em handlers (não deve quebrar publicação)
 
 **logger.py:**
-- [ ] `EventLogger` - persiste eventos no banco
-- [ ] Subscriber automático de todos eventos
-- [ ] Salva em `events_log` table
-- [ ] `get_events(event_type: str = None, limit: int = 100) -> List[Event]`
+- [X] `EventLogger` - persiste eventos no banco
+- [X] Subscriber automático de todos eventos
+- [X] Salva em `events_log` table
+- [X] `get_events(event_type: str = None, limit: int = 100) -> List[Event]`
 
 **Testes:**
-- [ ] `tests/unit/shared/events/test_bus.py`
-- [ ] `tests/unit/shared/events/test_logger.py`
-- [ ] Validar subscribe/unsubscribe
-- [ ] Validar publish (síncrono)
-- [ ] Validar múltiplos handlers para mesmo evento
-- [ ] Validar que falha em handler não quebra outros
-- [ ] Validar persistência em events_log
-- [ ] Mock de handlers
+- [X] `tests/unit/shared/events/test_bus.py`
+- [X] `tests/unit/shared/events/test_logger.py`
+- [X] Validar subscribe/unsubscribe
+- [X] Validar publish (síncrono)
+- [X] Validar múltiplos handlers para mesmo evento
+- [X] Validar que falha em handler não quebra outros
+- [X] Validar persistência em events_log
+- [X] Mock de handlers
 
 ### Entregáveis Fase 1
 - ✅ Logger estruturado funcionando

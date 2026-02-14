@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class InvoiceStatus(str, Enum):
     CREATED = "created"
     PAID = "paid"

@@ -1,7 +1,13 @@
-from fastapi import FastAPI
+import logging
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+
 from src.config.settings import settings
+
+logger = logging.getLogger("api")
+logging.basicConfig(level=settings.log_level)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -21,7 +27,3 @@ app = FastAPI(
 async def health_check():
     return {"status": "ok", "env": settings.app_env}
 
-# Avoid circular imports or undefined logger
-import logging
-logger = logging.getLogger("api")
-logging.basicConfig(level=settings.log_level)
