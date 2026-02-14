@@ -42,13 +42,13 @@ Cada fase só é considerada completa quando:
 ### Tarefas
 
 #### 0.1. Estrutura de Projeto
-- [ ] Criar estrutura completa de diretórios conforme [architecture.md](architecture.md#31-estrutura-de-diretórios)
-- [ ] Inicializar gerenciador de dependências (Rye/Poetry)
-- [ ] Configurar `.gitignore`
-- [ ] Criar arquivos `__init__.py` em todos os módulos
+- [X] Criar estrutura completa de diretórios conforme [architecture.md](architecture.md#31-estrutura-de-diretórios)
+- [X] Inicializar gerenciador de dependências (Rye/Poetry)
+- [X] Configurar `.gitignore`
+- [X] Criar arquivos `__init__.py` em todos os módulos
 
 #### 0.2. Dependências
-- [ ] Criar `pyproject.toml` com todas as dependências
+- [X] Criar `pyproject.toml` com todas as dependências
   ```toml
   [project]
   name = "stark-bank-challenge"
@@ -75,30 +75,30 @@ Cada fase só é considerada completa quando:
       "mypy>=1.11.0"
   ]
   ```
-- [ ] Instalar dependências: `rye sync` ou `poetry install`
+- [X] Instalar dependências: `rye sync` ou `poetry install`
 
 #### 0.3. Configuração
-- [ ] Criar `.env.example` com todas as variáveis necessárias
-- [ ] Criar `src/config/settings.py` - Settings dataclass
-- [ ] Criar `src/config/constants.py` - Constantes de negócio
-- [ ] Documentar variáveis de ambiente no README
+- [X] Criar `.env.example` com todas as variáveis necessárias
+- [X] Criar `src/config/settings.py` - Settings dataclass
+- [X] Criar `src/config/constants.py` - Constantes de negócio
+- [X] Documentar variáveis de ambiente no README
 
 #### 0.4. Testing Setup
-- [ ] Configurar `pytest.ini` ou `pyproject.toml` com configurações pytest
-- [ ] Criar `tests/conftest.py` com fixtures base
-- [ ] Configurar cobertura de testes (pytest-cov)
-- [ ] Criar estrutura de diretórios de testes
+- [X] Configurar `pytest.ini` ou `pyproject.toml` com configurações pytest
+- [X] Criar `tests/conftest.py` com fixtures base
+- [X] Configurar cobertura de testes (pytest-cov)
+- [x] Criar estrutura de diretórios de testes
 
 #### 0.5. Linting & Formatting
-- [ ] Configurar Ruff no `pyproject.toml`
-- [ ] Criar script de lint: `ruff check src/`
-- [ ] Criar script de format: `ruff format src/`
-- [ ] Configurar pre-commit hooks (opcional)
+- [X] Configurar Ruff no `pyproject.toml`
+- [X] Criar script de lint: `ruff check src/`
+- [X] Criar script de format: `ruff format src/`
+- [X] Configurar pre-commit hooks (opcional)
 
 #### 0.6. Documentação Base
-- [ ] Criar README.md com instruções de setup
-- [ ] Documentar estrutura de projeto
-- [ ] Criar CONTRIBUTING.md com workflow de desenvolvimento
+- [X] Criar README.md com instruções de setup
+- [X] Documentar estrutura de projeto
+- [X] Criar CONTRIBUTING.md com workflow de desenvolvimento
 
 ### Entregáveis Fase 0
 - ✅ Projeto estruturado e configurado

@@ -1,0 +1,3 @@
+@echo off
+echo Running ruff check...
+ruff check src/ %*
