@@ -335,20 +335,20 @@ python -c "from src.shared.events.bus import EventBus; bus = EventBus(); print('
 - `src/shared/stark/retry.py`
 
 **Implementação:**
-- [ ] Decorator `@retry_with_backoff` - configurável
-- [ ] Parâmetros: `max_attempts`, `delays`, `retriable_exceptions`, `non_retriable_exceptions`
-- [ ] Backoff exponencial: [0, 60, 120, 240, 480] segundos
-- [ ] Logging de cada tentativa
-- [ ] Persistência de retry_count
-- [ ] Raise após max_attempts
+- [X] Decorator `@retry_with_backoff` - configurável
+- [X] Parâmetros: `max_attempts`, `delays`, `retriable_exceptions`, `non_retriable_exceptions`
+- [X] Backoff exponencial: [0, 60, 120, 240, 480] segundos
+- [X] Logging de cada tentativa
+- [X] Persistência de retry_count
+- [X] Raise após max_attempts
 
 **Testes:**
-- [ ] `tests/unit/shared/stark/test_retry.py`
-- [ ] Mock de função que falha N vezes
-- [ ] Validar número de tentativas
-- [ ] Validar delays entre tentativas
-- [ ] Validar exceções retriáveis vs não-retriáveis
-- [ ] Validar logging
+- [X] `tests/unit/shared/stark/test_retry.py`
+- [X] Mock de função que falha N vezes
+- [X] Validar número de tentativas
+- [X] Validar delays entre tentativas
+- [X] Validar exceções retriáveis vs não-retriáveis
+- [X] Validar logging
 
 ### 2.2. Stark Bank Client Base
 
@@ -356,20 +356,20 @@ python -c "from src.shared.events.bus import EventBus; bus = EventBus(); print('
 - `src/shared/stark/client.py`
 
 **Implementação:**
-- [ ] Classe `StarkBankClient` - base class
-- [ ] Inicialização do SDK starkbank
-- [ ] Configuração de ambiente (sandbox/production)
-- [ ] Configuração de project_id e private_key
-- [ ] Logging de todas chamadas
-- [ ] Exception handling e mapeamento para custom exceptions
-- [ ] Rate limit handling
+- [X] Classe `StarkBankClient` - base class
+- [X] Inicialização do SDK starkbank
+- [X] Configuração de ambiente (sandbox/production)
+- [X] Configuração de project_id e private_key
+- [X] Logging de todas chamadas
+- [X] Exception handling e mapeamento para custom exceptions
+- [X] Rate limit handling
 
 **Testes:**
-- [ ] `tests/unit/shared/stark/test_client.py`
-- [ ] Mock do SDK starkbank
-- [ ] Validar inicialização
-- [ ] Validar configuração de ambiente
-- [ ] Validar exception handling
+- [X] `tests/unit/shared/stark/test_client.py`
+- [X] Mock do SDK starkbank
+- [X] Validar inicialização
+- [X] Validar configuração de ambiente
+- [X] Validar exception handling
 
 ### 2.3. Invoice API
 
@@ -377,22 +377,22 @@ python -c "from src.shared.events.bus import EventBus; bus = EventBus(); print('
 - `src/shared/stark/invoice_api.py`
 
 **Implementação:**
-- [ ] Classe `StarkInvoiceAPI(StarkBankClient)`
-- [ ] `create_invoice(amount, tax_id, name, due_date, ...) -> InvoiceResponse` com retry
-- [ ] `get_invoice(invoice_id: str) -> InvoiceResponse`
-- [ ] `list_invoices(limit: int, after: str) -> List[InvoiceResponse]`
-- [ ] Dataclass `InvoiceResponse` para resposta padronizada
-- [ ] Validação de parâmetros
-- [ ] Conversão de amount para centavos (int)
-- [ ] Logging estruturado
+- [X] Classe `StarkInvoiceAPI(StarkBankClient)`
+- [X] `create_invoice(amount, tax_id, name, due_date, ...) -> InvoiceResponse` com retry
+- [X] `get_invoice(invoice_id: str) -> InvoiceResponse`
+- [X] `list_invoices(limit: int, after: str) -> List[InvoiceResponse]`
+- [X] Dataclass `InvoiceResponse` para resposta padronizada
+- [X] Validação de parâmetros
+- [X] Conversão de amount para centavos (int)
+- [X] Logging estruturado
 
 **Testes:**
-- [ ] `tests/unit/shared/stark/test_invoice_api.py`
+- [X] `tests/unit/shared/stark/test_invoice_api.py`
 - [ ] `tests/integration/shared/stark/test_invoice_api_integration.py` (sandbox)
-- [ ] Mock de starkbank.invoice.create()
-- [ ] Validar retry em falhas
-- [ ] Validar conversão de valores
-- [ ] Validar validação de parâmetros
+- [X] Mock de starkbank.invoice.create()
+- [X] Validar retry em falhas
+- [X] Validar conversão de valores
+- [X] Validar validação de parâmetros
 - [ ] **Teste real:** criar invoice no sandbox (integration test)
 
 ### 2.4. Transfer API
@@ -401,23 +401,23 @@ python -c "from src.shared.events.bus import EventBus; bus = EventBus(); print('
 - `src/shared/stark/transfer_api.py`
 
 **Implementação:**
-- [ ] Classe `StarkTransferAPI(StarkBankClient)`
-- [ ] `create_transfer(amount, external_id, bank_code, ...) -> TransferResponse` com retry
-- [ ] `get_transfer(transfer_id: str) -> TransferResponse`
-- [ ] `list_transfers(limit: int, after: str) -> List[TransferResponse]`
-- [ ] Dataclass `TransferResponse` para resposta padronizada
-- [ ] Idempotência via `external_id`
-- [ ] Validação de parâmetros
-- [ ] Conversão de amount para centavos (int)
-- [ ] Logging estruturado
+- [X] Classe `StarkTransferAPI(StarkBankClient)`
+- [X] `create_transfer(amount, external_id, bank_code, ...) -> TransferResponse` com retry
+- [X] `get_transfer(transfer_id: str) -> TransferResponse`
+- [X] `list_transfers(limit: int, after: str) -> List[TransferResponse]`
+- [X] Dataclass `TransferResponse` para resposta padronizada
+- [X] Idempotência via `external_id`
+- [X] Validação de parâmetros
+- [X] Conversão de amount para centavos (int)
+- [X] Logging estruturado
 
 **Testes:**
-- [ ] `tests/unit/shared/stark/test_transfer_api.py`
+- [X] `tests/unit/shared/stark/test_transfer_api.py`
 - [ ] `tests/integration/shared/stark/test_transfer_api_integration.py` (sandbox)
-- [ ] Mock de starkbank.transfer.create()
-- [ ] Validar retry em falhas
-- [ ] Validar idempotência (mesmo external_id)
-- [ ] Validar conversão de valores
+- [X] Mock de starkbank.transfer.create()
+- [X] Validar retry em falhas
+- [X] Validar idempotência (mesmo external_id)
+- [X] Validar conversão de valores
 - [ ] **Teste real:** criar transfer no sandbox (integration test)
 
 ### Entregáveis Fase 2
