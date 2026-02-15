@@ -455,18 +455,18 @@ python -m examples.test_stark_transfer
 - `src/shared/security/api_key.py`
 
 **Implementação:**
-- [ ] Função `verify_api_key(api_key: str) -> bool` - constant-time comparison
-- [ ] FastAPI Dependency `get_api_key_dependency` - para uso em endpoints
-- [ ] Classe `APIKeyHeader` - extrai header X-API-Key
-- [ ] Exception `InvalidAPIKeyError`
-- [ ] Logging de tentativas de autenticação
+- [X] Função `verify_api_key(api_key: str) -> bool` - constant-time comparison
+- [X] FastAPI Dependency `get_api_key_dependency` - para uso em endpoints
+- [X] Classe `APIKeyHeader` - extrai header X-API-Key
+- [X] Exception `InvalidAPIKeyError`
+- [X] Logging de tentativas de autenticação
 
 **Testes:**
-- [ ] `tests/unit/shared/security/test_api_key.py`
-- [ ] Validar API key correta
-- [ ] Validar API key incorreta
-- [ ] Validar constant-time comparison
-- [ ] Validar logging de falhas
+- [X] `tests/unit/shared/security/test_api_key.py`
+- [X] Validar API key correta
+- [X] Validar API key incorreta
+- [X] Validar constant-time comparison
+- [X] Validar logging de falhas
 
 ### 3.2. Webhook Signature Validation
 
@@ -474,18 +474,18 @@ python -m examples.test_stark_transfer
 - `src/shared/security/signature.py`
 
 **Implementação:**
-- [ ] Função `validate_webhook_signature(payload: bytes, signature: str, public_key: str) -> bool`
-- [ ] Usar ECDSA para validação (conforme documentação Stark Bank)
-- [ ] Carregar public key do Stark Bank
-- [ ] Exception `InvalidSignatureError`
-- [ ] Logging de validações (sucesso/falha)
+- [X] Função `validate_webhook_signature(payload: bytes, signature: str, public_key: str) -> bool`
+- [X] Usar ECDSA para validação (conforme documentação Stark Bank)
+- [X] Carregar public key do Stark Bank
+- [X] Exception `InvalidSignatureError`
+- [X] Logging de validações (sucesso/falha)
 
 **Testes:**
-- [ ] `tests/unit/shared/security/test_signature.py`
-- [ ] Mock de assinatura válida
-- [ ] Mock de assinatura inválida
-- [ ] Validar parsing de public key
-- [ ] Validar ECDSA verification
+- [X] `tests/unit/shared/security/test_signature.py`
+- [X] Mock de assinatura válida
+- [X] Mock de assinatura inválida
+- [X] Validar parsing de public key
+- [X] Validar ECDSA verification
 
 ### 3.3. Security Constants
 
@@ -493,10 +493,10 @@ python -m examples.test_stark_transfer
 - `src/shared/security/constants.py`
 
 **Implementação:**
-- [ ] Public key do Stark Bank (sandbox e production)
-- [ ] Headers de segurança
-- [ ] Timeout de requests
-- [ ] Rate limits
+- [X] Public key do Stark Bank (sandbox e production)
+- [X] Headers de segurança
+- [X] Timeout de requests
+- [X] Rate limits
 
 ### Entregáveis Fase 3
 - ✅ API Key authentication funcionando
