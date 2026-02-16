@@ -71,5 +71,60 @@ def run_migrations():
     runner = MigrationRunner()
     runner.run_migrations()
 
+
+def migrate_database(conn):
+    """
+    Run migrations on a specific database connection.
+    
+    This is useful for testing where we want to use a specific
+    test database connection instead of the global one.
+    
+    Args:
+        conn: sqlite3.Connection - Database connection to migrate
+    """
+    migrations_dir = Path("migrations")
+    
+    # Initialize migrations table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS schema_migrations (
+            version TEXT PRIMARY KEY,
+            applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    
+    # Get applied migrations
+    cursor = conn.execute("SELECT version FROM schema_migrations")
+    applied = [row[0] for row in cursor.fetchall()]
+    
+    # Get migration files
+    migration_files = sorted(
+        [f.name for f in migrations_dir.iterdir() if f.suffix == ".sql"]
+    )
+    
+    # Apply pending migrations
+    for file in migration_files:
+        if file not in applied:
+            logger.info(f"Applying migration: {file}")
+            file_path = migrations_dir / file
+            with file_path.open() as f:
+                sql_script = f.read()
+            
+            try:
+                with conn:
+                    conn.executescript(sql_script)
+                    conn.execute(
+                        "INSERT INTO schema_migrations (version) VALUES (?)",
+                        (file,)
+                    )
+            except Exception as e:
+                logger.error(f"Failed to apply migration {file}: {e!s}")
+                raise
+        else:
+            logger.debug(f"Migration {file} already applied")
+    
+    logger.info("Migrations completed successfully")
+
+
 if __name__ == "__main__":
     run_migrations()

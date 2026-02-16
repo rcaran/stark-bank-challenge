@@ -1133,16 +1133,16 @@ open http://localhost:8000/docs
 - `tests/e2e/helpers.py`
 
 **Implementação:**
-- [ ] Fixtures para E2E:
-  - [ ] `e2e_app` - FastAPI TestClient com database real/in-memory
-  - [ ] `e2e_db` - Database isolada para cada teste
-  - [ ] `mock_stark_api` - Mock de Stark Bank API para E2E
-  - [ ] `sample_invoices` - Invoices de exemplo
-- [ ] Helpers:
-  - [ ] `create_test_invoice()` - cria invoice via API
-  - [ ] `simulate_webhook()` - simula webhook com assinatura
-  - [ ] `wait_for_event()` - aguarda evento ser publicado
-  - [ ] `assert_transfer_created()` - valida transfer criada
+- [X] Fixtures para E2E:
+  - [X] `e2e_app` - FastAPI TestClient com database real/in-memory
+  - [X] `e2e_db` - Database isolada para cada teste
+  - [X] `mock_stark_api` - Mock de Stark Bank API para E2E
+  - [X] `sample_invoices` - Invoices de exemplo
+- [X] Helpers:
+  - [X] `create_test_invoice()` - cria invoice via API
+  - [X] `simulate_webhook()` - simula webhook com assinatura
+  - [X] `wait_for_event()` - aguarda evento ser publicado
+  - [X] `assert_transfer_created()` - valida transfer criada
 
 ### 8.2. E2E Test: Invoice Creation Flow
 
@@ -1150,12 +1150,12 @@ open http://localhost:8000/docs
 - `tests/e2e/test_invoice_creation_flow.py`
 
 **Testes:**
-- [ ] `test_invoice_creation_success`
-  - [ ] Scheduler aciona geração
-  - [ ] Invoices criadas no Stark Bank (mock)
-  - [ ] Invoices salvas no banco
-  - [ ] Eventos `invoice.created` publicados
-  - [ ] Validar todas invoices com status="created"
+- [X] `test_invoice_creation_success`
+  - [X] Scheduler aciona geração
+  - [X] Invoices criadas no Stark Bank (mock)
+  - [X] Invoices salvas no banco
+  - [X] Eventos `invoice.created` publicados
+  - [X] Validar todas invoices com status="created"
 
 ### 8.3. E2E Test: Payment to Transfer Flow
 
