@@ -24,8 +24,6 @@ class StarkBankClient:
         if not self.project_id or not self.private_key_content:
             logger.warning("Stark Bank credentials not fully configured.")
 
-        self._initialize_sdk()
-
     def _initialize_sdk(self):
         """Initializes the Stark Bank SDK with the Project user."""
         try:
@@ -72,6 +70,13 @@ class StarkBankClient:
         # General fallback
         raise StarkBankError(f"Stark Bank Error: {e}") from e
 
-# Singleton accessor (optional, if we want shared state, but class is stateless mostly
-# except init)
-client = StarkBankClient()
+
+_client: StarkBankClient | None = None
+
+
+def get_client() -> StarkBankClient:
+    """Lazy singleton accessor for StarkBankClient."""
+    global _client
+    if _client is None:
+        _client = StarkBankClient()
+    return _client

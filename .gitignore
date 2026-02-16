@@ -146,3 +146,7 @@ cython_debug/
 .idea/
 *.swp
 *.swo
+
+# Database files
+*.db-shm
+*.db-wal

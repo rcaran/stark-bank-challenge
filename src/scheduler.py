@@ -9,6 +9,7 @@ automatically.
 import signal
 import sys
 import time
+import threading
 from datetime import UTC, datetime, timedelta
 from threading import Event
 
@@ -170,9 +171,10 @@ def run_scheduler(
     # Record start time
     _start_time = datetime.now(UTC)
 
-    # Register signal handlers for graceful shutdown
-    signal.signal(signal.SIGINT, _signal_handler)
-    signal.signal(signal.SIGTERM, _signal_handler)
+    # Register signal handlers for graceful shutdown (only in main thread)
+    if threading.current_thread() is threading.main_thread():
+        signal.signal(signal.SIGINT, _signal_handler)
+        signal.signal(signal.SIGTERM, _signal_handler)
 
     try:
         # Initialize scheduler

@@ -16,7 +16,6 @@ class Settings:
     api_host: str = os.getenv("API_HOST", "0.0.0.0")
 
     # Security
-    secret_key: str = os.getenv("SECRET_KEY", "change_me_in_production")
     admin_api_key: str | None = os.getenv("ADMIN_API_KEY")
 
     # Stark Bank

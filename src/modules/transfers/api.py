@@ -10,8 +10,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
 from src.modules.transfers.models import TransferStatus
+from src.modules.transfers.repository import TransferRepository
 from src.modules.transfers.service import TransferService
+from src.shared.events.bus import EventBus
 from src.shared.security.api_key import get_api_key_header
+from src.shared.stark.transfer_api import StarkTransferAPI
 from src.shared.utils.logger import get_logger
 
 logger = get_logger("modules.transfers.api")
@@ -30,7 +33,11 @@ def get_transfer_service() -> TransferService:
     """Get or create transfer service instance."""
     global _service
     if _service is None:
-        _service = TransferService()
+        _service = TransferService(
+            repository=TransferRepository(),
+            stark_api=StarkTransferAPI(),
+            event_bus=EventBus(),
+        )
     return _service
 
 

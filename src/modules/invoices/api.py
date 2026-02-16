@@ -11,8 +11,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from src.modules.invoices.models import InvoiceStatus
+from src.modules.invoices.repository import InvoiceRepository
 from src.modules.invoices.service import InvoiceService
+from src.shared.events.bus import EventBus
 from src.shared.security.api_key import get_api_key_header
+from src.shared.stark.invoice_api import StarkInvoiceAPI
 from src.shared.utils.errors import StarkBankError, ValidationError
 from src.shared.utils.logger import get_logger
 
@@ -32,7 +35,11 @@ def get_invoice_service() -> InvoiceService:
     """Get or create invoice service instance."""
     global _service
     if _service is None:
-        _service = InvoiceService()
+        _service = InvoiceService(
+            repository=InvoiceRepository(),
+            stark_api=StarkInvoiceAPI(),
+            event_bus=EventBus(),
+        )
     return _service
 
 

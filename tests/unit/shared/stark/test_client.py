@@ -14,13 +14,18 @@ def mock_starkbank_project(mocker):
 def mock_starkbank_user(mocker):
     return mocker.patch("starkbank.user")
 
-def test_client_initialization(mock_starkbank_project, mock_starkbank_user, mocker):
+def test_client_initialization(mock_starkbank_project, mocker):
     mock_settings = mocker.patch("src.shared.stark.client.settings")
     mock_settings.starkbank_project_id = "project-123"
     mock_settings.starkbank_private_key_content = "private-key"
     mock_settings.starkbank_environment = "sandbox"
 
+    # Ensure starkbank.user is None so lazy init triggers
+    mocker.patch("starkbank.user", None)
+
     client = StarkBankClient()
+    # Trigger lazy SDK initialization via check_user
+    _ = client.check_user
 
     mock_starkbank_project.assert_called_once_with(
         environment="sandbox",
@@ -31,6 +36,8 @@ def test_client_initialization(mock_starkbank_project, mock_starkbank_user, mock
     assert client.check_user == mock_starkbank_project.return_value
 
 def test_handle_stark_error_input(mocker):
+    mocker.patch("src.shared.stark.client.settings")
+    mocker.patch("src.shared.stark.client.StarkBankClient._initialize_sdk")
     client = StarkBankClient()
 
     class MockInputError(Exception):
@@ -47,7 +54,10 @@ def test_handle_stark_error_input(mocker):
     assert "Invalid field" in str(excinfo.value.details)
 
 def test_handle_stark_error_generic():
-    client = StarkBankClient()
+    from unittest.mock import patch
+    with patch("src.shared.stark.client.settings"), \
+         patch("src.shared.stark.client.StarkBankClient._initialize_sdk"):
+        client = StarkBankClient()
     error = Exception("Unknown error")
     with pytest.raises(StarkBankError):
         client.handle_stark_error(error)
