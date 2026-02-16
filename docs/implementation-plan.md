@@ -844,22 +844,22 @@ curl -X POST http://localhost:8000/webhooks/invoice \
 **Implementação:**
 
 **models.py:**
-- [ ] Dataclass `TransferModel` - representa transfer no sistema
-- [ ] Campos: id, invoice_id, stark_transfer_id, external_id, amount, status, created_at, updated_at, completed_at, retry_count, last_retry_at, error_message
-- [ ] Métodos: `to_dict()`, `from_dict()`
-- [ ] Validação de campos
+- [X] Dataclass `TransferModel` - representa transfer no sistema
+- [X] Campos: id, invoice_id, stark_transfer_id, external_id, amount, status, created_at, updated_at, completed_at, retry_count, last_retry_at, error_message
+- [X] Métodos: `to_dict()`, `from_dict()`
+- [X] Validação de campos
 
 **events.py:**
-- [ ] `TransferInitiatedEvent` - transfer iniciada
-- [ ] `TransferProcessingEvent` - transfer em processamento
-- [ ] `TransferCompletedEvent` - transfer concluída
-- [ ] `TransferFailedEvent` - transfer falhou
+- [X] `TransferInitiatedEvent` - transfer iniciada
+- [X] `TransferProcessingEvent` - transfer em processamento
+- [X] `TransferCompletedEvent` - transfer concluída
+- [X] `TransferFailedEvent` - transfer falhou
 
 **Testes:**
-- [ ] `tests/unit/modules/transfers/test_models.py`
-- [ ] Validar criação de modelo
-- [ ] Validar conversão to_dict/from_dict
-- [ ] Validar status transitions
+- [X] `tests/unit/modules/transfers/test_models.py`
+- [X] Validar criação de modelo
+- [X] Validar conversão to_dict/from_dict
+- [X] Validar status transitions
 
 ### 6.2. Transfer Repository
 
@@ -867,23 +867,23 @@ curl -X POST http://localhost:8000/webhooks/invoice \
 - `src/modules/transfers/repository.py`
 
 **Implementação:**
-- [ ] Classe `TransferRepository(BaseRepository)`
-- [ ] `create(transfer: TransferModel) -> None`
-- [ ] `get_by_id(transfer_id: str) -> Optional[TransferModel]`
-- [ ] `get_by_stark_id(stark_id: str) -> Optional[TransferModel]`
-- [ ] `get_by_external_id(external_id: str) -> Optional[TransferModel]` - para idempotência
-- [ ] `get_by_invoice_id(invoice_id: str) -> Optional[TransferModel]`
-- [ ] `update(transfer: TransferModel) -> None`
-- [ ] `list(status: Optional[str], limit: int, offset: int) -> List[TransferModel]`
-- [ ] `count(status: Optional[str]) -> int`
-- [ ] Logging de operações
+- [X] Classe `TransferRepository(BaseRepository)`
+- [X] `create(transfer: TransferModel) -> None`
+- [X] `get_by_id(transfer_id: str) -> Optional[TransferModel]`
+- [X] `get_by_stark_id(stark_id: str) -> Optional[TransferModel]`
+- [X] `get_by_external_id(external_id: str) -> Optional[TransferModel]` - para idempotência
+- [X] `get_by_invoice_id(invoice_id: str) -> Optional[TransferModel]`
+- [X] `update(transfer: TransferModel) -> None`
+- [X] `list(status: Optional[str], limit: int, offset: int) -> List[TransferModel]`
+- [X] `count(status: Optional[str]) -> int`
+- [X] Logging de operações
 
 **Testes:**
-- [ ] `tests/unit/modules/transfers/test_repository.py`
-- [ ] Mock de database
-- [ ] Validar CRUD operations
-- [ ] Validar queries com filtros
-- [ ] Validar busca por external_id (idempotência)
+- [X] `tests/unit/modules/transfers/test_repository.py`
+- [X] Mock de database
+- [X] Validar CRUD operations
+- [X] Validar queries com filtros
+- [X] Validar busca por external_id (idempotência)
 
 ### 6.3. Transfer Service
 
@@ -891,30 +891,30 @@ curl -X POST http://localhost:8000/webhooks/invoice \
 - `src/modules/transfers/service.py`
 
 **Implementação:**
-- [ ] Classe `TransferService`
-- [ ] `__init__(repository, stark_api, event_bus, config)`
-- [ ] `create_transfer(invoice: InvoiceModel) -> TransferModel` - cria transfer
-  - [ ] Gerar external_id = f"invoice-{invoice.id}"
-  - [ ] Verificar se transfer já existe (idempotência)
-  - [ ] Calcular amount = invoice.net_amount
-  - [ ] Montar payload com conta destino do Stark Bank (constants)
-  - [ ] Criar via StarkTransferAPI (com retry)
-  - [ ] Salvar no banco com status="created"
-  - [ ] Publicar evento `transfer.initiated`
-  - [ ] Exception handling + publicar `transfer.failed`
-- [ ] `get_transfer(transfer_id: str) -> Optional[TransferModel]`
-- [ ] `list_transfers(status, limit, offset) -> List[TransferModel]`
-- [ ] `update_transfer_status(transfer_id, status, **kwargs) -> None`
-- [ ] Logging estruturado
+- [X] Classe `TransferService`
+- [X] `__init__(repository, stark_api, event_bus, config)`
+- [X] `create_transfer(invoice: InvoiceModel) -> TransferModel` - cria transfer
+  - [X] Gerar external_id = f"invoice-{invoice.id}"
+  - [X] Verificar se transfer já existe (idempotência)
+  - [X] Calcular amount = invoice.net_amount
+  - [X] Montar payload com conta destino do Stark Bank (constants)
+  - [X] Criar via StarkTransferAPI (com retry)
+  - [X] Salvar no banco com status="created"
+  - [X] Publicar evento `transfer.initiated`
+  - [X] Exception handling + publicar `transfer.failed`
+- [X] `get_transfer(transfer_id: str) -> Optional[TransferModel]`
+- [X] `list_transfers(status, limit, offset) -> List[TransferModel]`
+- [X] `update_transfer_status(transfer_id, status, **kwargs) -> None`
+- [X] Logging estruturado
 
 **Testes:**
-- [ ] `tests/unit/modules/transfers/test_service.py`
-- [ ] Mock de repository, stark_api, event_bus
-- [ ] Validar fluxo completo de criação
-- [ ] Validar idempotência (mesma invoice)
-- [ ] Validar retry em falhas
-- [ ] Validar publicação de eventos
-- [ ] Validar conta destino (Stark Bank)
+- [X] `tests/unit/modules/transfers/test_service.py`
+- [X] Mock de repository, stark_api, event_bus
+- [X] Validar fluxo completo de criação
+- [X] Validar idempotência (mesma invoice)
+- [X] Validar retry em falhas
+- [X] Validar publicação de eventos
+- [X] Validar conta destino (Stark Bank)
 
 ### 6.4. Transfer Handler (Event Subscriber)
 
@@ -922,23 +922,23 @@ curl -X POST http://localhost:8000/webhooks/invoice \
 - `src/modules/transfers/handler.py`
 
 **Implementação:**
-- [ ] Classe `TransferHandler`
-- [ ] `__init__(service, invoice_repository)`
-- [ ] `handle_invoice_paid(event: Event) -> None` - subscriber de `invoice.paid`
-  - [ ] Extrair invoice_id do evento
-  - [ ] Carregar invoice do banco
-  - [ ] Validar se invoice está paga
-  - [ ] Chamar TransferService.create_transfer()
-  - [ ] Logging estruturado
-  - [ ] Exception handling (não deve quebrar event bus)
-- [ ] Registrar handler no EventBus na inicialização
+- [X] Classe `TransferHandler`
+- [X] `__init__(service, invoice_repository)`
+- [X] `handle_invoice_paid(event: Event) -> None` - subscriber de `invoice.paid`
+  - [X] Extrair invoice_id do evento
+  - [X] Carregar invoice do banco
+  - [X] Validar se invoice está paga
+  - [X] Chamar TransferService.create_transfer()
+  - [X] Logging estruturado
+  - [X] Exception handling (não deve quebrar event bus)
+- [X] Registrar handler no EventBus na inicialização
 
 **Testes:**
-- [ ] `tests/unit/modules/transfers/test_handler.py`
-- [ ] Mock de service, repository, event_bus
-- [ ] Validar processamento de evento `invoice.paid`
-- [ ] Validar chamada a TransferService
-- [ ] Validar exception handling
+- [X] `tests/unit/modules/transfers/test_handler.py`
+- [X] Mock de service, repository, event_bus
+- [X] Validar processamento de evento `invoice.paid`
+- [X] Validar chamada a TransferService
+- [X] Validar exception handling
 
 ### 6.5. Transfer API Endpoints
 
@@ -946,22 +946,22 @@ curl -X POST http://localhost:8000/webhooks/invoice \
 - `src/modules/transfers/api.py`
 
 **Implementação:**
-- [ ] FastAPI Router `transfer_router`
-- [ ] `GET /transfers` - listar transfers (protegido por API Key)
+- [X] FastAPI Router `transfer_router`
+- [X] `GET /transfers` - listar transfers (protegido por API Key)
   - Query params: status, limit, offset
-- [ ] `GET /transfers/{transfer_id}` - buscar transfer (protegido por API Key)
-- [ ] `GET /transfers/invoice/{invoice_id}` - buscar transfer por invoice (protegido por API Key)
-- [ ] Response models
-- [ ] Exception handling → HTTP status codes
-- [ ] Logging de requests
+- [X] `GET /transfers/{transfer_id}` - buscar transfer (protegido por API Key)
+- [X] `GET /transfers/invoice/{invoice_id}` - buscar transfer por invoice (protegido por API Key)
+- [X] Response models
+- [X] Exception handling → HTTP status codes
+- [X] Logging de requests
 
 **Testes:**
-- [ ] `tests/integration/modules/transfers/test_api.py`
-- [ ] Usar TestClient do FastAPI
-- [ ] Mock de service
-- [ ] Validar todos endpoints
-- [ ] Validar autenticação
-- [ ] Validar responses e status codes
+- [X] `tests/integration/modules/transfers/test_api.py`
+- [X] Usar TestClient do FastAPI
+- [X] Mock de service
+- [X] Validar todos endpoints
+- [X] Validar autenticação
+- [X] Validar responses e status codes
 
 ### Entregáveis Fase 6
 - ✅ Módulo de Transfers completo
