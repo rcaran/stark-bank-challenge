@@ -5,8 +5,7 @@ This module provides business logic for transfer operations,
 including creating transfers to Stark Bank when invoices are paid.
 """
 
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import UTC, datetime
 
 from src.config.constants import (
     STARKBANK_DESTINATION_ACCOUNT_NUMBER,
@@ -137,7 +136,7 @@ class TransferService:
             # Update transfer with Stark Bank ID and status
             transfer.stark_transfer_id = stark_response.id
             transfer.status = TransferStatus.CREATED
-            transfer.updated_at = datetime.now(timezone.utc)
+            transfer.updated_at = datetime.now(UTC)
 
             # Save transfer to database
             self.repository.create(transfer)
@@ -173,14 +172,14 @@ class TransferService:
             # Retriable errors - will be retried by the retry decorator
             error_msg = (
                 f"Retriable error creating transfer for invoice "
-                f"{invoice.id}: {str(e)}"
+                f"{invoice.id}: {e!s}"
             )
             logger.warning(error_msg)
 
             # Update transfer with error information
             transfer.error_message = str(e)
             transfer.retry_count += 1
-            transfer.last_retry_at = datetime.now(timezone.utc)
+            transfer.last_retry_at = datetime.now(UTC)
             transfer.status = TransferStatus.FAILED
 
             # Save failed transfer to database
@@ -201,7 +200,7 @@ class TransferService:
             # Non-retriable errors
             error_msg = (
                 f"Non-retriable error creating transfer for invoice "
-                f"{invoice.id}: {str(e)}"
+                f"{invoice.id}: {e!s}"
             )
             logger.error(error_msg, exc_info=True)
 
@@ -223,7 +222,7 @@ class TransferService:
             # Re-raise
             raise
 
-    def get_transfer(self, transfer_id: str) -> Optional[TransferModel]:
+    def get_transfer(self, transfer_id: str) -> TransferModel | None:
         """
         Get a transfer by its ID.
 
@@ -236,7 +235,7 @@ class TransferService:
         logger.debug(f"Getting transfer: {transfer_id}")
         return self.repository.get_by_id(transfer_id)
 
-    def get_transfer_by_invoice(self, invoice_id: str) -> Optional[TransferModel]:
+    def get_transfer_by_invoice(self, invoice_id: str) -> TransferModel | None:
         """
         Get a transfer by its invoice ID.
 
@@ -251,10 +250,10 @@ class TransferService:
 
     def list_transfers(
         self,
-        status: Optional[str] = None,
+        status: str | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> List[TransferModel]:
+    ) -> list[TransferModel]:
         """
         List transfers with optional filtering.
 
@@ -271,7 +270,7 @@ class TransferService:
         )
         return self.repository.list(status=status, limit=limit, offset=offset)
 
-    def count_transfers(self, status: Optional[str] = None) -> int:
+    def count_transfers(self, status: str | None = None) -> int:
         """
         Count transfers with optional filtering.
 
@@ -309,7 +308,7 @@ class TransferService:
 
         # Update status
         transfer.status = TransferStatus(status)
-        transfer.updated_at = datetime.now(timezone.utc)
+        transfer.updated_at = datetime.now(UTC)
 
         # Update additional fields
         for key, value in kwargs.items():
@@ -342,7 +341,7 @@ class TransferService:
                 amount=transfer.amount,
                 error_message=error_message,
                 retry_count=transfer.retry_count,
-                failed_at=datetime.now(timezone.utc),
+                failed_at=datetime.now(UTC),
             )
             event = Event(
                 event_type=TRANSFER_FAILED,

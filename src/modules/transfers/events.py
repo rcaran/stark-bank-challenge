@@ -7,7 +7,7 @@ used with the EventBus system.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from src.shared.events.types import EventType
 
@@ -28,7 +28,7 @@ class TransferInitiatedEventPayload:
     amount: float
     created_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "transfer_id": self.transfer_id,
@@ -49,7 +49,7 @@ class TransferProcessingEventPayload:
     status: str
     updated_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "transfer_id": self.transfer_id,
@@ -69,7 +69,7 @@ class TransferCompletedEventPayload:
     amount: float
     completed_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "transfer_id": self.transfer_id,
@@ -87,13 +87,13 @@ class TransferFailedEventPayload:
     """Payload for transfer failed event."""
     transfer_id: str
     invoice_id: str
-    stark_transfer_id: Optional[str]
+    stark_transfer_id: str | None
     amount: float
     error_message: str
     retry_count: int
     failed_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "transfer_id": self.transfer_id,

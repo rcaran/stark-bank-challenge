@@ -1,11 +1,12 @@
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Callable, Dict, Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class EventType(str, Enum):
+class EventType(StrEnum):
     # Invoice Events
     INVOICE_CREATED = "invoice.created"
     INVOICE_CREATION_FAILED = "invoice.creation_failed"
@@ -28,9 +29,9 @@ class EventType(str, Enum):
 @dataclass
 class Event:
     event_type: EventType
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    metadata: Optional[Dict[str, Any]] = None
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    metadata: dict[str, Any] | None = None
 
 EventHandler = Callable[[Event], None]

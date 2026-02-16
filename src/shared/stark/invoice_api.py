@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import starkbank
 from starkbank import Invoice
@@ -25,14 +25,14 @@ class InvoiceResponse:
     name: str
     due_date: datetime
     status: str
-    pdf: Optional[str] = None
+    pdf: str | None = None
     fine: float = 0
     interest: float = 0
-    tags: Optional[List[str]] = None
-    descriptions: Optional[List[Dict[str, Any]]] = None
+    tags: list[str] | None = None
+    descriptions: list[dict[str, Any]] | None = None
 
     @classmethod
-    def from_stark_invoice(cls, invoice: Invoice) -> 'InvoiceResponse':
+    def from_stark_invoice(cls, invoice: Invoice) -> InvoiceResponse:
         # starkbank.Invoice object has attributes.
         return cls(
             id=invoice.id,
@@ -41,7 +41,7 @@ class InvoiceResponse:
             name=invoice.name,
             due_date=invoice.due, # 'due' in starkbank object
             status=invoice.status,
-            pdf=invoice.pdf if hasattr(invoice, 'pdf') else None,
+            pdf=invoice.pdf if hasattr(invoice, "pdf") else None,
             fine=invoice.fine,
             interest=invoice.interest,
             tags=invoice.tags,
@@ -62,15 +62,15 @@ class StarkInvoiceAPI(StarkBankClient):
         due_date: date,
         fine: float = 0,
         interest: float = 0,
-        tags: List[str] = None,
-        descriptions: List[Dict] = None
+        tags: list[str] | None = None,
+        descriptions: list[dict] | None = None
     ) -> InvoiceResponse:
         """
         Creates an invoice in Stark Bank.
         params:
             amount: in cents
         """
-        self.check_user # Ensure initialized
+        _ = self.check_user  # Ensure initialized
 
         logger.info(f"Creating invoice: amount={amount}, tax_id={tax_id}, name={name}")
 
@@ -100,7 +100,7 @@ class StarkInvoiceAPI(StarkBankClient):
             self.handle_stark_error(e)
 
     def get_invoice(self, invoice_id: str) -> InvoiceResponse:
-        self.check_user
+        _ = self.check_user  # Ensure initialized
         try:
             invoice = starkbank.invoice.get(invoice_id)
             return InvoiceResponse.from_stark_invoice(invoice)
@@ -110,10 +110,10 @@ class StarkInvoiceAPI(StarkBankClient):
     def list_invoices(
         self,
         limit: int = 100,
-        after: Optional[date] = None,
-        status: Optional[str] = None
-    ) -> List[InvoiceResponse]:
-        self.check_user
+        after: date | None = None,
+        status: str | None = None
+    ) -> list[InvoiceResponse]:
+        _ = self.check_user  # Ensure initialized
         try:
             # starkbank.invoice.query returns generator
             invoices_gen = starkbank.invoice.query(

@@ -1,5 +1,5 @@
 import random
-from typing import Any, Dict
+from typing import Any
 
 from faker import Faker
 
@@ -7,7 +7,7 @@ from src.shared.utils.validators import validator_cnpj, validator_cpf
 
 
 class DataGenerator:
-    def __init__(self, locale: str = 'pt_BR'):
+    def __init__(self, locale: str = "pt_BR"):
         self.faker = Faker(locale)
         # Seed for reproducibility if needed, but usually we want randomness
         # self.faker.seed_instance(42)
@@ -20,7 +20,7 @@ class DataGenerator:
         """Generates a valid, formatted CNPJ."""
         return validator_cnpj.generate(True)
 
-    def generate_person_data(self) -> Dict[str, Any]:
+    def generate_person_data(self) -> dict[str, Any]:
         """Generates mock data for a person (PF)."""
         return {
             "name": self.faker.name(),
@@ -29,7 +29,7 @@ class DataGenerator:
             "type": "individual"
         }
 
-    def generate_company_data(self) -> Dict[str, Any]:
+    def generate_company_data(self) -> dict[str, Any]:
         """Generates mock data for a company (PJ)."""
         return {
             "name": self.faker.company(),
@@ -38,7 +38,7 @@ class DataGenerator:
             "type": "company"
         }
 
-    def generate_customer_data(self, prefer_cpf: bool = True) -> Dict[str, Any]:
+    def generate_customer_data(self, prefer_cpf: bool = True) -> dict[str, Any]:
         """
         Generates customer data, either PF (70% probability) or PJ (30% probability)
         if prefer_cpf is True, otherwise equal probability or customized.
@@ -53,5 +53,4 @@ class DataGenerator:
 
         if is_person:
             return self.generate_person_data()
-        else:
-            return self.generate_company_data()
+        return self.generate_company_data()

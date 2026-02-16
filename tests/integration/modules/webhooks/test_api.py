@@ -121,7 +121,8 @@ class TestInvoiceWebhookEndpoint:
         )
 
         # Assert
-        assert response.status_code == 422  # Unprocessable Entity (missing required header)
+        # Unprocessable Entity (missing required header)
+        assert response.status_code == 422
 
     @patch("src.modules.webhooks.api._get_webhook_receiver")
     def test_invoice_webhook_invalid_signature_returns_401(

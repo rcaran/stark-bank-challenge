@@ -1,16 +1,15 @@
 """Integration tests for Invoice API endpoints."""
 
-import pytest
 from unittest.mock import Mock
 
-from fastapi.testclient import TestClient
+import pytest
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
-from src.modules.invoices.api import invoice_router, get_invoice_service
+from src.modules.invoices.api import get_invoice_service, invoice_router
 from src.modules.invoices.models import InvoiceModel, InvoiceStatus
 from src.modules.invoices.service import InvoiceService
 from src.shared.security.api_key import get_api_key_header
-
 
 # Test app setup
 app = FastAPI()

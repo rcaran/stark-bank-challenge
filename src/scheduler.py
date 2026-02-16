@@ -9,9 +9,8 @@ automatically.
 import signal
 import sys
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from threading import Event
-from typing import Optional
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -24,9 +23,9 @@ from src.shared.utils.logger import get_logger
 logger = get_logger("scheduler")
 
 # Global scheduler instance
-_scheduler: Optional[BackgroundScheduler] = None
+_scheduler: BackgroundScheduler | None = None
 _shutdown_event = Event()
-_start_time: Optional[datetime] = None
+_start_time: datetime | None = None
 
 
 def generate_invoices_job() -> None:
@@ -40,26 +39,26 @@ def generate_invoices_job() -> None:
     4. Handles exceptions gracefully
     """
     logger.info("Starting invoice generation job")
-    
+
     try:
         # Initialize services
         generator = InvoiceGenerator()
         service = InvoiceService()
-        
+
         # Generate batch of invoices
         batch_count = None  # Will generate 8-12 randomly
         invoice_data_list = generator.generate_batch(count=batch_count)
-        
+
         logger.info(
             "Generated invoice batch",
             count=len(invoice_data_list),
             total_amount=sum(inv["amount"] for inv in invoice_data_list)
         )
-        
+
         # Create each invoice
         created_count = 0
         failed_count = 0
-        
+
         for invoice_data in invoice_data_list:
             try:
                 invoice = service.create_invoice(invoice_data)
@@ -77,14 +76,14 @@ def generate_invoices_job() -> None:
                     error=str(e),
                     customer_tax_id=invoice_data.get("customer_tax_id")
                 )
-        
+
         logger.info(
             "Invoice generation job completed",
             created=created_count,
             failed=failed_count,
             total=len(invoice_data_list)
         )
-        
+
     except Exception as e:
         logger.error(
             "Invoice generation job failed",
@@ -120,24 +119,24 @@ def _should_continue_running() -> bool:
     if _shutdown_event.is_set():
         logger.info("Shutdown signal received, stopping scheduler")
         return False
-    
+
     if _start_time is not None:
-        elapsed = datetime.now(timezone.utc) - _start_time
+        elapsed = datetime.now(UTC) - _start_time
         max_duration = timedelta(hours=24)
-        
+
         if elapsed >= max_duration:
             logger.info(
                 "Maximum duration reached, stopping scheduler",
                 elapsed_hours=elapsed.total_seconds() / 3600
             )
             return False
-    
+
     return True
 
 
 def run_scheduler(
-    interval_hours: Optional[int] = None,
-    max_duration_hours: Optional[int] = None,
+    interval_hours: int | None = None,
+    max_duration_hours: int | None = None,
     run_immediately: bool = False
 ) -> None:
     """
@@ -156,60 +155,60 @@ def run_scheduler(
         run_immediately: If True, runs first job immediately (default: False)
     """
     global _scheduler, _start_time
-    
+
     # Get configuration
     interval_hours = interval_hours or settings.scheduler_interval_hours
     max_duration_hours = max_duration_hours or 24
-    
+
     logger.info(
         "Starting scheduler",
         interval_hours=interval_hours,
         max_duration_hours=max_duration_hours,
         run_immediately=run_immediately
     )
-    
+
     # Record start time
-    _start_time = datetime.now(timezone.utc)
-    
+    _start_time = datetime.now(UTC)
+
     # Register signal handlers for graceful shutdown
     signal.signal(signal.SIGINT, _signal_handler)
     signal.signal(signal.SIGTERM, _signal_handler)
-    
+
     try:
         # Initialize scheduler
         _scheduler = BackgroundScheduler(
-            timezone='UTC',
+            timezone="UTC",
             job_defaults={
-                'coalesce': True,  # Combine missed runs
-                'max_instances': 1,  # Only one instance at a time
-                'misfire_grace_time': 300  # 5 minutes grace period
+                "coalesce": True,  # Combine missed runs
+                "max_instances": 1,  # Only one instance at a time
+                "misfire_grace_time": 300  # 5 minutes grace period
             }
         )
-        
+
         # Add job with interval trigger
         _scheduler.add_job(
             func=generate_invoices_job,
             trigger=IntervalTrigger(hours=interval_hours),
-            id='generate_invoices',
-            name='Generate Invoices Batch',
+            id="generate_invoices",
+            name="Generate Invoices Batch",
             replace_existing=True
         )
-        
+
         # Start scheduler
         _scheduler.start()
         logger.info("Scheduler started successfully")
-        
+
         # Run immediately if requested
         if run_immediately:
             logger.info("Running first job immediately")
             generate_invoices_job()
-        
+
         # Keep running until shutdown signal or max duration
         while _should_continue_running():
             time.sleep(1)
-        
+
         logger.info("Scheduler stopping gracefully...")
-        
+
     except Exception as e:
         logger.error(
             "Scheduler encountered an error",
@@ -217,7 +216,7 @@ def run_scheduler(
             exc_info=True
         )
         raise
-    
+
     finally:
         # Shutdown scheduler
         if _scheduler is not None and _scheduler.running:
@@ -234,10 +233,10 @@ def stop_scheduler() -> None:
     without sending a signal.
     """
     global _scheduler
-    
+
     logger.info("Stopping scheduler programmatically")
     _shutdown_event.set()
-    
+
     if _scheduler is not None and _scheduler.running:
         _scheduler.shutdown(wait=True)
         logger.info("Scheduler stopped")
@@ -255,26 +254,28 @@ def get_scheduler_status() -> dict:
         - jobs: List of scheduled jobs with next run time
     """
     global _scheduler, _start_time
-    
+
     status = {
         "running": _scheduler is not None and _scheduler.running,
         "start_time": _start_time.isoformat() if _start_time else None,
         "uptime_seconds": None,
         "jobs": []
     }
-    
+
     if _start_time:
-        elapsed = datetime.now(timezone.utc) - _start_time
+        elapsed = datetime.now(UTC) - _start_time
         status["uptime_seconds"] = elapsed.total_seconds()
-    
+
     if _scheduler and _scheduler.running:
         for job in _scheduler.get_jobs():
             status["jobs"].append({
                 "id": job.id,
                 "name": job.name,
-                "next_run_time": job.next_run_time.isoformat() if job.next_run_time else None
+                "next_run_time": (
+                    job.next_run_time.isoformat() if job.next_run_time else None
+                ),
             })
-    
+
     return status
 
 

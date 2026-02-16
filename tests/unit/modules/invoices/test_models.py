@@ -1,7 +1,7 @@
 """Unit tests for InvoiceModel."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -31,8 +31,8 @@ class TestInvoiceModel:
     def test_create_invoice_with_all_fields(self):
         """Test creating invoice with all fields."""
         custom_id = str(uuid.uuid4())
-        created_at = datetime.now(timezone.utc)
-        due_date = datetime.now(timezone.utc)
+        created_at = datetime.now(UTC)
+        due_date = datetime.now(UTC)
 
         invoice = InvoiceModel(
             id=custom_id,
@@ -171,8 +171,8 @@ class TestInvoiceModel:
 
     def test_from_dict_with_datetime_strings(self):
         """Test creation from dict with datetime strings."""
-        created = datetime.now(timezone.utc)
-        paid = datetime.now(timezone.utc)
+        created = datetime.now(UTC)
+        paid = datetime.now(UTC)
 
         data = {
             "amount": 10000,
@@ -212,7 +212,7 @@ class TestInvoiceModel:
             customer_email="test@test.com",
         )
 
-        paid_at = datetime.now(timezone.utc)
+        paid_at = datetime.now(UTC)
         invoice.mark_as_paid(fee=500, paid_at=paid_at)
 
         assert invoice.status == InvoiceStatus.PAID

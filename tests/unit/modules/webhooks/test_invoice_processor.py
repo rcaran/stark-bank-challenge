@@ -1,6 +1,6 @@
 """Unit tests for InvoiceWebhookProcessor."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import Mock
 
 import pytest
@@ -44,7 +44,7 @@ class TestInvoiceWebhookProcessor:
             customer_tax_id="529.982.247-25",
             customer_email="joao@example.com",
             status=InvoiceStatus.CREATED,
-            created_at=datetime(2026, 2, 15, 10, 0, 0, tzinfo=timezone.utc),
+            created_at=datetime(2026, 2, 15, 10, 0, 0, tzinfo=UTC),
         )
 
     @pytest.fixture
@@ -57,8 +57,8 @@ class TestInvoiceWebhookProcessor:
             fee=50,  # 0.50 in centavos
             name="João Silva",
             tax_id="529.982.247-25",
-            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=timezone.utc),
-            updated=datetime(2026, 2, 16, 14, 30, 0, tzinfo=timezone.utc),
+            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=UTC),
+            updated=datetime(2026, 2, 16, 14, 30, 0, tzinfo=UTC),
         )
 
     @pytest.fixture
@@ -180,7 +180,7 @@ class TestInvoiceWebhookProcessor:
 
         updated_invoice = mock_repository.update.call_args[0][0]
         assert updated_invoice.paid_at == datetime(
-            2026, 2, 16, 14, 30, 0, tzinfo=timezone.utc
+            2026, 2, 16, 14, 30, 0, tzinfo=UTC
         )
 
     def test_process_sets_current_time_when_updated_missing(
@@ -209,7 +209,7 @@ class TestInvoiceWebhookProcessor:
         assert updated_invoice.paid_at is not None
         # Should be close to now
         time_diff = abs(
-            (datetime.now(timezone.utc) - updated_invoice.paid_at).total_seconds()
+            (datetime.now(UTC) - updated_invoice.paid_at).total_seconds()
         )
         assert time_diff < 5  # Within 5 seconds
 
@@ -299,13 +299,13 @@ class TestInvoiceWebhookProcessor:
             stark_invoice_id="stark-invoice-456",
             amount=10000,
             fee=100,  # 1.00 real
-            paid_at=datetime(2026, 2, 16, 12, 0, 0, tzinfo=timezone.utc),
+            paid_at=datetime(2026, 2, 16, 12, 0, 0, tzinfo=UTC),
         )
 
         # Verify invoice was updated
         assert result.status == InvoiceStatus.PAID
         assert result.fee == 1.00
-        assert result.paid_at == datetime(2026, 2, 16, 12, 0, 0, tzinfo=timezone.utc)
+        assert result.paid_at == datetime(2026, 2, 16, 12, 0, 0, tzinfo=UTC)
 
         # Verify repository was called
         mock_repository.update.assert_called_once()
@@ -350,7 +350,7 @@ class TestInvoiceWebhookProcessor:
 
         # Should be close to now
         time_diff = abs(
-            (datetime.now(timezone.utc) - result.paid_at).total_seconds()
+            (datetime.now(UTC) - result.paid_at).total_seconds()
         )
         assert time_diff < 5
 

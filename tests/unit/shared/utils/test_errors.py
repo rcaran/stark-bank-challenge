@@ -1,8 +1,14 @@
 from src.shared.utils.errors import (
-    StarkBankError, RetriableError, NonRetriableError,
-    ValidationError, AuthenticationError, NotFoundError,
-    TimeoutError, RateLimitError
+    AuthenticationError,
+    NonRetriableError,
+    NotFoundError,
+    RateLimitError,
+    RetriableError,
+    StarkBankError,
+    TimeoutError,
+    ValidationError,
 )
+
 
 def test_exception_hierarchy():
     assert issubclass(RetriableError, StarkBankError)

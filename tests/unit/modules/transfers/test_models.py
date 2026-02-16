@@ -1,7 +1,7 @@
 """Unit tests for TransferModel."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -32,8 +32,8 @@ class TestTransferModel:
         custom_id = str(uuid.uuid4())
         invoice_id = str(uuid.uuid4())
         external_id = str(uuid.uuid4())
-        created_at = datetime.now(timezone.utc)
-        updated_at = datetime.now(timezone.utc)
+        created_at = datetime.now(UTC)
+        updated_at = datetime.now(UTC)
 
         transfer = TransferModel(
             id=custom_id,
@@ -118,10 +118,10 @@ class TestTransferModel:
         transfer_id = str(uuid.uuid4())
         invoice_id = str(uuid.uuid4())
         external_id = str(uuid.uuid4())
-        created_at = datetime.now(timezone.utc)
-        updated_at = datetime.now(timezone.utc)
-        completed_at = datetime.now(timezone.utc)
-        last_retry_at = datetime.now(timezone.utc)
+        created_at = datetime.now(UTC)
+        updated_at = datetime.now(UTC)
+        completed_at = datetime.now(UTC)
+        last_retry_at = datetime.now(UTC)
 
         data = {
             "id": transfer_id,

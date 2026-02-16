@@ -1,15 +1,14 @@
-from abc import ABC
 from sqlite3 import Cursor, Row
-from typing import Generic, List, Optional, TypeVar
+from typing import TypeVar
 
 from src.shared.database.connection import DatabaseConnection
 from src.shared.utils.logger import get_logger
 
 logger = get_logger("shared.database.repository")
 
-T = TypeVar('T')
+T = TypeVar("T")
 
-class BaseRepository(ABC, Generic[T]):
+class BaseRepository[T]:
     def __init__(self, db_connection: DatabaseConnection = None):
         if db_connection is None:
             self.db = DatabaseConnection()
@@ -25,10 +24,10 @@ class BaseRepository(ABC, Generic[T]):
             logger.error(f"Error executing query: {query}", error=str(e))
             raise
 
-    def _fetchone(self, query: str, params: tuple = ()) -> Optional[Row]:
+    def _fetchone(self, query: str, params: tuple = ()) -> Row | None:
         cursor = self._execute(query, params)
         return cursor.fetchone()
 
-    def _fetchall(self, query: str, params: tuple = ()) -> List[Row]:
+    def _fetchall(self, query: str, params: tuple = ()) -> list[Row]:
         cursor = self._execute(query, params)
         return cursor.fetchall()

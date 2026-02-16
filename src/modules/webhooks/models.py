@@ -7,12 +7,12 @@ for invoice and transfer webhooks from Stark Bank.
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class WebhookEventType(str, Enum):
+class WebhookEventType(StrEnum):
     """Webhook event types from Stark Bank."""
     # Invoice events
     INVOICE_CREATED = "created"
@@ -40,11 +40,11 @@ class WebhookEvent:
     event_type: str
     log_id: str
     log_created: datetime
-    raw_payload: Dict[str, Any] = field(default_factory=dict)
-    received_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    raw_payload: dict[str, Any] = field(default_factory=dict)
+    received_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "WebhookEvent":
+    def from_dict(cls, data: dict[str, Any]) -> WebhookEvent:
         """
         Parse webhook event from raw payload dictionary.
 
@@ -70,9 +70,9 @@ class WebhookEvent:
         # Parse log created timestamp
         log_created = log.get("created")
         if isinstance(log_created, str):
-            log_created = datetime.fromisoformat(log_created.replace("Z", "+00:00"))
+            log_created = datetime.fromisoformat(log_created)
         elif log_created is None:
-            log_created = datetime.now(timezone.utc)
+            log_created = datetime.now(UTC)
 
         return cls(
             subscription=event.get("subscription", ""),
@@ -83,7 +83,7 @@ class WebhookEvent:
             raw_payload=data,
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "subscription": self.subscription,
@@ -106,12 +106,12 @@ class InvoiceWebhookPayload:
     invoice_id: str
     status: str
     amount: int  # In centavos
-    fee: Optional[int] = None  # In centavos
-    name: Optional[str] = None
-    tax_id: Optional[str] = None
-    created: Optional[datetime] = None
-    updated: Optional[datetime] = None
-    raw_data: Dict[str, Any] = field(default_factory=dict)
+    fee: int | None = None  # In centavos
+    name: str | None = None
+    tax_id: str | None = None
+    created: datetime | None = None
+    updated: datetime | None = None
+    raw_data: dict[str, Any] = field(default_factory=dict)
 
     @property
     def amount_decimal(self) -> float:
@@ -119,25 +119,25 @@ class InvoiceWebhookPayload:
         return self.amount / 100.0
 
     @property
-    def fee_decimal(self) -> Optional[float]:
+    def fee_decimal(self) -> float | None:
         """Get fee in decimal format (reais)."""
         return self.fee / 100.0 if self.fee is not None else None
 
     @property
-    def net_amount(self) -> Optional[int]:
+    def net_amount(self) -> int | None:
         """Calculate net amount (amount - fee) in centavos."""
         if self.fee is not None:
             return self.amount - self.fee
         return None
 
     @property
-    def net_amount_decimal(self) -> Optional[float]:
+    def net_amount_decimal(self) -> float | None:
         """Calculate net amount in decimal format (reais)."""
         net = self.net_amount
         return net / 100.0 if net is not None else None
 
     @classmethod
-    def from_webhook_event(cls, webhook: WebhookEvent) -> "InvoiceWebhookPayload":
+    def from_webhook_event(cls, webhook: WebhookEvent) -> InvoiceWebhookPayload:
         """
         Extract invoice payload from webhook event.
 
@@ -164,11 +164,11 @@ class InvoiceWebhookPayload:
         # Parse timestamp fields
         created = invoice.get("created")
         if isinstance(created, str):
-            created = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            created = datetime.fromisoformat(created)
 
         updated = invoice.get("updated")
         if isinstance(updated, str):
-            updated = datetime.fromisoformat(updated.replace("Z", "+00:00"))
+            updated = datetime.fromisoformat(updated)
 
         return cls(
             invoice_id=str(invoice.get("id", "")),
@@ -183,7 +183,7 @@ class InvoiceWebhookPayload:
         )
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "InvoiceWebhookPayload":
+    def from_dict(cls, data: dict[str, Any]) -> InvoiceWebhookPayload:
         """
         Create payload from dictionary (convenience method).
 
@@ -196,7 +196,7 @@ class InvoiceWebhookPayload:
         webhook = WebhookEvent.from_dict(data)
         return cls.from_webhook_event(webhook)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "invoice_id": self.invoice_id,
@@ -225,19 +225,19 @@ class TransferWebhookPayload:
     transfer_id: str
     status: str
     amount: int  # In centavos
-    external_id: Optional[str] = None
-    bank_code: Optional[str] = None
-    branch_code: Optional[str] = None
-    account_number: Optional[str] = None
-    account_type: Optional[str] = None
-    name: Optional[str] = None
-    tax_id: Optional[str] = None
-    fee: Optional[int] = None  # In centavos
-    created: Optional[datetime] = None
-    updated: Optional[datetime] = None
-    error_code: Optional[str] = None
-    error_message: Optional[str] = None
-    raw_data: Dict[str, Any] = field(default_factory=dict)
+    external_id: str | None = None
+    bank_code: str | None = None
+    branch_code: str | None = None
+    account_number: str | None = None
+    account_type: str | None = None
+    name: str | None = None
+    tax_id: str | None = None
+    fee: int | None = None  # In centavos
+    created: datetime | None = None
+    updated: datetime | None = None
+    error_code: str | None = None
+    error_message: str | None = None
+    raw_data: dict[str, Any] = field(default_factory=dict)
 
     @property
     def amount_decimal(self) -> float:
@@ -245,7 +245,7 @@ class TransferWebhookPayload:
         return self.amount / 100.0
 
     @property
-    def fee_decimal(self) -> Optional[float]:
+    def fee_decimal(self) -> float | None:
         """Get fee in decimal format (reais)."""
         return self.fee / 100.0 if self.fee is not None else None
 
@@ -265,7 +265,7 @@ class TransferWebhookPayload:
         return self.status == "processing"
 
     @classmethod
-    def from_webhook_event(cls, webhook: WebhookEvent) -> "TransferWebhookPayload":
+    def from_webhook_event(cls, webhook: WebhookEvent) -> TransferWebhookPayload:
         """
         Extract transfer payload from webhook event.
 
@@ -292,11 +292,11 @@ class TransferWebhookPayload:
         # Parse timestamp fields
         created = transfer.get("created")
         if isinstance(created, str):
-            created = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            created = datetime.fromisoformat(created)
 
         updated = transfer.get("updated")
         if isinstance(updated, str):
-            updated = datetime.fromisoformat(updated.replace("Z", "+00:00"))
+            updated = datetime.fromisoformat(updated)
 
         # Extract error information from log if present
         errors = log.get("errors", [])
@@ -326,7 +326,7 @@ class TransferWebhookPayload:
         )
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "TransferWebhookPayload":
+    def from_dict(cls, data: dict[str, Any]) -> TransferWebhookPayload:
         """
         Create payload from dictionary (convenience method).
 
@@ -339,7 +339,7 @@ class TransferWebhookPayload:
         webhook = WebhookEvent.from_dict(data)
         return cls.from_webhook_event(webhook)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "transfer_id": self.transfer_id,

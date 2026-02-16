@@ -1,8 +1,9 @@
 """Unit tests for InvoiceRepository."""
 
+from datetime import UTC, datetime
+from unittest.mock import MagicMock, Mock
+
 import pytest
-from unittest.mock import Mock, MagicMock, patch
-from datetime import datetime, timezone
 
 from src.modules.invoices.models import InvoiceModel, InvoiceStatus
 from src.modules.invoices.repository import InvoiceRepository
@@ -67,7 +68,7 @@ class TestInvoiceRepository:
             "123.456.789-09",
             "test@test.com",
             "pending",
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
             None,  # paid_at
             None,  # fee
             None,  # net_amount
@@ -113,7 +114,7 @@ class TestInvoiceRepository:
             "123.456.789-09",
             "test@test.com",
             "created",
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
             None, None, None, 0, None, None,
         )
 
@@ -136,7 +137,7 @@ class TestInvoiceRepository:
             sample_invoice.id,
             None, 10000, "Test User", "123.456.789-09",
             "test@test.com", "pending",
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
             None, None, None, 0, None, None,
         )
 
@@ -171,10 +172,10 @@ class TestInvoiceRepository:
         """Test listing invoices."""
         mock_rows = [
             ("id1", "stark1", 10000, "User1", "111.111.111-11", "u1@test.com",
-             "pending", datetime.now(timezone.utc).isoformat(),
+             "pending", datetime.now(UTC).isoformat(),
              None, None, None, 0, None, None),
             ("id2", "stark2", 20000, "User2", "222.222.222-22", "u2@test.com",
-             "created", datetime.now(timezone.utc).isoformat(),
+             "created", datetime.now(UTC).isoformat(),
              None, None, None, 0, None, None),
         ]
 
@@ -194,8 +195,8 @@ class TestInvoiceRepository:
         """Test listing invoices with status filter."""
         mock_rows = [
             ("id1", "stark1", 10000, "User1", "111.111.111-11", "u1@test.com",
-             "paid", datetime.now(timezone.utc).isoformat(),
-             datetime.now(timezone.utc).isoformat(), 500, 9500, 0, None, None),
+             "paid", datetime.now(UTC).isoformat(),
+             datetime.now(UTC).isoformat(), 500, 9500, 0, None, None),
         ]
 
         mock_conn = MagicMock()
@@ -242,7 +243,7 @@ class TestInvoiceRepository:
         """Test listing invoices by status."""
         mock_rows = [
             ("id1", None, 10000, "User1", "111.111.111-11", "u1@test.com",
-             "pending", datetime.now(timezone.utc).isoformat(),
+             "pending", datetime.now(UTC).isoformat(),
              None, None, None, 0, None, None),
         ]
 

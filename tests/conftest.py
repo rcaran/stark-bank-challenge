@@ -1,7 +1,7 @@
-import pytest
 import asyncio
-from typing import AsyncGenerator
 import os
+
+import pytest
 
 # Set environment variables for testing
 os.environ["APP_ENV"] = "test"
@@ -16,9 +16,10 @@ def event_loop():
 
 @pytest.fixture
 async def async_client():
-    from httpx import AsyncClient, ASGITransport
+    from httpx import ASGITransport, AsyncClient
+
     from src.main import app
-    
+
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://test"

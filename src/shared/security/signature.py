@@ -7,7 +7,6 @@ to ensure authenticity and integrity of webhook payloads.
 
 import base64
 import hashlib
-from typing import Optional
 
 from cryptography.exceptions import (
     InvalidSignature as CryptoInvalidSignature,
@@ -42,8 +41,7 @@ def _get_public_key_pem() -> str:
     """
     if settings.starkbank_environment == STARKBANK_ENV_SANDBOX:
         return STARKBANK_PUBLIC_KEY_SANDBOX
-    else:
-        return STARKBANK_PUBLIC_KEY_PRODUCTION
+    return STARKBANK_PUBLIC_KEY_PRODUCTION
 
 
 def _load_public_key(public_key_pem: str) -> ec.EllipticCurvePublicKey:
@@ -60,19 +58,18 @@ def _load_public_key(public_key_pem: str) -> ec.EllipticCurvePublicKey:
         ValueError: If the key cannot be loaded
     """
     try:
-        public_key = serialization.load_pem_public_key(
-            public_key_pem.encode('utf-8')
+        return serialization.load_pem_public_key(
+            public_key_pem.encode("utf-8")
         )
-        return public_key
     except Exception as e:
         logger.error(f"Failed to load public key: {e}")
-        raise ValueError(f"Invalid public key format: {e}")
+        raise ValueError(f"Invalid public key format: {e}") from e
 
 
 def validate_webhook_signature(
     payload: bytes,
     signature: str,
-    public_key_pem: Optional[str] = None
+    public_key_pem: str | None = None
 ) -> bool:
     """
     Validate a webhook signature using ECDSA.
@@ -144,7 +141,7 @@ def validate_webhook_signature(
 def verify_webhook_signature(
     payload: bytes,
     signature: str,
-    public_key_pem: Optional[str] = None
+    public_key_pem: str | None = None
 ) -> None:
     """
     Verify webhook signature and raise exception if invalid.

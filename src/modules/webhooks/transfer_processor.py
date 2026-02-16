@@ -5,8 +5,8 @@ This module processes transfer webhooks from Stark Bank,
 updating transfer status and publishing relevant events.
 """
 
-from datetime import datetime, timezone
-from typing import Any, Optional, Protocol
+from datetime import UTC, datetime
+from typing import Any, Protocol
 
 from src.modules.webhooks.events import (
     TRANSFER_COMPLETED,
@@ -28,7 +28,7 @@ logger = get_logger("modules.webhooks.transfer_processor")
 class TransferRepositoryProtocol(Protocol):
     """Protocol defining the interface for transfer repository."""
 
-    def get_by_stark_id(self, stark_id: str) -> Optional[Any]:
+    def get_by_stark_id(self, stark_id: str) -> Any | None:
         """Get transfer by Stark Bank transfer ID."""
         ...
 
@@ -131,10 +131,10 @@ class TransferWebhookProcessor:
         transfer.status = "success"
 
         # Set completed_at timestamp
-        transfer.completed_at = webhook_payload.updated or datetime.now(timezone.utc)
+        transfer.completed_at = webhook_payload.updated or datetime.now(UTC)
 
         # Update updated_at timestamp
-        transfer.updated_at = datetime.now(timezone.utc)
+        transfer.updated_at = datetime.now(UTC)
 
         # Set fee if available
         if webhook_payload.fee is not None:
@@ -169,11 +169,11 @@ class TransferWebhookProcessor:
         transfer.status = "failed"
 
         # Update updated_at timestamp
-        transfer.updated_at = datetime.now(timezone.utc)
+        transfer.updated_at = datetime.now(UTC)
 
         # Save error information
         transfer.error_message = webhook_payload.error_message
-        if hasattr(transfer, 'error_code'):
+        if hasattr(transfer, "error_code"):
             transfer.error_code = webhook_payload.error_code
 
         # Persist changes
@@ -205,7 +205,7 @@ class TransferWebhookProcessor:
         transfer.status = "processing"
 
         # Update updated_at timestamp
-        transfer.updated_at = datetime.now(timezone.utc)
+        transfer.updated_at = datetime.now(UTC)
 
         # Persist changes
         self._repository.update(transfer)
@@ -230,7 +230,7 @@ class TransferWebhookProcessor:
         logger.debug(f"Publishing transfer completed event: {transfer.id}")
 
         # Get invoice_id if available
-        invoice_id = getattr(transfer, 'invoice_id', None)
+        invoice_id = getattr(transfer, "invoice_id", None)
 
         # Create event payload
         event_payload = TransferCompletedEventPayload(
@@ -240,7 +240,7 @@ class TransferWebhookProcessor:
             amount=webhook_payload.amount_decimal,
             fee=webhook_payload.fee_decimal,
             external_id=webhook_payload.external_id or "",
-            completed_at=transfer.completed_at or datetime.now(timezone.utc),
+            completed_at=transfer.completed_at or datetime.now(UTC),
         )
 
         # Create and publish event
@@ -272,7 +272,7 @@ class TransferWebhookProcessor:
         logger.debug(f"Publishing transfer failed event: {transfer.id}")
 
         # Get invoice_id if available
-        invoice_id = getattr(transfer, 'invoice_id', None)
+        invoice_id = getattr(transfer, "invoice_id", None)
 
         # Create event payload
         event_payload = TransferFailedEventPayload(
@@ -283,7 +283,7 @@ class TransferWebhookProcessor:
             external_id=webhook_payload.external_id or "",
             error_code=webhook_payload.error_code,
             error_message=webhook_payload.error_message,
-            failed_at=datetime.now(timezone.utc),
+            failed_at=datetime.now(UTC),
         )
 
         # Create and publish event
@@ -316,7 +316,7 @@ class TransferWebhookProcessor:
         logger.debug(f"Publishing transfer processing event: {transfer.id}")
 
         # Get invoice_id if available
-        invoice_id = getattr(transfer, 'invoice_id', None)
+        invoice_id = getattr(transfer, "invoice_id", None)
 
         # Create event payload
         event_payload = TransferProcessingEventPayload(
@@ -325,7 +325,7 @@ class TransferWebhookProcessor:
             invoice_id=invoice_id,
             amount=webhook_payload.amount_decimal,
             external_id=webhook_payload.external_id or "",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         # Create and publish event

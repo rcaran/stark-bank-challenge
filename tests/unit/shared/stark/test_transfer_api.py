@@ -1,8 +1,10 @@
-import pytest
-from unittest.mock import MagicMock
 from datetime import date
-from src.shared.stark.transfer_api import StarkTransferAPI, TransferResponse
-from src.shared.utils.errors import ValidationError
+from unittest.mock import MagicMock
+
+import pytest
+
+from src.shared.stark.transfer_api import StarkTransferAPI
+
 
 @pytest.fixture
 def mock_stark_transfer_create(mocker):
@@ -60,7 +62,9 @@ def test_get_transfer_success(api, mock_stark_transfer_get):
         id="trans-123",
         amount=5000,
         status="processing",
-        tax_id="123", name="John", bank_code="001", branch_code="0001", account_number="123", external_id=None, tags=[], fee=0
+        tax_id="123", name="John", bank_code="001",
+        branch_code="0001", account_number="123",
+        external_id=None, tags=[], fee=0,
     )
     mock_stark_transfer_get.return_value = mock_transfer
 
@@ -73,7 +77,9 @@ def test_list_transfers_success(api, mock_stark_transfer_query):
         id="trans-123",
         amount=5000,
         status="processing",
-        tax_id="123", name="John", bank_code="001", branch_code="0001", account_number="123", external_id=None, tags=[], fee=0
+        tax_id="123", name="John", bank_code="001",
+        branch_code="0001", account_number="123",
+        external_id=None, tags=[], fee=0,
     )
     # query returns generator or list, mock usually returns list which is iterable
     mock_stark_transfer_query.return_value = [mock_transfer]

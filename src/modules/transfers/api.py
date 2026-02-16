@@ -5,7 +5,6 @@ This module provides FastAPI endpoints for transfer operations,
 protected by API key authentication.
 """
 
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -24,7 +23,7 @@ transfer_router = APIRouter(
 )
 
 # Initialize service (singleton pattern for production)
-_service: Optional[TransferService] = None
+_service: TransferService | None = None
 
 
 def get_transfer_service() -> TransferService:
@@ -42,20 +41,20 @@ class TransferResponse(BaseModel):
     """Response model for transfer data."""
     id: str
     invoice_id: str
-    stark_transfer_id: Optional[str] = None
+    stark_transfer_id: str | None = None
     external_id: str
     amount: float
     status: str
     created_at: str
     updated_at: str
-    completed_at: Optional[str] = None
+    completed_at: str | None = None
     retry_count: int = 0
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class TransferListResponse(BaseModel):
     """Response model for transfer list."""
-    transfers: List[TransferResponse]
+    transfers: list[TransferResponse]
     total: int
     limit: int
     offset: int
@@ -64,7 +63,7 @@ class TransferListResponse(BaseModel):
 class ErrorResponse(BaseModel):
     """Response model for errors."""
     detail: str
-    error_code: Optional[str] = None
+    error_code: str | None = None
 
 
 # --- Endpoints ---
@@ -80,7 +79,7 @@ class ErrorResponse(BaseModel):
     description="List transfers with optional filtering and pagination.",
 )
 async def list_transfers(
-    status_filter: Optional[str] = Query(
+    status_filter: str | None = Query(
         None,
         alias="status",
         description="Filter by status",
@@ -114,7 +113,7 @@ async def list_transfers(
                     f"Invalid status: {status_filter}. "
                     f"Valid values: {[s.value for s in TransferStatus]}"
                 ),
-            )
+            ) from None
 
     transfers = service.list_transfers(status=status_filter, limit=limit, offset=offset)
     total = service.count_transfers(status=status_filter)

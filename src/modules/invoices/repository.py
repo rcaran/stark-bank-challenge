@@ -5,7 +5,8 @@ This module provides database operations for invoices,
 extending the BaseRepository with invoice-specific methods.
 """
 
-from typing import List, Optional
+
+import builtins
 
 from src.modules.invoices.models import InvoiceModel, InvoiceStatus
 from src.shared.database.base_repository import BaseRepository
@@ -73,7 +74,7 @@ class InvoiceRepository(BaseRepository[InvoiceModel]):
         self._execute(query, params)
         logger.info(f"Invoice created successfully: {invoice.id}")
 
-    def get_by_id(self, invoice_id: str) -> Optional[InvoiceModel]:
+    def get_by_id(self, invoice_id: str) -> InvoiceModel | None:
         """
         Get an invoice by its internal ID.
 
@@ -100,7 +101,7 @@ class InvoiceRepository(BaseRepository[InvoiceModel]):
 
         return self._row_to_model(row)
 
-    def get_by_stark_id(self, stark_id: str) -> Optional[InvoiceModel]:
+    def get_by_stark_id(self, stark_id: str) -> InvoiceModel | None:
         """
         Get an invoice by its Stark Bank ID.
 
@@ -188,10 +189,10 @@ class InvoiceRepository(BaseRepository[InvoiceModel]):
 
     def list(
         self,
-        status: Optional[str] = None,
+        status: str | None = None,
         limit: int = 100,
         offset: int = 0
-    ) -> List[InvoiceModel]:
+    ) -> builtins.list[InvoiceModel]:
         """
         List invoices with optional filtering.
 
@@ -232,7 +233,7 @@ class InvoiceRepository(BaseRepository[InvoiceModel]):
         logger.debug(f"Found {len(invoices)} invoices")
         return invoices
 
-    def count(self, status: Optional[str] = None) -> int:
+    def count(self, status: str | None = None) -> int:
         """
         Count invoices with optional status filter.
 
@@ -255,7 +256,7 @@ class InvoiceRepository(BaseRepository[InvoiceModel]):
         logger.debug(f"Invoice count: {count}")
         return count
 
-    def list_by_status(self, status: InvoiceStatus) -> List[InvoiceModel]:
+    def list_by_status(self, status: InvoiceStatus) -> builtins.list[InvoiceModel]:
         """
         List all invoices with a specific status.
 

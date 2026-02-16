@@ -1,6 +1,6 @@
 """Unit tests for Webhook Models."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -58,7 +58,7 @@ class TestWebhookEvent:
 
     def test_webhook_event_to_dict(self):
         """Test converting webhook event to dictionary."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         event = WebhookEvent(
             subscription="transfer",
             event_id="12345",
@@ -91,7 +91,7 @@ class TestWebhookEvent:
         }
 
         event = WebhookEvent.from_dict(payload)
-        
+
         assert event.log_created is not None
         assert event.log_created.tzinfo is not None
 

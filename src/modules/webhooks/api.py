@@ -5,7 +5,6 @@ This module provides FastAPI endpoints for receiving webhooks from Stark Bank.
 These endpoints are publicly accessible but require valid signatures.
 """
 
-from typing import Dict
 
 from fastapi import APIRouter, Header, Request, status
 from fastapi.responses import JSONResponse
@@ -78,7 +77,7 @@ def _get_webhook_receiver() -> WebhookReceiver:
     summary="Receive invoice webhook",
     description="Receives and processes invoice webhooks from Stark Bank. "
     "Validates signature and updates invoice status.",
-    response_model=Dict[str, str],
+    response_model=dict[str, str],
     status_code=status.HTTP_200_OK,
     responses={
         200: {
@@ -93,7 +92,10 @@ def _get_webhook_receiver() -> WebhookReceiver:
             "description": "Invalid signature",
             "content": {
                 "application/json": {
-                    "example": {"error": "Unauthorized", "message": "Invalid webhook signature"}
+                    "example": {
+                        "error": "Unauthorized",
+                        "message": "Invalid webhook signature",
+                    }
                 }
             },
         },
@@ -178,7 +180,7 @@ async def receive_invoice_webhook(
     summary="Receive transfer webhook",
     description="Receives and processes transfer webhooks from Stark Bank. "
     "Validates signature and updates transfer status.",
-    response_model=Dict[str, str],
+    response_model=dict[str, str],
     status_code=status.HTTP_200_OK,
     responses={
         200: {
@@ -193,7 +195,10 @@ async def receive_invoice_webhook(
             "description": "Invalid signature",
             "content": {
                 "application/json": {
-                    "example": {"error": "Unauthorized", "message": "Invalid webhook signature"}
+                    "example": {
+                        "error": "Unauthorized",
+                        "message": "Invalid webhook signature",
+                    }
                 }
             },
         },
@@ -277,9 +282,9 @@ async def receive_transfer_webhook(
     "/health",
     summary="Webhook service health check",
     description="Simple health check endpoint to verify webhook service is running.",
-    response_model=Dict[str, str],
+    response_model=dict[str, str],
 )
-async def webhook_health() -> Dict[str, str]:
+async def webhook_health() -> dict[str, str]:
     """
     Health check endpoint for webhook service.
 

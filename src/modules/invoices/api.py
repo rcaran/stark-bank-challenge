@@ -6,7 +6,6 @@ protected by API key authentication.
 """
 
 from datetime import datetime
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -26,7 +25,7 @@ invoice_router = APIRouter(
 )
 
 # Initialize service (singleton pattern for production)
-_service: Optional[InvoiceService] = None
+_service: InvoiceService | None = None
 
 
 def get_invoice_service() -> InvoiceService:
@@ -46,30 +45,30 @@ class CreateInvoiceRequest(BaseModel):
     customer_name: str = Field(..., min_length=1, max_length=200)
     customer_tax_id: str = Field(..., min_length=11, max_length=18)
     customer_email: str = Field(..., min_length=5, max_length=100)
-    due_date: Optional[datetime] = Field(None, description="Due date for the invoice")
+    due_date: datetime | None = Field(None, description="Due date for the invoice")
 
 
 class InvoiceResponse(BaseModel):
     """Response model for invoice data."""
     id: str
-    stark_invoice_id: Optional[str] = None
+    stark_invoice_id: str | None = None
     amount: float
     customer_name: str
     customer_tax_id: str
     customer_email: str
     status: str
     created_at: str
-    due_date: Optional[str] = None
-    paid_at: Optional[str] = None
-    fee: Optional[float] = None
-    net_amount: Optional[float] = None
+    due_date: str | None = None
+    paid_at: str | None = None
+    fee: float | None = None
+    net_amount: float | None = None
     retry_count: int = 0
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class InvoiceListResponse(BaseModel):
     """Response model for invoice list."""
-    invoices: List[InvoiceResponse]
+    invoices: list[InvoiceResponse]
     total: int
     limit: int
     offset: int
@@ -78,7 +77,7 @@ class InvoiceListResponse(BaseModel):
 class ErrorResponse(BaseModel):
     """Response model for errors."""
     detail: str
-    error_code: Optional[str] = None
+    error_code: str | None = None
 
 
 # --- Endpoints ---
@@ -135,19 +134,19 @@ async def create_invoice(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e
     except StarkBankError as e:
         logger.error(f"Stark Bank error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create invoice: {e}",
-        )
+        ) from e
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
-        )
+        ) from e
 
 
 @invoice_router.get(
@@ -160,7 +159,7 @@ async def create_invoice(
     description="List invoices with optional filtering and pagination.",
 )
 async def list_invoices(
-    status_filter: Optional[str] = Query(
+    status_filter: str | None = Query(
         None,
         alias="status",
         description="Filter by status",
@@ -194,7 +193,7 @@ async def list_invoices(
                     f"Invalid status: {status_filter}. "
                     f"Valid values: {[s.value for s in InvoiceStatus]}"
                 ),
-            )
+            ) from None
 
     invoices = service.list_invoices(status=status_filter, limit=limit, offset=offset)
     total = service.count_invoices(status=status_filter)

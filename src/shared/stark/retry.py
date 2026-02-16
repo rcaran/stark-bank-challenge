@@ -1,17 +1,16 @@
 import functools
 import logging
 import time
-from typing import List, Optional, Type, Union
 
 from src.config.constants import RETRY_DELAYS, RETRY_MAX_ATTEMPTS
 
 logger = logging.getLogger(__name__)
 
 def retry_with_backoff(
-    max_attempts: Optional[int] = None,
-    delays: Optional[List[int]] = None,
-    retriable_exceptions: Union[Type[Exception], tuple] = (Exception,),
-    non_retriable_exceptions: Union[Type[Exception], tuple] = (),
+    max_attempts: int | None = None,
+    delays: list[int] | None = None,
+    retriable_exceptions: type[Exception] | tuple = (Exception,),
+    non_retriable_exceptions: type[Exception] | tuple = (),
 ):
     """
     Decorator for retrying a function with custom backoff delays.

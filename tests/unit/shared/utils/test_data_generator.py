@@ -1,5 +1,6 @@
 from src.shared.utils.data_generator import DataGenerator
-from src.shared.utils.validators import validate_cpf, validate_cnpj
+from src.shared.utils.validators import validate_cnpj, validate_cpf
+
 
 def test_data_generator_valid_cpf():
     generator = DataGenerator()
@@ -32,7 +33,7 @@ def test_generate_customer_data_distribution():
     generator = DataGenerator()
     count_person = 0
     count_company = 0
-    
+
     # Run a few times
     for _ in range(100):
         data = generator.generate_customer_data(prefer_cpf=True)
@@ -40,6 +41,6 @@ def test_generate_customer_data_distribution():
             count_person += 1
         else:
             count_company += 1
-            
+
     assert count_person > 0
     assert count_company > 0

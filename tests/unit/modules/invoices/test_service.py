@@ -1,13 +1,14 @@
 """Unit tests for InvoiceService."""
 
-import pytest
-from unittest.mock import Mock, MagicMock, patch
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from unittest.mock import Mock
 
+import pytest
+
+from src.modules.invoices.events import INVOICE_CREATED, INVOICE_CREATION_FAILED
 from src.modules.invoices.models import InvoiceModel, InvoiceStatus
 from src.modules.invoices.service import InvoiceService
-from src.modules.invoices.events import INVOICE_CREATED, INVOICE_CREATION_FAILED
-from src.shared.utils.errors import ValidationError, NotFoundError, StarkBankError
+from src.shared.utils.errors import NotFoundError, StarkBankError, ValidationError
 
 
 class TestInvoiceService:
@@ -52,11 +53,12 @@ class TestInvoiceService:
             "customer_name": "João Silva",
             "customer_tax_id": "529.982.247-25",  # Valid CPF
             "customer_email": "joao@example.com",
-            "due_date": datetime.now(timezone.utc),
+            "due_date": datetime.now(UTC),
         }
 
     def test_create_invoice_success(
-        self, service, mock_repository, mock_stark_api, mock_event_bus, valid_invoice_data
+        self, service, mock_repository, mock_stark_api,
+        mock_event_bus, valid_invoice_data,
     ):
         """Test successful invoice creation."""
         result = service.create_invoice(valid_invoice_data)
@@ -80,7 +82,8 @@ class TestInvoiceService:
         assert result.status == InvoiceStatus.CREATED
 
     def test_create_invoice_stark_failure(
-        self, service, mock_repository, mock_stark_api, mock_event_bus, valid_invoice_data
+        self, service, mock_repository, mock_stark_api,
+        mock_event_bus, valid_invoice_data,
     ):
         """Test invoice creation when Stark Bank fails."""
         mock_stark_api.create_invoice.side_effect = StarkBankError("Connection failed")
@@ -253,7 +256,7 @@ class TestInvoiceService:
         )
         mock_repository.get_by_id.return_value = invoice
 
-        paid_at = datetime.now(timezone.utc)
+        paid_at = datetime.now(UTC)
         result = service.mark_invoice_as_paid("test-id", fee=500, paid_at=paid_at)
 
         assert result.status == InvoiceStatus.PAID
@@ -299,7 +302,10 @@ class TestInvoiceServiceValidation:
             "customer_email": "test@test.com",
         }
 
-        with pytest.raises(ValidationError, match="Missing required field: customer_name"):
+        with pytest.raises(
+            ValidationError,
+            match="Missing required field: customer_name",
+        ):
             service.create_invoice(data)
 
     def test_validate_empty_customer_name(self, service):
@@ -311,7 +317,10 @@ class TestInvoiceServiceValidation:
             "customer_email": "test@test.com",
         }
 
-        with pytest.raises(ValidationError, match="Missing required field: customer_name"):
+        with pytest.raises(
+            ValidationError,
+            match="Missing required field: customer_name",
+        ):
             service.create_invoice(data)
 
     def test_validate_valid_cnpj(self, service):

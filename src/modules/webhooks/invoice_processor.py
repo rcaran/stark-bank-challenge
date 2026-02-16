@@ -5,8 +5,7 @@ This module processes invoice webhooks from Stark Bank,
 updating invoice status and publishing relevant events.
 """
 
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from src.modules.invoices.models import InvoiceModel, InvoiceStatus
 from src.modules.invoices.repository import InvoiceRepository
@@ -111,7 +110,7 @@ class InvoiceWebhookProcessor:
         invoice.status = InvoiceStatus.PAID
 
         # Set payment timestamp
-        invoice.paid_at = webhook_payload.updated or datetime.now(timezone.utc)
+        invoice.paid_at = webhook_payload.updated or datetime.now(UTC)
 
         # Set fee (convert from centavos to reais)
         if webhook_payload.fee is not None:
@@ -150,7 +149,7 @@ class InvoiceWebhookProcessor:
             fee=invoice.fee or 0.0,
             net_amount=invoice.net_amount or invoice.amount,
             customer_tax_id=invoice.customer_tax_id,
-            paid_at=invoice.paid_at or datetime.now(timezone.utc),
+            paid_at=invoice.paid_at or datetime.now(UTC),
         )
 
         # Create and publish event
@@ -171,8 +170,8 @@ class InvoiceWebhookProcessor:
         self,
         stark_invoice_id: str,
         amount: int,
-        fee: Optional[int],
-        paid_at: Optional[datetime] = None,
+        fee: int | None,
+        paid_at: datetime | None = None,
     ) -> InvoiceModel:
         """
         Convenience method to process a payment directly without full webhook payload.
@@ -199,7 +198,7 @@ class InvoiceWebhookProcessor:
 
         # Update invoice
         invoice.status = InvoiceStatus.PAID
-        invoice.paid_at = paid_at or datetime.now(timezone.utc)
+        invoice.paid_at = paid_at or datetime.now(UTC)
 
         if fee is not None:
             invoice.fee = fee / 100.0  # Convert from centavos

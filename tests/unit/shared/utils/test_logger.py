@@ -1,10 +1,9 @@
 import json
 import logging
 from io import StringIO
-from unittest.mock import patch, MagicMock
 
-import pytest
 from src.shared.utils.logger import StructuredLogger, get_logger
+
 
 def test_structured_logger_format():
     stream = StringIO()
@@ -12,7 +11,7 @@ def test_structured_logger_format():
     logger = StructuredLogger("test_logger")
     # clear existing handlers to capture output in our stream
     logger.logger.handlers = []
-    
+
     # recreate formatter setup from class
     formatter = logger.JsonFormatter()
     handler.setFormatter(formatter)
@@ -20,10 +19,10 @@ def test_structured_logger_format():
     logger.logger.setLevel(logging.INFO)
 
     logger.info("test message", key="value")
-    
+
     log_output = stream.getvalue().strip()
     log_data = json.loads(log_output)
-    
+
     assert log_data["level"] == "INFO"
     assert log_data["message"] == "test message"
     assert log_data["key"] == "value"
@@ -40,12 +39,12 @@ def test_context_binding():
     handler.setFormatter(logger.JsonFormatter())
     logger.logger.addHandler(handler)
     logger.logger.setLevel(logging.INFO)
-    
+
     logger.info("test context")
-    
+
     log_output = stream.getvalue().strip()
     log_data = json.loads(log_output)
-    
+
     assert log_data["correlation_id"] == "123"
 
 def test_get_logger():

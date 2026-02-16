@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -18,7 +17,7 @@ class Settings:
 
     # Security
     secret_key: str = os.getenv("SECRET_KEY", "change_me_in_production")
-    admin_api_key: Optional[str] = os.getenv("ADMIN_API_KEY")
+    admin_api_key: str | None = os.getenv("ADMIN_API_KEY")
 
     # Stark Bank
     starkbank_private_key_content: str = os.getenv("STARKBANK_PRIVATE_KEY_CONTENT", "")

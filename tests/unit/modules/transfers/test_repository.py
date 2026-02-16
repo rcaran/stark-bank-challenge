@@ -1,8 +1,9 @@
 """Unit tests for TransferRepository."""
 
+from datetime import UTC, datetime
+from unittest.mock import MagicMock, Mock
+
 import pytest
-from unittest.mock import Mock, MagicMock
-from datetime import datetime, timezone
 
 from src.modules.transfers.models import TransferModel, TransferStatus
 from src.modules.transfers.repository import TransferRepository
@@ -66,8 +67,8 @@ class TestTransferRepository:
             "external-id",
             9500,
             "created",
-            datetime.now(timezone.utc).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
+            datetime.now(UTC).isoformat(),
             None,  # completed_at
             0,     # retry_count
             None,  # last_retry_at
@@ -112,8 +113,8 @@ class TestTransferRepository:
             "external-id",
             9500,
             "processing",
-            datetime.now(timezone.utc).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
+            datetime.now(UTC).isoformat(),
             None, 0, None, None,
         )
 
@@ -138,8 +139,8 @@ class TestTransferRepository:
             "external-123",
             9500,
             "created",
-            datetime.now(timezone.utc).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
+            datetime.now(UTC).isoformat(),
             None, 0, None, None,
         )
 
@@ -164,9 +165,9 @@ class TestTransferRepository:
             "external-id",
             9500,
             "success",
-            datetime.now(timezone.utc).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
+            datetime.now(UTC).isoformat(),
+            datetime.now(UTC).isoformat(),
             0, None, None,
         )
 
@@ -192,8 +193,8 @@ class TestTransferRepository:
             sample_transfer.external_id,
             sample_transfer.amount,
             "pending",
-            datetime.now(timezone.utc).isoformat(),
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
+            datetime.now(UTC).isoformat(),
             None, 0, None, None,
         )
 
@@ -228,12 +229,12 @@ class TestTransferRepository:
         """Test listing transfers."""
         mock_rows = [
             ("id1", "inv1", "stark1", "ext1", 9500, "created",
-             datetime.now(timezone.utc).isoformat(),
-             datetime.now(timezone.utc).isoformat(),
+             datetime.now(UTC).isoformat(),
+             datetime.now(UTC).isoformat(),
              None, 0, None, None),
             ("id2", "inv2", "stark2", "ext2", 8500, "processing",
-             datetime.now(timezone.utc).isoformat(),
-             datetime.now(timezone.utc).isoformat(),
+             datetime.now(UTC).isoformat(),
+             datetime.now(UTC).isoformat(),
              None, 0, None, None),
         ]
 
@@ -253,9 +254,9 @@ class TestTransferRepository:
         """Test listing transfers with status filter."""
         mock_rows = [
             ("id1", "inv1", "stark1", "ext1", 9500, "success",
-             datetime.now(timezone.utc).isoformat(),
-             datetime.now(timezone.utc).isoformat(),
-             datetime.now(timezone.utc).isoformat(), 0, None, None),
+             datetime.now(UTC).isoformat(),
+             datetime.now(UTC).isoformat(),
+             datetime.now(UTC).isoformat(), 0, None, None),
         ]
 
         mock_conn = MagicMock()
@@ -302,8 +303,8 @@ class TestTransferRepository:
         """Test listing transfers by status."""
         mock_rows = [
             ("id1", "inv1", None, "ext1", 9500, "pending",
-             datetime.now(timezone.utc).isoformat(),
-             datetime.now(timezone.utc).isoformat(),
+             datetime.now(UTC).isoformat(),
+             datetime.now(UTC).isoformat(),
              None, 0, None, None),
         ]
 
@@ -320,7 +321,7 @@ class TestTransferRepository:
 
     def test_row_to_model_conversion(self, repository):
         """Test database row to model conversion."""
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         row = (
             "transfer-id",
             "invoice-id",
@@ -349,7 +350,7 @@ class TestTransferRepository:
 
     def test_create_with_all_fields(self, repository, mock_db):
         """Test creating transfer with all fields populated."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         transfer = TransferModel(
             id="full-transfer",
             invoice_id="invoice-123",

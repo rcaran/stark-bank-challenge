@@ -111,7 +111,7 @@ class TransferHandler:
         except Exception as e:
             # Log error but don't re-raise to avoid breaking event bus
             logger.error(
-                f"Error handling invoice.paid event: {str(e)}",
+                f"Error handling invoice.paid event: {e!s}",
                 event_id=event.event_id,
                 error=str(e),
                 exc_info=True,

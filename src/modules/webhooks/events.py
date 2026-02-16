@@ -7,7 +7,7 @@ used with the EventBus system.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from src.shared.events.types import EventType
 
@@ -35,7 +35,7 @@ class InvoicePaidEventPayload:
     customer_tax_id: str
     paid_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "invoice_id": self.invoice_id,
@@ -58,12 +58,12 @@ class TransferProcessingEventPayload:
     """
     transfer_id: str
     stark_transfer_id: str
-    invoice_id: Optional[str]
+    invoice_id: str | None
     amount: float
     external_id: str
     timestamp: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "transfer_id": self.transfer_id,
@@ -84,13 +84,13 @@ class TransferCompletedEventPayload:
     """
     transfer_id: str
     stark_transfer_id: str
-    invoice_id: Optional[str]
+    invoice_id: str | None
     amount: float
-    fee: Optional[float]
+    fee: float | None
     external_id: str
     completed_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "transfer_id": self.transfer_id,
@@ -115,14 +115,14 @@ class TransferFailedEventPayload:
     """
     transfer_id: str
     stark_transfer_id: str
-    invoice_id: Optional[str]
+    invoice_id: str | None
     amount: float
     external_id: str
-    error_code: Optional[str]
-    error_message: Optional[str]
+    error_code: str | None
+    error_message: str | None
     failed_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "transfer_id": self.transfer_id,
@@ -145,12 +145,12 @@ class WebhookValidationFailedEventPayload:
     indicating potential security issues or malformed requests.
     """
     webhook_type: str  # "invoice" or "transfer"
-    source_ip: Optional[str]
+    source_ip: str | None
     error_message: str
     timestamp: datetime
-    raw_payload_preview: Optional[str] = None  # First N chars for debugging
+    raw_payload_preview: str | None = None  # First N chars for debugging
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "webhook_type": self.webhook_type,

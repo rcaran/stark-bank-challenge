@@ -1,6 +1,6 @@
 """Unit tests for TransferHandler."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import Mock
 
 import pytest
@@ -54,7 +54,7 @@ class TestTransferHandler:
             customer_email="joao@example.com",
             status=InvoiceStatus.PAID,
             stark_invoice_id="stark-invoice-123",
-            paid_at=datetime.now(timezone.utc),
+            paid_at=datetime.now(UTC),
             fee=5.0,
             net_amount=95.0,
         )
@@ -180,7 +180,7 @@ class TestTransferHandler:
             customer_tax_id="529.982.247-25",
             customer_email="joao@example.com",
             status=InvoiceStatus.PAID,
-            paid_at=datetime.now(timezone.utc),
+            paid_at=datetime.now(UTC),
             fee=5.0,
             net_amount=0.0,  # Invalid
         )
@@ -235,7 +235,7 @@ class TestTransferHandler:
             customer_tax_id="529.982.247-25",
             customer_email="joao@example.com",
             status=InvoiceStatus.PAID,
-            paid_at=datetime.now(timezone.utc),
+            paid_at=datetime.now(UTC),
             fee=5.0,
             net_amount=None,  # None
         )

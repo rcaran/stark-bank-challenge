@@ -1,14 +1,14 @@
 import json
 import logging
 import sys
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from src.config.settings import settings
 
 
 class StructuredLogger:
-    def __init__(self, name: str, correlation_id: Optional[str] = None):
+    def __init__(self, name: str, correlation_id: str | None = None):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(getattr(logging, settings.log_level.upper()))
         self.correlation_id = correlation_id
@@ -24,7 +24,7 @@ class StructuredLogger:
         def format(self, record: logging.LogRecord) -> str:
             log_record = {
                 "timestamp": datetime.fromtimestamp(
-                    record.created, tz=timezone.utc
+                    record.created, tz=UTC
                 ).isoformat(),
                 "level": record.levelname,
 
@@ -63,13 +63,12 @@ class StructuredLogger:
     def critical(self, message: str, **kwargs: Any) -> None:
         self._log(logging.CRITICAL, message, **kwargs)
 
-    def bind(self, **kwargs: Any) -> "StructuredLogger":
+    def bind(self, **kwargs: Any) -> StructuredLogger:
         """Returns a new logger instance with bound context"""
-        new_logger = StructuredLogger(self.logger.name, self.correlation_id)
+        return StructuredLogger(self.logger.name, self.correlation_id)
         # In a real implementation we might want to attach context permanently
         # For simplicity, we return a new logger here, context is per-log call
         # or we could implement a ContextVar based context.
-        return new_logger
 
 def get_logger(name: str) -> StructuredLogger:
     return StructuredLogger(name)

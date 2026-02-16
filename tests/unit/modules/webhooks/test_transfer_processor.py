@@ -1,7 +1,7 @@
 """Unit tests for TransferWebhookProcessor."""
 
-from datetime import datetime, timezone
-from unittest.mock import Mock, MagicMock
+from datetime import UTC, datetime
+from unittest.mock import Mock
 
 import pytest
 
@@ -10,8 +10,8 @@ from src.modules.webhooks.events import (
     TRANSFER_FAILED,
     TRANSFER_PROCESSING,
 )
-from src.modules.webhooks.transfer_processor import TransferWebhookProcessor
 from src.modules.webhooks.models import TransferWebhookPayload
+from src.modules.webhooks.transfer_processor import TransferWebhookProcessor
 from src.shared.utils.errors import NotFoundError
 
 
@@ -26,12 +26,12 @@ class MockTransfer:
         amount: float = 100.00,
         status: str = "created",
         external_id: str = "invoice-inv-789",
-        created_at: datetime = None,
-        updated_at: datetime = None,
-        completed_at: datetime = None,
-        error_message: str = None,
-        error_code: str = None,
-        fee: float = None,
+        created_at: datetime | None = None,
+        updated_at: datetime | None = None,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+        error_code: str | None = None,
+        fee: float | None = None,
     ):
         self.id = id
         self.stark_transfer_id = stark_transfer_id
@@ -39,7 +39,7 @@ class MockTransfer:
         self.amount = amount
         self.status = status
         self.external_id = external_id
-        self.created_at = created_at or datetime(2026, 2, 15, 10, 0, 0, tzinfo=timezone.utc)
+        self.created_at = created_at or datetime(2026, 2, 15, 10, 0, 0, tzinfo=UTC)
         self.updated_at = updated_at
         self.completed_at = completed_at
         self.error_message = error_message
@@ -95,8 +95,8 @@ class TestTransferWebhookProcessor:
             name="Stark Bank S.A.",
             tax_id="20.018.183/0001-80",
             fee=0,
-            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=timezone.utc),
-            updated=datetime(2026, 2, 16, 14, 30, 0, tzinfo=timezone.utc),
+            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=UTC),
+            updated=datetime(2026, 2, 16, 14, 30, 0, tzinfo=UTC),
         )
 
     @pytest.fixture
@@ -114,8 +114,8 @@ class TestTransferWebhookProcessor:
             tax_id="20.018.183/0001-80",
             error_code="invalidAccountNumber",
             error_message="Invalid account number",
-            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=timezone.utc),
-            updated=datetime(2026, 2, 16, 14, 30, 0, tzinfo=timezone.utc),
+            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=UTC),
+            updated=datetime(2026, 2, 16, 14, 30, 0, tzinfo=UTC),
         )
 
     @pytest.fixture
@@ -131,8 +131,8 @@ class TestTransferWebhookProcessor:
             account_number="6341320293482496",
             name="Stark Bank S.A.",
             tax_id="20.018.183/0001-80",
-            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=timezone.utc),
-            updated=datetime(2026, 2, 16, 14, 0, 0, tzinfo=timezone.utc),
+            created=datetime(2026, 2, 15, 10, 0, 0, tzinfo=UTC),
+            updated=datetime(2026, 2, 16, 14, 0, 0, tzinfo=UTC),
         )
 
     # ==========================================================================
@@ -186,7 +186,7 @@ class TestTransferWebhookProcessor:
 
         updated_transfer = mock_repository.update.call_args[0][0]
         assert updated_transfer.completed_at == datetime(
-            2026, 2, 16, 14, 30, 0, tzinfo=timezone.utc
+            2026, 2, 16, 14, 30, 0, tzinfo=UTC
         )
 
     def test_process_success_sets_fee_if_available(
@@ -429,7 +429,7 @@ class TestTransferWebhookProcessor:
         assert updated_transfer.completed_at is not None
         # Should be close to now
         time_diff = abs(
-            (datetime.now(timezone.utc) - updated_transfer.completed_at).total_seconds()
+            (datetime.now(UTC) - updated_transfer.completed_at).total_seconds()
         )
         assert time_diff < 5  # Within 5 seconds
 
@@ -449,7 +449,7 @@ class TestTransferWebhookProcessor:
             external_id="manual-transfer",
         )
         # Remove invoice_id attribute
-        delattr(transfer_without_invoice, 'invoice_id')
+        delattr(transfer_without_invoice, "invoice_id")
 
         mock_repository.get_by_stark_id.return_value = transfer_without_invoice
 
@@ -544,7 +544,10 @@ class TestTransferWebhookProcessor:
         processing_webhook_payload,
         success_webhook_payload,
     ):
-        """Test processing multiple webhooks for same transfer (processing then success)."""
+        """Test processing multiple webhooks for same transfer.
+
+        Tests the processing then success scenario.
+        """
         mock_repository.get_by_stark_id.return_value = sample_transfer
 
         # First webhook: processing

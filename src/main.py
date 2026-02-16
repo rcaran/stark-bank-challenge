@@ -5,11 +5,9 @@ This module implements the FastAPI application with all modules integrated,
 including lifespan management, routers, middleware, and exception handlers.
 """
 
-import logging
 import sys
 from contextlib import asynccontextmanager
 from threading import Thread
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -32,7 +30,7 @@ from src.shared.utils.logger import get_logger
 logger = get_logger("api")
 
 # Global scheduler thread reference
-_scheduler_thread: Optional[Thread] = None
+_scheduler_thread: Thread | None = None
 
 
 @asynccontextmanager
@@ -45,25 +43,25 @@ async def lifespan(app: FastAPI):
     - Shutdown: Stop scheduler and cleanup resources
     """
     global _scheduler_thread
-    
+
     # Startup
     logger.info(
         f"Starting {settings.app_name} v1.0.0",
         environment=settings.app_env,
         log_level=settings.log_level
     )
-    
+
     try:
         # 1. Run database migrations
         logger.info("Running database migrations")
         run_migrations()
         logger.info("Database migrations completed")
-        
+
         # 2. Initialize EventBus and register event handlers
         logger.info("Initializing EventBus and event handlers")
         initialize_event_handlers()
         logger.info("EventBus and event handlers initialized")
-        
+
         # 3. Start scheduler in background thread (if enabled)
         if settings.app_env != "test":
             logger.info("Starting invoice generation scheduler")
@@ -76,18 +74,18 @@ async def lifespan(app: FastAPI):
             logger.info("Scheduler started in background thread")
         else:
             logger.info("Scheduler disabled in test environment")
-        
+
         logger.info(f"{settings.app_name} started successfully")
-        
+
     except Exception as e:
-        logger.error(f"Failed to start application: {str(e)}", exc_info=True)
+        logger.error(f"Failed to start application: {e!s}", exc_info=True)
         sys.exit(1)
-    
+
     yield
-    
+
     # Shutdown
     logger.info("Shutting down application")
-    
+
     try:
         # 1. Stop scheduler
         if _scheduler_thread and _scheduler_thread.is_alive():
@@ -95,15 +93,15 @@ async def lifespan(app: FastAPI):
             stop_scheduler()
             _scheduler_thread.join(timeout=5)
             logger.info("Scheduler stopped")
-        
+
         # 2. Cleanup resources
         logger.info("Cleaning up resources")
         cleanup()
         logger.info("Resources cleaned up")
-        
+
     except Exception as e:
-        logger.error(f"Error during shutdown: {str(e)}", exc_info=True)
-    
+        logger.error(f"Error during shutdown: {e!s}", exc_info=True)
+
     logger.info("Application shutdown complete")
 
 
@@ -134,7 +132,7 @@ app.add_middleware(
 async def invalid_api_key_handler(request: Request, exc: InvalidAPIKeyError):
     """Handle invalid API key errors."""
     logger.warning(
-        f"Invalid API key attempt",
+        "Invalid API key attempt",
         path=request.url.path,
         client=request.client.host if request.client else "unknown"
     )
@@ -151,7 +149,7 @@ async def invalid_api_key_handler(request: Request, exc: InvalidAPIKeyError):
 async def invalid_signature_handler(request: Request, exc: InvalidSignatureError):
     """Handle invalid webhook signature errors."""
     logger.warning(
-        f"Invalid webhook signature",
+        "Invalid webhook signature",
         path=request.url.path,
         client=request.client.host if request.client else "unknown"
     )
@@ -168,7 +166,7 @@ async def invalid_signature_handler(request: Request, exc: InvalidSignatureError
 async def stark_bank_api_error_handler(request: Request, exc: StarkBankError):
     """Handle Stark Bank API errors."""
     logger.error(
-        f"Stark Bank API error",
+        "Stark Bank API error",
         path=request.url.path,
         error=str(exc)
     )
@@ -185,7 +183,7 @@ async def stark_bank_api_error_handler(request: Request, exc: StarkBankError):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle request validation errors."""
     logger.warning(
-        f"Request validation error",
+        "Request validation error",
         path=request.url.path,
         errors=exc.errors()
     )
@@ -215,7 +213,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle all other unexpected exceptions."""
     logger.error(
-        f"Unexpected error",
+        "Unexpected error",
         path=request.url.path,
         error=str(exc),
         exc_info=True
@@ -240,16 +238,16 @@ async def log_requests(request: Request, call_next):
         path=request.url.path,
         client=request.client.host if request.client else "unknown"
     )
-    
+
     response = await call_next(request)
-    
+
     logger.info(
         f"Response {response.status_code}",
         method=request.method,
         path=request.url.path,
         status_code=response.status_code
     )
-    
+
     return response
 
 

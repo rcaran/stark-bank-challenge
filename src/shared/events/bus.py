@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Dict, List
 
 from src.shared.events.types import Event, EventHandler, EventType
 from src.shared.utils.logger import get_logger
@@ -8,11 +7,11 @@ logger = get_logger("shared.events.bus")
 
 class EventBus:
     _instance = None
-    _subscribers: Dict[EventType, List[EventHandler]] = defaultdict(list)
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(EventBus, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
+            cls._instance._subscribers = defaultdict(list)
         return cls._instance
 
     def subscribe(self, event_type: EventType, handler: EventHandler) -> None:

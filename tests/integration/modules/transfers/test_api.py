@@ -1,16 +1,15 @@
 """Integration tests for Transfer API endpoints."""
 
-import pytest
 from unittest.mock import Mock
 
-from fastapi.testclient import TestClient
+import pytest
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
-from src.modules.transfers.api import transfer_router, get_transfer_service
+from src.modules.transfers.api import get_transfer_service, transfer_router
 from src.modules.transfers.models import TransferModel, TransferStatus
 from src.modules.transfers.service import TransferService
 from src.shared.security.api_key import get_api_key_header
-
 
 # Test app setup
 app = FastAPI()

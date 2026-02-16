@@ -1,7 +1,6 @@
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import List, Optional
 
 import starkbank
 from starkbank import Transfer
@@ -26,14 +25,14 @@ class TransferResponse:
     bank_code: str
     branch_code: str
     account_number: str
-    external_id: Optional[str]
+    external_id: str | None
     status: str
-    tags: Optional[List[str]] = None
+    tags: list[str] | None = None
     fee: int = 0
-    created: Optional[datetime] = None
+    created: datetime | None = None
 
     @classmethod
-    def from_stark_transfer(cls, transfer: Transfer) -> 'TransferResponse':
+    def from_stark_transfer(cls, transfer: Transfer) -> TransferResponse:
         return cls(
             id=transfer.id,
             amount=transfer.amount,
@@ -46,7 +45,7 @@ class TransferResponse:
             status=transfer.status,
             tags=transfer.tags,
             fee=transfer.fee,
-            created=transfer.created if hasattr(transfer, 'created') else None
+            created=transfer.created if hasattr(transfer, "created") else None
         )
 
 class StarkTransferAPI(StarkBankClient):
@@ -63,8 +62,8 @@ class StarkTransferAPI(StarkBankClient):
         bank_code: str,
         branch_code: str,
         account_number: str,
-        external_id: Optional[str] = None,
-        tags: List[str] = None,
+        external_id: str | None = None,
+        tags: list[str] | None = None,
         account_type: str = "checking",
     ) -> TransferResponse:
         """
@@ -72,7 +71,7 @@ class StarkTransferAPI(StarkBankClient):
         params:
             amount: in cents
         """
-        self.check_user
+        _ = self.check_user  # Ensure initialized
 
         logger.info(
             f"Creating transfer: amount={amount}, name={name}, "
@@ -104,7 +103,7 @@ class StarkTransferAPI(StarkBankClient):
             self.handle_stark_error(e)
 
     def get_transfer(self, transfer_id: str) -> TransferResponse:
-        self.check_user
+        _ = self.check_user  # Ensure initialized
         try:
             transfer = starkbank.transfer.get(transfer_id)
             return TransferResponse.from_stark_transfer(transfer)
@@ -114,11 +113,11 @@ class StarkTransferAPI(StarkBankClient):
     def list_transfers(
         self,
         limit: int = 100,
-        after: Optional[date] = None,
-        status: Optional[str] = None,
-        transaction_ids: Optional[List[str]] = None
-    ) -> List[TransferResponse]:
-        self.check_user
+        after: date | None = None,
+        status: str | None = None,
+        transaction_ids: list[str] | None = None
+    ) -> list[TransferResponse]:
+        _ = self.check_user  # Ensure initialized
         try:
             transfers_gen = starkbank.transfer.query(
                 limit=limit,

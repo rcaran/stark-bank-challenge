@@ -7,9 +7,8 @@ provides singletons where appropriate.
 """
 
 import sqlite3
-from typing import Generator
+from collections.abc import Generator
 
-from src.config.settings import settings
 from src.modules.invoices.generator import InvoiceGenerator
 from src.modules.invoices.repository import InvoiceRepository
 from src.modules.invoices.service import InvoiceService
@@ -35,7 +34,7 @@ _event_bus: EventBus = None
 _stark_client: StarkBankClient = None
 
 
-def get_db() -> Generator[sqlite3.Connection, None, None]:
+def get_db() -> Generator[sqlite3.Connection]:
     """
     Get database connection for FastAPI Depends.
 
@@ -46,7 +45,7 @@ def get_db() -> Generator[sqlite3.Connection, None, None]:
     if _db_connection is None:
         _db_connection = DatabaseConnection()
         logger.info("Database connection initialized")
-    
+
     with _db_connection.get_db() as conn:
         yield conn
 
@@ -62,7 +61,7 @@ def get_event_bus() -> EventBus:
     if _event_bus is None:
         _event_bus = EventBus()
         logger.info("EventBus initialized")
-    
+
     return _event_bus
 
 
@@ -77,7 +76,7 @@ def get_stark_client() -> StarkBankClient:
     if _stark_client is None:
         _stark_client = StarkBankClient()
         logger.info("StarkBankClient initialized")
-    
+
     return _stark_client
 
 
@@ -131,7 +130,7 @@ def get_invoice_service() -> InvoiceService:
     repository = get_invoice_repository()
     stark_api = get_stark_invoice_api()
     event_bus = get_event_bus()
-    
+
     return InvoiceService(
         repository=repository,
         stark_api=stark_api,
@@ -159,7 +158,7 @@ def get_transfer_service() -> TransferService:
     repository = get_transfer_repository()
     stark_api = get_stark_transfer_api()
     event_bus = get_event_bus()
-    
+
     return TransferService(
         repository=repository,
         stark_api=stark_api,
@@ -194,7 +193,7 @@ def get_webhook_receiver() -> WebhookReceiver:
         event_bus=get_event_bus()
     )
     event_bus = get_event_bus()
-    
+
     return WebhookReceiver(
         validator=validator,
         invoice_processor=invoice_processor,
@@ -211,20 +210,20 @@ def initialize_event_handlers() -> None:
     all event handlers are properly registered with the EventBus.
     """
     logger.info("Initializing event handlers")
-    
+
     event_bus = get_event_bus()
     invoice_repository = get_invoice_repository()
     transfer_service = get_transfer_service()
-    
+
     # Initialize and register TransferHandler
     transfer_handler = TransferHandler(
         service=transfer_service,
         invoice_repository=invoice_repository
     )
-    
+
     # Subscribe the handler to invoice.paid events
     event_bus.subscribe("invoice.paid", transfer_handler.handle_invoice_paid)
-    
+
     logger.info("Event handlers initialized and registered")
 
 
@@ -236,17 +235,17 @@ def cleanup() -> None:
     all resources are properly released.
     """
     global _db_connection, _event_bus, _stark_client
-    
+
     logger.info("Cleaning up dependencies")
-    
+
     # Close database connection
     if _db_connection and _db_connection._connection:
         _db_connection._connection.close()
         logger.info("Database connection closed")
-    
+
     # Reset singletons
     _db_connection = None
     _event_bus = None
     _stark_client = None
-    
+
     logger.info("Cleanup completed")

@@ -1,6 +1,4 @@
-import os
 from pathlib import Path
-from typing import List
 
 from src.shared.database.connection import get_db_connection
 from src.shared.utils.logger import get_logger
@@ -21,7 +19,7 @@ class MigrationRunner:
         """)
         self.conn.commit()
 
-    def _get_applied_migrations(self) -> List[str]:
+    def _get_applied_migrations(self) -> list[str]:
         cursor = self.conn.execute("SELECT version FROM schema_migrations")
         return [row["version"] for row in cursor.fetchall()]
 
@@ -31,7 +29,11 @@ class MigrationRunner:
 
         applied = self._get_applied_migrations()
         migration_files = sorted(
-            [f for f in os.listdir(self.migrations_dir) if f.endswith(".sql")]
+            [
+                f.name
+                for f in self.migrations_dir.iterdir()
+                if f.suffix == ".sql"
+            ]
         )
 
         for file in migration_files:
@@ -45,7 +47,7 @@ class MigrationRunner:
 
     def _apply_migration(self, filename: str):
         file_path = self.migrations_dir / filename
-        with open(file_path, "r") as f:
+        with file_path.open() as f:
             sql_script = f.read()
 
         try:
@@ -56,13 +58,13 @@ class MigrationRunner:
                     (filename,)
                 )
         except Exception as e:
-            logger.error(f"Failed to apply migration {filename}: {str(e)}")
+            logger.error(f"Failed to apply migration {filename}: {e!s}")
             raise
 
 def run_migrations():
     """
     Convenience function to run all migrations.
-    
+
     This function creates a MigrationRunner instance and runs all
     pending migrations from the migrations directory.
     """

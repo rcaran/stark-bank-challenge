@@ -5,8 +5,8 @@ This module contains the business logic for invoice operations,
 coordinating between the repository, Stark Bank API, and event bus.
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from src.modules.invoices.events import (
     INVOICE_CREATED,
@@ -56,7 +56,7 @@ class InvoiceService:
 
         logger.info("InvoiceService initialized")
 
-    def create_invoice(self, invoice_data: Dict[str, Any]) -> InvoiceModel:
+    def create_invoice(self, invoice_data: dict[str, Any]) -> InvoiceModel:
         """
         Create a new invoice.
 
@@ -147,7 +147,7 @@ class InvoiceService:
 
             raise
 
-    def get_invoice(self, invoice_id: str) -> Optional[InvoiceModel]:
+    def get_invoice(self, invoice_id: str) -> InvoiceModel | None:
         """
         Get an invoice by ID.
 
@@ -160,7 +160,7 @@ class InvoiceService:
         logger.debug(f"Getting invoice: {invoice_id}")
         return self.repository.get_by_id(invoice_id)
 
-    def get_invoice_by_stark_id(self, stark_id: str) -> Optional[InvoiceModel]:
+    def get_invoice_by_stark_id(self, stark_id: str) -> InvoiceModel | None:
         """
         Get an invoice by Stark Bank ID.
 
@@ -175,10 +175,10 @@ class InvoiceService:
 
     def list_invoices(
         self,
-        status: Optional[str] = None,
+        status: str | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> List[InvoiceModel]:
+    ) -> list[InvoiceModel]:
         """
         List invoices with optional filtering.
 
@@ -245,7 +245,7 @@ class InvoiceService:
         self,
         invoice_id: str,
         fee: float,
-        paid_at: datetime = None,
+        paid_at: datetime | None = None,
     ) -> InvoiceModel:
         """
         Mark an invoice as paid.
@@ -265,7 +265,7 @@ class InvoiceService:
         if not invoice:
             raise NotFoundError(f"Invoice not found: {invoice_id}")
 
-        invoice.mark_as_paid(fee=fee, paid_at=paid_at or datetime.now(timezone.utc))
+        invoice.mark_as_paid(fee=fee, paid_at=paid_at or datetime.now(UTC))
         self.repository.update(invoice)
 
         logger.info(
@@ -277,7 +277,7 @@ class InvoiceService:
 
         return invoice
 
-    def count_invoices(self, status: Optional[str] = None) -> int:
+    def count_invoices(self, status: str | None = None) -> int:
         """
         Count invoices with optional status filter.
 
@@ -289,7 +289,7 @@ class InvoiceService:
         """
         return self.repository.count(status=status)
 
-    def _validate_invoice_data(self, data: Dict[str, Any]) -> None:
+    def _validate_invoice_data(self, data: dict[str, Any]) -> None:
         """
         Validate invoice input data.
 
@@ -352,7 +352,7 @@ class InvoiceService:
             customer_tax_id=invoice.customer_tax_id,
             error_message=error_message,
             retry_count=invoice.retry_count,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         event = Event(

@@ -1,10 +1,11 @@
 """Unit tests for InvoiceGenerator."""
 
+from datetime import UTC, datetime
+
 import pytest
-from datetime import datetime, timezone
 
 from src.modules.invoices.generator import InvoiceGenerator
-from src.shared.utils.validators import validate_cpf, validate_cnpj
+from src.shared.utils.validators import validate_cnpj, validate_cpf
 
 
 class TestInvoiceGenerator:
@@ -99,7 +100,7 @@ class TestInvoiceGenerator:
 
     def test_batch_due_dates_in_future(self, generator):
         """Test that all due dates are in the future."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         invoices = generator.generate_batch(count=10)
 
         for inv in invoices:
@@ -144,7 +145,9 @@ class TestInvoiceGenerator:
 
         # With 70% CPF ratio, expect roughly 60-80% CPFs
         cpf_ratio = cpf_count / 100
-        assert 0.50 <= cpf_ratio <= 0.90, f"CPF ratio {cpf_ratio} outside expected range"
+        assert 0.50 <= cpf_ratio <= 0.90, (
+            f"CPF ratio {cpf_ratio} outside expected range"
+        )
 
     def test_generate_for_testing_cpf(self, generator):
         """Test generating invoice for testing with CPF."""
@@ -195,7 +198,7 @@ class TestInvoiceGeneratorCustomConfig:
     def test_custom_due_days_range(self):
         """Test custom due days range."""
         generator = InvoiceGenerator(due_days_min=10, due_days_max=20)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         invoices = generator.generate_batch(count=10)
 
@@ -210,7 +213,12 @@ class TestInvoiceGeneratorCustomConfig:
 
         cpf_count = sum(
             1 for inv in invoices
-            if len(inv["customer_tax_id"].replace(".", "").replace("-", "").replace("/", "")) == 11
+            if len(
+                inv["customer_tax_id"]
+                .replace(".", "")
+                .replace("-", "")
+                .replace("/", "")
+            ) == 11
         )
 
         assert cpf_count / 50 >= 0.75  # Expect at least 75% CPF with 90% ratio

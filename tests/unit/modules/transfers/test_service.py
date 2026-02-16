@@ -1,8 +1,9 @@
 """Unit tests for TransferService."""
 
-import pytest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import Mock
+
+import pytest
 
 from src.modules.invoices.models import InvoiceModel, InvoiceStatus
 from src.modules.transfers.events import TRANSFER_FAILED, TRANSFER_INITIATED
@@ -57,7 +58,7 @@ class TestTransferService:
             customer_email="joao@example.com",
             status=InvoiceStatus.PAID,
             stark_invoice_id="stark-invoice-123",
-            paid_at=datetime.now(timezone.utc),
+            paid_at=datetime.now(UTC),
             fee=5.0,
             net_amount=95.0,
         )
@@ -320,7 +321,7 @@ class TestTransferService:
         service.update_transfer_status(
             "transfer-123",
             "processing",
-            completed_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(UTC),
         )
 
         # Verify

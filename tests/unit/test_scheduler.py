@@ -2,7 +2,7 @@
 Unit tests for the scheduler module.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -141,13 +141,13 @@ class TestSchedulerControl:
         """Test getting status of running scheduler."""
         with (
             patch("src.scheduler._scheduler") as mock_scheduler,
-            patch("src.scheduler._start_time", datetime.now(timezone.utc)),
+            patch("src.scheduler._start_time", datetime.now(UTC)),
         ):
             mock_scheduler.running = True
             mock_job = MagicMock()
             mock_job.id = "generate_invoices"
             mock_job.name = "Generate Invoices Batch"
-            mock_job.next_run_time = datetime.now(timezone.utc) + timedelta(hours=3)
+            mock_job.next_run_time = datetime.now(UTC) + timedelta(hours=3)
             mock_scheduler.get_jobs.return_value = [mock_job]
 
             status = get_scheduler_status()
@@ -262,7 +262,7 @@ class TestSchedulerExecution:
         # Set start time to 25 hours ago
         with patch(
             "src.scheduler._start_time",
-            datetime.now(timezone.utc) - timedelta(hours=25),
+            datetime.now(UTC) - timedelta(hours=25),
         ):
             result = _should_continue_running()
 
@@ -276,7 +276,7 @@ class TestSchedulerExecution:
         # Set start time to 1 hour ago
         with patch(
             "src.scheduler._start_time",
-            datetime.now(timezone.utc) - timedelta(hours=1),
+            datetime.now(UTC) - timedelta(hours=1),
         ):
             result = _should_continue_running()
 
@@ -311,5 +311,6 @@ class TestSchedulerIntegration:
             # This should start, potentially run job, and stop quickly
             run_scheduler(interval_hours=1 / 3600)  # 1 second in hours
 
-        # Note: Job might not execute due to timing, but scheduler should start/stop cleanly
+        # Note: Job might not execute due to timing,
+        # but scheduler should start/stop cleanly
         # This test primarily verifies no crashes occur

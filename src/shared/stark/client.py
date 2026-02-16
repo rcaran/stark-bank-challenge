@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import starkbank
 from starkbank.error import InputErrors, InternalServerError
@@ -14,8 +13,8 @@ from src.shared.utils.errors import (
 logger = logging.getLogger(__name__)
 
 class StarkBankClient:
-    _instance: Optional['StarkBankClient'] = None
-    _user: Optional[starkbank.Project] = None
+    _instance: StarkBankClient | None = None
+    _user: starkbank.Project | None = None
 
     def __init__(self):
         self.project_id = settings.starkbank_project_id
@@ -43,7 +42,9 @@ class StarkBankClient:
                 )
         except Exception as e:
             logger.error(f"Failed to initialize Stark Bank SDK: {e}")
-            raise AuthenticationError(f"Failed to initialize Stark Bank SDK: {str(e)}")
+            raise AuthenticationError(
+                f"Failed to initialize Stark Bank SDK: {e!s}"
+            ) from e
 
     @property
     def check_user(self):

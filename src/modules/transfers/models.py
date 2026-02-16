@@ -7,12 +7,12 @@ including the TransferModel dataclass and TransferStatus enum.
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class TransferStatus(str, Enum):
+class TransferStatus(StrEnum):
     """Transfer status enumeration."""
     PENDING = "pending"
     CREATED = "created"
@@ -37,19 +37,19 @@ class TransferModel:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     external_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     status: TransferStatus = TransferStatus.PENDING
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Stark Bank fields (populated after creation)
-    stark_transfer_id: Optional[str] = None
+    stark_transfer_id: str | None = None
 
     # Completion tracking
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     # Retry tracking
     retry_count: int = 0
-    last_retry_at: Optional[datetime] = None
-    error_message: Optional[str] = None
+    last_retry_at: datetime | None = None
+    error_message: str | None = None
 
     def __post_init__(self):
         """Validate fields after initialization."""
@@ -67,7 +67,7 @@ class TransferModel:
         if isinstance(self.status, str):
             self.status = TransferStatus(self.status)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Convert transfer to dictionary representation.
 
@@ -98,7 +98,7 @@ class TransferModel:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "TransferModel":
+    def from_dict(cls, data: dict[str, Any]) -> TransferModel:
         """
         Create TransferModel from dictionary.
 
@@ -137,8 +137,8 @@ class TransferModel:
             external_id=data.get("external_id", str(uuid.uuid4())),
             amount=float(data["amount"]),
             status=status,
-            created_at=created_at or datetime.now(timezone.utc),
-            updated_at=updated_at or datetime.now(timezone.utc),
+            created_at=created_at or datetime.now(UTC),
+            updated_at=updated_at or datetime.now(UTC),
             completed_at=completed_at,
             retry_count=data.get("retry_count", 0),
             last_retry_at=last_retry_at,
@@ -146,7 +146,7 @@ class TransferModel:
         )
 
     def update_status(
-        self, new_status: TransferStatus, error_message: Optional[str] = None
+        self, new_status: TransferStatus, error_message: str | None = None
     ) -> None:
         """
         Update transfer status and timestamp.
@@ -156,10 +156,10 @@ class TransferModel:
             error_message: Optional error message for failed transfers
         """
         self.status = new_status
-        self.updated_at = datetime.now(timezone.utc)
+        self.updated_at = datetime.now(UTC)
 
         if new_status == TransferStatus.SUCCESS:
-            self.completed_at = datetime.now(timezone.utc)
+            self.completed_at = datetime.now(UTC)
             self.error_message = None
         elif new_status == TransferStatus.FAILED:
             self.error_message = error_message
@@ -167,4 +167,4 @@ class TransferModel:
     def increment_retry(self) -> None:
         """Increment retry count and update last retry timestamp."""
         self.retry_count += 1
-        self.last_retry_at = datetime.now(timezone.utc)
+        self.last_retry_at = datetime.now(UTC)

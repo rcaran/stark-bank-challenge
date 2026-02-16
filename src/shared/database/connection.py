@@ -1,6 +1,6 @@
 import sqlite3
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
 
 from src.config.settings import settings
 from src.shared.utils.logger import get_logger
@@ -13,7 +13,7 @@ class DatabaseConnection:
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(DatabaseConnection, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def _create_connection(self) -> sqlite3.Connection:
@@ -34,14 +34,14 @@ class DatabaseConnection:
         return self._connection
 
     @contextmanager
-    def get_db(self) -> Generator[sqlite3.Connection, None, None]:
+    def get_db(self) -> Generator[sqlite3.Connection]:
         conn = self.connection
         try:
             yield conn
             conn.commit()
         except Exception as e:
             conn.rollback()
-            logger.error(f"Database transaction failed: {str(e)}")
+            logger.error(f"Database transaction failed: {e!s}")
             raise
         # We don't close the connection here because we're using a singleton connection
         # for SQLite in this simple architecture.
@@ -50,6 +50,6 @@ def get_db_connection() -> sqlite3.Connection:
     return DatabaseConnection().connection
 
 @contextmanager
-def get_db_cursor() -> Generator[sqlite3.Cursor, None, None]:
+def get_db_cursor() -> Generator[sqlite3.Cursor]:
     with DatabaseConnection().get_db() as conn:
         yield conn.cursor()

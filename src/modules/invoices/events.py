@@ -7,7 +7,7 @@ used with the EventBus system.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from src.shared.events.types import EventType
 
@@ -28,7 +28,7 @@ class InvoiceCreatedEventPayload:
     customer_email: str
     created_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "invoice_id": self.invoice_id,
@@ -52,7 +52,7 @@ class InvoiceCreationFailedEventPayload:
     retry_count: int
     timestamp: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "invoice_id": self.invoice_id,
@@ -76,7 +76,7 @@ class InvoicePaidEventPayload:
     customer_tax_id: str
     paid_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for event payload."""
         return {
             "invoice_id": self.invoice_id,

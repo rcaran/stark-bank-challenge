@@ -17,15 +17,15 @@ from src.shared.security.signature import (
 )
 
 __all__ = [
-    # API Key
-    "verify_api_key",
-    "get_api_key_header",
-    "get_api_key_dependency",
     "APIKeyHeader",
     "InvalidAPIKeyError",
+    "InvalidSignatureError",
+    "compute_payload_hash",
+    "get_api_key_dependency",
+    "get_api_key_header",
     # Signature
     "validate_webhook_signature",
+    # API Key
+    "verify_api_key",
     "verify_webhook_signature",
-    "compute_payload_hash",
-    "InvalidSignatureError",
 ]

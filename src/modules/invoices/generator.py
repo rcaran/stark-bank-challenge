@@ -6,8 +6,8 @@ using the shared DataGenerator for realistic Brazilian customer data.
 """
 
 import random
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from src.shared.utils.data_generator import DataGenerator
 from src.shared.utils.logger import get_logger
@@ -33,11 +33,11 @@ class InvoiceGenerator:
 
     def __init__(
         self,
-        min_amount: float = None,
-        max_amount: float = None,
-        due_days_min: int = None,
-        due_days_max: int = None,
-        cpf_ratio: float = None,
+        min_amount: float | None = None,
+        max_amount: float | None = None,
+        due_days_min: int | None = None,
+        due_days_max: int | None = None,
+        cpf_ratio: float | None = None,
     ):
         """
         Initialize InvoiceGenerator with configuration.
@@ -75,7 +75,7 @@ class InvoiceGenerator:
             cpf_ratio=self.cpf_ratio,
         )
 
-    def generate_batch(self, count: int = None) -> List[Dict[str, Any]]:
+    def generate_batch(self, count: int | None = None) -> list[dict[str, Any]]:
         """
         Generate a batch of invoice data.
 
@@ -115,7 +115,7 @@ class InvoiceGenerator:
 
         return invoices
 
-    def _generate_single(self) -> Dict[str, Any]:
+    def _generate_single(self) -> dict[str, Any]:
         """
         Generate data for a single invoice.
 
@@ -152,7 +152,7 @@ class InvoiceGenerator:
 
         # Generate due date
         due_days = random.randint(self.due_days_min, self.due_days_max)
-        due_date = datetime.now(timezone.utc) + timedelta(days=due_days)
+        due_date = datetime.now(UTC) + timedelta(days=due_days)
 
         return {
             "amount": amount,
@@ -164,9 +164,9 @@ class InvoiceGenerator:
 
     def generate_invoice_for_testing(
         self,
-        amount: int = None,
+        amount: int | None = None,
         use_cpf: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate invoice data with specific parameters for testing.
 
@@ -185,7 +185,7 @@ class InvoiceGenerator:
         if amount is None:
             amount = random.randint(int(self.min_amount), int(self.max_amount))
 
-        due_date = datetime.now(timezone.utc) + timedelta(days=7)
+        due_date = datetime.now(UTC) + timedelta(days=7)
 
         return {
             "amount": amount,

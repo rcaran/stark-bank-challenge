@@ -16,10 +16,10 @@ from src.modules.invoices.repository import InvoiceRepository
 from src.modules.invoices.service import InvoiceService
 
 __all__ = [
+    "InvoiceGenerator",
     "InvoiceModel",
-    "InvoiceStatus",
     "InvoiceRepository",
     "InvoiceService",
-    "InvoiceGenerator",
+    "InvoiceStatus",
     "invoice_router",
 ]

@@ -7,12 +7,12 @@ including the InvoiceModel dataclass and InvoiceStatus enum.
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import Any
 
 
-class InvoiceStatus(str, Enum):
+class InvoiceStatus(StrEnum):
     """Invoice status enumeration."""
     PENDING = "pending"
     CREATED = "created"
@@ -40,21 +40,21 @@ class InvoiceModel:
     # Auto-generated fields
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     status: InvoiceStatus = InvoiceStatus.PENDING
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Stark Bank fields (populated after creation)
-    stark_invoice_id: Optional[str] = None
-    due_date: Optional[datetime] = None
+    stark_invoice_id: str | None = None
+    due_date: datetime | None = None
 
     # Payment fields (populated when paid)
-    paid_at: Optional[datetime] = None
-    fee: Optional[float] = None
-    net_amount: Optional[float] = None
+    paid_at: datetime | None = None
+    fee: float | None = None
+    net_amount: float | None = None
 
     # Retry tracking
     retry_count: int = 0
-    last_retry_at: Optional[datetime] = None
-    error_message: Optional[str] = None
+    last_retry_at: datetime | None = None
+    error_message: str | None = None
 
     def __post_init__(self):
         """Validate fields after initialization."""
@@ -78,7 +78,7 @@ class InvoiceModel:
         if isinstance(self.status, str):
             self.status = InvoiceStatus(self.status)
 
-    def calculate_net_amount(self) -> Optional[float]:
+    def calculate_net_amount(self) -> float | None:
         """
         Calculate net amount after fee deduction.
 
@@ -90,7 +90,7 @@ class InvoiceModel:
             return self.net_amount
         return None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Convert invoice to dictionary representation.
 
@@ -124,7 +124,7 @@ class InvoiceModel:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "InvoiceModel":
+    def from_dict(cls, data: dict[str, Any]) -> InvoiceModel:
         """
         Create an InvoiceModel from a dictionary.
 
@@ -139,7 +139,7 @@ class InvoiceModel:
         if created_at and isinstance(created_at, str):
             created_at = datetime.fromisoformat(created_at)
         elif not created_at:
-            created_at = datetime.now(timezone.utc)
+            created_at = datetime.now(UTC)
 
         due_date = data.get("due_date")
         if due_date and isinstance(due_date, str):
@@ -182,11 +182,11 @@ class InvoiceModel:
         self.status = InvoiceStatus.CREATED
         self.error_message = None
 
-    def mark_as_paid(self, fee: float, paid_at: datetime = None) -> None:
+    def mark_as_paid(self, fee: float, paid_at: datetime | None = None) -> None:
         """Mark invoice as paid."""
         self.status = InvoiceStatus.PAID
         self.fee = fee
-        self.paid_at = paid_at or datetime.now(timezone.utc)
+        self.paid_at = paid_at or datetime.now(UTC)
         self.calculate_net_amount()
 
     def mark_as_failed(self, error_message: str) -> None:
@@ -194,4 +194,4 @@ class InvoiceModel:
         self.status = InvoiceStatus.FAILED
         self.error_message = error_message
         self.retry_count += 1
-        self.last_retry_at = datetime.now(timezone.utc)
+        self.last_retry_at = datetime.now(UTC)

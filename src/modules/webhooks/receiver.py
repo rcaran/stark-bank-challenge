@@ -7,7 +7,6 @@ validation and routing to appropriate processors.
 """
 
 import json
-from typing import Dict
 
 from src.modules.webhooks.events import WEBHOOK_VALIDATION_FAILED
 from src.modules.webhooks.invoice_processor import InvoiceWebhookProcessor
@@ -64,7 +63,7 @@ class WebhookReceiver:
 
     def receive_invoice_webhook(
         self, payload: bytes, signature: str
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Receive and process an invoice webhook.
 
@@ -135,7 +134,7 @@ class WebhookReceiver:
 
     def receive_transfer_webhook(
         self, payload: bytes, signature: str
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Receive and process a transfer webhook.
 

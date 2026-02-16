@@ -1,6 +1,5 @@
 import json
 from datetime import datetime
-from typing import List, Optional
 
 from src.shared.database.base_repository import BaseRepository
 from src.shared.events.types import Event, EventType
@@ -32,11 +31,11 @@ class EventLogger(BaseRepository):
             ))
             logger.debug(f"Event {event.event_id} persisted to database")
         except Exception as e:
-            logger.error(f"Failed to persist event {event.event_id}: {str(e)}")
+            logger.error(f"Failed to persist event {event.event_id}: {e!s}")
 
     def get_events(
-        self, event_type: Optional[str] = None, limit: int = 100
-    ) -> List[Event]:
+        self, event_type: str | None = None, limit: int = 100
+    ) -> list[Event]:
         """Retrieves events from the events_log table."""
         try:
             query = "SELECT * FROM events_log"
@@ -54,16 +53,16 @@ class EventLogger(BaseRepository):
             events = []
             for row in rows:
                 event = Event(
-                    event_id=row['event_id'],
-                    event_type=EventType(row['event_type']),
-                    payload=json.loads(row['payload']),
-                    metadata=json.loads(row['metadata']) if row['metadata'] else None,
-                    timestamp=datetime.fromisoformat(row['timestamp'])
+                    event_id=row["event_id"],
+                    event_type=EventType(row["event_type"]),
+                    payload=json.loads(row["payload"]),
+                    metadata=json.loads(row["metadata"]) if row["metadata"] else None,
+                    timestamp=datetime.fromisoformat(row["timestamp"])
                 )
                 events.append(event)
             return events
         except Exception as e:
-            logger.error(f"Failed to fetch events: {str(e)}")
+            logger.error(f"Failed to fetch events: {e!s}")
             return []
 
 def event_logger_handler(event: Event) -> None:

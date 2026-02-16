@@ -5,7 +5,8 @@ This module provides database operations for transfers,
 extending the BaseRepository with transfer-specific methods.
 """
 
-from typing import List, Optional
+
+import builtins
 
 from src.modules.transfers.models import TransferModel, TransferStatus
 from src.shared.database.base_repository import BaseRepository
@@ -71,7 +72,7 @@ class TransferRepository(BaseRepository[TransferModel]):
         self._execute(query, params)
         logger.info(f"Transfer created successfully: {transfer.id}")
 
-    def get_by_id(self, transfer_id: str) -> Optional[TransferModel]:
+    def get_by_id(self, transfer_id: str) -> TransferModel | None:
         """
         Get a transfer by its internal ID.
 
@@ -98,7 +99,7 @@ class TransferRepository(BaseRepository[TransferModel]):
 
         return self._row_to_model(row)
 
-    def get_by_stark_id(self, stark_id: str) -> Optional[TransferModel]:
+    def get_by_stark_id(self, stark_id: str) -> TransferModel | None:
         """
         Get a transfer by its Stark Bank ID.
 
@@ -125,7 +126,7 @@ class TransferRepository(BaseRepository[TransferModel]):
 
         return self._row_to_model(row)
 
-    def get_by_external_id(self, external_id: str) -> Optional[TransferModel]:
+    def get_by_external_id(self, external_id: str) -> TransferModel | None:
         """
         Get a transfer by its external ID (for idempotency).
 
@@ -152,7 +153,7 @@ class TransferRepository(BaseRepository[TransferModel]):
 
         return self._row_to_model(row)
 
-    def get_by_invoice_id(self, invoice_id: str) -> Optional[TransferModel]:
+    def get_by_invoice_id(self, invoice_id: str) -> TransferModel | None:
         """
         Get a transfer by its associated invoice ID.
 
@@ -236,10 +237,10 @@ class TransferRepository(BaseRepository[TransferModel]):
 
     def list(
         self,
-        status: Optional[str] = None,
+        status: str | None = None,
         limit: int = 100,
         offset: int = 0
-    ) -> List[TransferModel]:
+    ) -> builtins.list[TransferModel]:
         """
         List transfers with optional filtering.
 
@@ -280,7 +281,7 @@ class TransferRepository(BaseRepository[TransferModel]):
         logger.debug(f"Found {len(transfers)} transfers")
         return transfers
 
-    def count(self, status: Optional[str] = None) -> int:
+    def count(self, status: str | None = None) -> int:
         """
         Count transfers with optional status filter.
 
@@ -303,7 +304,7 @@ class TransferRepository(BaseRepository[TransferModel]):
         logger.debug(f"Transfer count: {count}")
         return count
 
-    def list_by_status(self, status: TransferStatus) -> List[TransferModel]:
+    def list_by_status(self, status: TransferStatus) -> builtins.list[TransferModel]:
         """
         List all transfers with a specific status.
 

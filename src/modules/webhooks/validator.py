@@ -5,7 +5,6 @@ Provides a wrapper class for validating Stark Bank webhook signatures,
 with structured logging and exception handling.
 """
 
-from typing import Optional
 
 from src.shared.security.signature import (
     InvalidSignatureError,
@@ -29,7 +28,7 @@ class WebhookValidator:
         ...     print("Invalid signature")
     """
 
-    def __init__(self, public_key_pem: Optional[str] = None):
+    def __init__(self, public_key_pem: str | None = None):
         """
         Initialize the webhook validator.
 
