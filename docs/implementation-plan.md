@@ -529,22 +529,22 @@ python -c "from src.shared.security.api_key import verify_api_key; print(verify_
 **Implementação:**
 
 **models.py:**
-- [ ] Dataclass `InvoiceModel` - representa invoice no sistema
-- [ ] Campos: id, stark_invoice_id, amount, customer_name, customer_tax_id, customer_email, status, created_at, paid_at, fee, net_amount, retry_count, last_retry_at, error_message
-- [ ] Métodos: `to_dict()`, `from_dict()`, `calculate_net_amount()`
-- [ ] Validação de campos
+- [X] Dataclass `InvoiceModel` - representa invoice no sistema
+- [X] Campos: id, stark_invoice_id, amount, customer_name, customer_tax_id, customer_email, status, created_at, paid_at, fee, net_amount, retry_count, last_retry_at, error_message
+- [X] Métodos: `to_dict()`, `from_dict()`, `calculate_net_amount()`
+- [X] Validação de campos
 
 **events.py:**
-- [ ] `InvoiceCreatedEvent` - payload da invoice criada
-- [ ] `InvoiceCreationFailedEvent` - payload de falha
-- [ ] Constantes de tipos de eventos
+- [X] `InvoiceCreatedEvent` - payload da invoice criada
+- [X] `InvoiceCreationFailedEvent` - payload de falha
+- [X] Constantes de tipos de eventos
 
 **Testes:**
-- [ ] `tests/unit/modules/invoices/test_models.py`
-- [ ] Validar criação de modelo
-- [ ] Validar cálculo de net_amount
-- [ ] Validar conversão to_dict/from_dict
-- [ ] Validar validação de campos
+- [X] `tests/unit/modules/invoices/test_models.py`
+- [X] Validar criação de modelo
+- [X] Validar cálculo de net_amount
+- [X] Validar conversão to_dict/from_dict
+- [X] Validar validação de campos
 
 ### 4.2. Invoice Repository
 
@@ -552,22 +552,22 @@ python -c "from src.shared.security.api_key import verify_api_key; print(verify_
 - `src/modules/invoices/repository.py`
 
 **Implementação:**
-- [ ] Classe `InvoiceRepository(BaseRepository)`
-- [ ] `create(invoice: InvoiceModel) -> None`
-- [ ] `get_by_id(invoice_id: str) -> Optional[InvoiceModel]`
-- [ ] `get_by_stark_id(stark_id: str) -> Optional[InvoiceModel]`
-- [ ] `update(invoice: InvoiceModel) -> None`
-- [ ] `list(status: Optional[str], limit: int, offset: int) -> List[InvoiceModel]`
-- [ ] `count(status: Optional[str]) -> int`
-- [ ] Logging de operações
-- [ ] Exception handling
+- [X] Classe `InvoiceRepository(BaseRepository)`
+- [X] `create(invoice: InvoiceModel) -> None`
+- [X] `get_by_id(invoice_id: str) -> Optional[InvoiceModel]`
+- [X] `get_by_stark_id(stark_id: str) -> Optional[InvoiceModel]`
+- [X] `update(invoice: InvoiceModel) -> None`
+- [X] `list(status: Optional[str], limit: int, offset: int) -> List[InvoiceModel]`
+- [X] `count(status: Optional[str]) -> int`
+- [X] Logging de operações
+- [X] Exception handling
 
 **Testes:**
-- [ ] `tests/unit/modules/invoices/test_repository.py`
-- [ ] Mock de database
-- [ ] Validar CRUD operations
-- [ ] Validar queries com filtros
-- [ ] Validar paginação
+- [X] `tests/unit/modules/invoices/test_repository.py`
+- [X] Mock de database
+- [X] Validar CRUD operations
+- [X] Validar queries com filtros
+- [X] Validar paginação
 
 ### 4.3. Invoice Generator
 
@@ -575,20 +575,20 @@ python -c "from src.shared.security.api_key import verify_api_key; print(verify_
 - `src/modules/invoices/generator.py`
 
 **Implementação:**
-- [ ] Classe `InvoiceGenerator`
-- [ ] `generate_batch(count: int) -> List[dict]` - gera dados de N invoices
-- [ ] `_generate_single() -> dict` - gera dados de 1 invoice
-- [ ] Usa `DataGenerator` para dados fake
-- [ ] Valida CPF/CNPJ gerados
-- [ ] Configuração: min/max amount, due days, CPF/CNPJ ratio
-- [ ] Logging de invoices geradas
+- [X] Classe `InvoiceGenerator`
+- [X] `generate_batch(count: int) -> List[dict]` - gera dados de N invoices
+- [X] `_generate_single() -> dict` - gera dados de 1 invoice
+- [X] Usa `DataGenerator` para dados fake
+- [X] Valida CPF/CNPJ gerados
+- [X] Configuração: min/max amount, due days, CPF/CNPJ ratio
+- [X] Logging de invoices geradas
 
 **Testes:**
-- [ ] `tests/unit/modules/invoices/test_generator.py`
-- [ ] Validar geração de batch (8-12 invoices)
-- [ ] Validar valores dentro do range
-- [ ] Validar CPF/CNPJ válidos
-- [ ] Validar distribuição CPF/CNPJ (70/30)
+- [X] `tests/unit/modules/invoices/test_generator.py`
+- [X] Validar geração de batch (8-12 invoices)
+- [X] Validar valores dentro do range
+- [X] Validar CPF/CNPJ válidos
+- [X] Validar distribuição CPF/CNPJ (70/30)
 
 ### 4.4. Invoice Service
 
@@ -596,26 +596,26 @@ python -c "from src.shared.security.api_key import verify_api_key; print(verify_
 - `src/modules/invoices/service.py`
 
 **Implementação:**
-- [ ] Classe `InvoiceService`
-- [ ] `__init__(repository, stark_api, event_bus)`
-- [ ] `create_invoice(invoice_data: dict) -> InvoiceModel` - cria invoice completa
-  - [ ] Validar dados
-  - [ ] Criar no Stark Bank (com retry)
-  - [ ] Salvar no banco
-  - [ ] Publicar evento `invoice.created`
-  - [ ] Exception handling + publicar `invoice.creation_failed`
-- [ ] `get_invoice(invoice_id: str) -> Optional[InvoiceModel]`
-- [ ] `list_invoices(status, limit, offset) -> List[InvoiceModel]`
-- [ ] `update_invoice_status(invoice_id, status, **kwargs) -> None`
-- [ ] Logging estruturado
+- [X] Classe `InvoiceService`
+- [X] `__init__(repository, stark_api, event_bus)`
+- [X] `create_invoice(invoice_data: dict) -> InvoiceModel` - cria invoice completa
+  - [X] Validar dados
+  - [X] Criar no Stark Bank (com retry)
+  - [X] Salvar no banco
+  - [X] Publicar evento `invoice.created`
+  - [X] Exception handling + publicar `invoice.creation_failed`
+- [X] `get_invoice(invoice_id: str) -> Optional[InvoiceModel]`
+- [X] `list_invoices(status, limit, offset) -> List[InvoiceModel]`
+- [X] `update_invoice_status(invoice_id, status, **kwargs) -> None`
+- [X] Logging estruturado
 
 **Testes:**
-- [ ] `tests/unit/modules/invoices/test_service.py`
-- [ ] Mock de repository, stark_api, event_bus
-- [ ] Validar fluxo completo de criação
-- [ ] Validar retry em falhas
-- [ ] Validar publicação de eventos
-- [ ] Validar exception handling
+- [X] `tests/unit/modules/invoices/test_service.py`
+- [X] Mock de repository, stark_api, event_bus
+- [X] Validar fluxo completo de criação
+- [X] Validar retry em falhas
+- [X] Validar publicação de eventos
+- [X] Validar exception handling
 
 ### 4.5. Invoice API Endpoints
 
@@ -623,22 +623,22 @@ python -c "from src.shared.security.api_key import verify_api_key; print(verify_
 - `src/modules/invoices/api.py`
 
 **Implementação:**
-- [ ] FastAPI Router `invoice_router`
-- [ ] `POST /invoices` - criar invoice (protegido por API Key)
-- [ ] `GET /invoices` - listar invoices (protegido por API Key)
+- [X] FastAPI Router `invoice_router`
+- [X] `POST /invoices` - criar invoice (protegido por API Key)
+- [X] `GET /invoices` - listar invoices (protegido por API Key)
   - Query params: status, limit, offset
-- [ ] `GET /invoices/{invoice_id}` - buscar invoice (protegido por API Key)
-- [ ] Response models (dict ou dataclass)
-- [ ] Exception handling → HTTP status codes
-- [ ] Logging de requests
+- [X] `GET /invoices/{invoice_id}` - buscar invoice (protegido por API Key)
+- [X] Response models (dict ou dataclass)
+- [X] Exception handling → HTTP status codes
+- [X] Logging de requests
 
 **Testes:**
-- [ ] `tests/integration/modules/invoices/test_api.py`
-- [ ] Usar TestClient do FastAPI
-- [ ] Mock de service
-- [ ] Validar todos endpoints
-- [ ] Validar autenticação (com/sem API Key)
-- [ ] Validar responses e status codes
+- [X] `tests/integration/modules/invoices/test_api.py`
+- [X] Usar TestClient do FastAPI
+- [X] Mock de service
+- [X] Validar todos endpoints
+- [X] Validar autenticação (com/sem API Key)
+- [X] Validar responses e status codes
 
 ### Entregáveis Fase 4
 - ✅ Módulo de Invoices completo
@@ -677,23 +677,23 @@ curl -X GET http://localhost:8000/invoices -H "X-API-Key: dev-key"
 **Implementação:**
 
 **models.py:**
-- [ ] Dataclass `WebhookEvent` - estrutura base de webhook
-- [ ] Dataclass `InvoiceWebhookPayload` - parser de payload de invoice
-- [ ] Dataclass `TransferWebhookPayload` - parser de payload de transfer
-- [ ] Métodos de parsing e validação
+- [X] Dataclass `WebhookEvent` - estrutura base de webhook
+- [X] Dataclass `InvoiceWebhookPayload` - parser de payload de invoice
+- [X] Dataclass `TransferWebhookPayload` - parser de payload de transfer
+- [X] Métodos de parsing e validação
 
 **events.py:**
-- [ ] `InvoicePaidEvent` - invoice paga confirmada
-- [ ] `TransferProcessingEvent` - transfer em processamento
-- [ ] `TransferCompletedEvent` - transfer concluída
-- [ ] `TransferFailedEvent` - transfer falhou
-- [ ] `WebhookValidationFailedEvent` - assinatura inválida
+- [X] `InvoicePaidEvent` - invoice paga confirmada
+- [X] `TransferProcessingEvent` - transfer em processamento
+- [X] `TransferCompletedEvent` - transfer concluída
+- [X] `TransferFailedEvent` - transfer falhou
+- [X] `WebhookValidationFailedEvent` - assinatura inválida
 
 **Testes:**
-- [ ] `tests/unit/modules/webhooks/test_models.py`
-- [ ] Validar parsing de payloads reais (samples do Stark Bank)
-- [ ] Validar campos obrigatórios
-- [ ] Validar conversão de tipos
+- [X] `tests/unit/modules/webhooks/test_models.py`
+- [X] Validar parsing de payloads reais (samples do Stark Bank)
+- [X] Validar campos obrigatórios
+- [X] Validar conversão de tipos
 
 ### 5.2. Webhook Validator
 
@@ -701,18 +701,18 @@ curl -X GET http://localhost:8000/invoices -H "X-API-Key: dev-key"
 - `src/modules/webhooks/validator.py`
 
 **Implementação:**
-- [ ] Classe `WebhookValidator`
-- [ ] `validate_signature(payload: bytes, signature: str) -> bool`
-- [ ] Wrapper sobre `security.signature.validate_webhook_signature`
-- [ ] Logging de validações
-- [ ] Exception handling
+- [X] Classe `WebhookValidator`
+- [X] `validate_signature(payload: bytes, signature: str) -> bool`
+- [X] Wrapper sobre `security.signature.validate_webhook_signature`
+- [X] Logging de validações
+- [X] Exception handling
 
 **Testes:**
-- [ ] `tests/unit/modules/webhooks/test_validator.py`
-- [ ] Mock de signature validation
-- [ ] Validar assinatura válida
-- [ ] Validar assinatura inválida
-- [ ] Validar logging
+- [X] `tests/unit/modules/webhooks/test_validator.py`
+- [X] Mock de signature validation
+- [X] Validar assinatura válida
+- [X] Validar assinatura inválida
+- [X] Validar logging
 
 ### 5.3. Invoice Webhook Processor
 
@@ -720,25 +720,25 @@ curl -X GET http://localhost:8000/invoices -H "X-API-Key: dev-key"
 - `src/modules/webhooks/invoice_processor.py`
 
 **Implementação:**
-- [ ] Classe `InvoiceWebhookProcessor`
-- [ ] `__init__(invoice_repository, event_bus)`
-- [ ] `process(webhook_payload: InvoiceWebhookPayload) -> None`
-  - [ ] Extrair dados (invoice_id, amount, fee, status)
-  - [ ] Buscar invoice no banco via stark_invoice_id
-  - [ ] Atualizar status da invoice
-  - [ ] Calcular net_amount = amount - fee
-  - [ ] Atualizar paid_at timestamp
-  - [ ] Publicar evento `invoice.paid`
-- [ ] Logging estruturado
-- [ ] Exception handling
+- [X] Classe `InvoiceWebhookProcessor`
+- [X] `__init__(invoice_repository, event_bus)`
+- [X] `process(webhook_payload: InvoiceWebhookPayload) -> None`
+  - [X] Extrair dados (invoice_id, amount, fee, status)
+  - [X] Buscar invoice no banco via stark_invoice_id
+  - [X] Atualizar status da invoice
+  - [X] Calcular net_amount = amount - fee
+  - [X] Atualizar paid_at timestamp
+  - [X] Publicar evento `invoice.paid`
+- [X] Logging estruturado
+- [X] Exception handling
 
 **Testes:**
-- [ ] `tests/unit/modules/webhooks/test_invoice_processor.py`
-- [ ] Mock de repository e event_bus
-- [ ] Validar processamento de webhook de pagamento
-- [ ] Validar cálculo de net_amount
-- [ ] Validar atualização de invoice
-- [ ] Validar publicação de evento
+- [X] `tests/unit/modules/webhooks/test_invoice_processor.py`
+- [X] Mock de repository e event_bus
+- [X] Validar processamento de webhook de pagamento
+- [X] Validar cálculo de net_amount
+- [X] Validar atualização de invoice
+- [X] Validar publicação de evento
 
 ### 5.4. Transfer Webhook Processor
 
@@ -746,27 +746,27 @@ curl -X GET http://localhost:8000/invoices -H "X-API-Key: dev-key"
 - `src/modules/webhooks/transfer_processor.py`
 
 **Implementação:**
-- [ ] Classe `TransferWebhookProcessor`
-- [ ] `__init__(transfer_repository, event_bus)`
-- [ ] `process(webhook_payload: TransferWebhookPayload) -> None`
-  - [ ] Extrair dados (transfer_id, status, error)
-  - [ ] Buscar transfer no banco via stark_transfer_id
-  - [ ] Atualizar status da transfer
-  - [ ] Atualizar updated_at timestamp
-  - [ ] Se status="success": atualizar completed_at, publicar `transfer.completed`
-  - [ ] Se status="failed": salvar error_message, publicar `transfer.failed`
-  - [ ] Se status="processing": publicar `transfer.processing`
-- [ ] Logging estruturado
-- [ ] Exception handling
+- [X] Classe `TransferWebhookProcessor`
+- [X] `__init__(transfer_repository, event_bus)`
+- [X] `process(webhook_payload: TransferWebhookPayload) -> None`
+  - [X] Extrair dados (transfer_id, status, error)
+  - [X] Buscar transfer no banco via stark_transfer_id
+  - [X] Atualizar status da transfer
+  - [X] Atualizar updated_at timestamp
+  - [X] Se status="success": atualizar completed_at, publicar `transfer.completed`
+  - [X] Se status="failed": salvar error_message, publicar `transfer.failed`
+  - [X] Se status="processing": publicar `transfer.processing`
+- [X] Logging estruturado
+- [X] Exception handling
 
 **Testes:**
-- [ ] `tests/unit/modules/webhooks/test_transfer_processor.py`
-- [ ] Mock de repository e event_bus
-- [ ] Validar processamento de status "processing"
-- [ ] Validar processamento de status "success"
-- [ ] Validar processamento de status "failed"
-- [ ] Validar atualização de transfer
-- [ ] Validar publicação de eventos
+- [X] `tests/unit/modules/webhooks/test_transfer_processor.py`
+- [X] Mock de repository e event_bus
+- [X] Validar processamento de status "processing"
+- [X] Validar processamento de status "success"
+- [X] Validar processamento de status "failed"
+- [X] Validar atualização de transfer
+- [X] Validar publicação de eventos
 
 ### 5.5. Webhook Receiver (API)
 
@@ -777,35 +777,35 @@ curl -X GET http://localhost:8000/invoices -H "X-API-Key: dev-key"
 **Implementação:**
 
 **receiver.py:**
-- [ ] Classe `WebhookReceiver`
-- [ ] `__init__(validator, invoice_processor, transfer_processor, event_bus)`
-- [ ] `receive_invoice_webhook(payload: bytes, signature: str) -> dict`
-  - [ ] Validar assinatura
-  - [ ] Parsear payload
-  - [ ] Processar via InvoiceWebhookProcessor
-  - [ ] Retornar {"status": "ok"}
-- [ ] `receive_transfer_webhook(payload: bytes, signature: str) -> dict`
-  - [ ] Validar assinatura
-  - [ ] Parsear payload
-  - [ ] Processar via TransferWebhookProcessor
-  - [ ] Retornar {"status": "ok"}
-- [ ] Exception handling robusto (sempre retornar 200 se possível)
+- [X] Classe `WebhookReceiver`
+- [X] `__init__(validator, invoice_processor, transfer_processor, event_bus)`
+- [X] `receive_invoice_webhook(payload: bytes, signature: str) -> dict`
+  - [X] Validar assinatura
+  - [X] Parsear payload
+  - [X] Processar via InvoiceWebhookProcessor
+  - [X] Retornar {"status": "ok"}
+- [X] `receive_transfer_webhook(payload: bytes, signature: str) -> dict`
+  - [X] Validar assinatura
+  - [X] Parsear payload
+  - [X] Processar via TransferWebhookProcessor
+  - [X] Retornar {"status": "ok"}
+- [X] Exception handling robusto (sempre retornar 200 se possível)
 
 **api.py:**
-- [ ] FastAPI Router `webhook_router`
-- [ ] `POST /webhooks/invoice` - recebe webhook de invoice (público, validado por assinatura)
-- [ ] `POST /webhooks/transfer` - recebe webhook de transfer (público, validado por assinatura)
-- [ ] Exception handling → sempre retornar 200 (exceto validation fatal)
-- [ ] Logging de todos webhooks recebidos
+- [X] FastAPI Router `webhook_router`
+- [X] `POST /webhooks/invoice` - recebe webhook de invoice (público, validado por assinatura)
+- [X] `POST /webhooks/transfer` - recebe webhook de transfer (público, validado por assinatura)
+- [X] Exception handling → sempre retornar 200 (exceto validation fatal)
+- [X] Logging de todos webhooks recebidos
 
 **Testes:**
-- [ ] `tests/unit/modules/webhooks/test_receiver.py`
-- [ ] `tests/integration/modules/webhooks/test_api.py`
-- [ ] Mock de processors
-- [ ] Validar fluxo completo de webhook
-- [ ] Validar validação de assinatura
-- [ ] Validar exception handling
-- [ ] Validar responses HTTP
+- [X] `tests/unit/modules/webhooks/test_receiver.py`
+- [X] `tests/integration/modules/webhooks/test_api.py`
+- [X] Mock de processors
+- [X] Validar fluxo completo de webhook
+- [X] Validar validação de assinatura
+- [X] Validar exception handling
+- [X] Validar responses HTTP
 
 ### Entregáveis Fase 5
 - ✅ Webhooks de invoice processados

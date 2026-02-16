@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.config.settings import settings
+from src.modules.invoices.api import invoice_router
 
 logger = logging.getLogger("api")
 logging.basicConfig(level=settings.log_level)
@@ -22,6 +23,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+# Include routers
+app.include_router(invoice_router)
 
 @app.get("/health")
 async def health_check():
