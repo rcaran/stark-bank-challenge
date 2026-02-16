@@ -93,7 +93,7 @@ def _get_webhook_receiver() -> WebhookReceiver:
             "description": "Invalid signature",
             "content": {
                 "application/json": {
-                    "example": {"detail": "Invalid webhook signature"}
+                    "example": {"error": "Unauthorized", "message": "Invalid webhook signature"}
                 }
             },
         },
@@ -157,7 +157,7 @@ async def receive_invoice_webhook(
         )
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"detail": "Invalid webhook signature"},
+            content={"error": "Unauthorized", "message": "Invalid webhook signature"},
         )
 
     except Exception as e:
@@ -193,7 +193,7 @@ async def receive_invoice_webhook(
             "description": "Invalid signature",
             "content": {
                 "application/json": {
-                    "example": {"detail": "Invalid webhook signature"}
+                    "example": {"error": "Unauthorized", "message": "Invalid webhook signature"}
                 }
             },
         },
@@ -257,7 +257,7 @@ async def receive_transfer_webhook(
         )
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"detail": "Invalid webhook signature"},
+            content={"error": "Unauthorized", "message": "Invalid webhook signature"},
         )
 
     except Exception as e:

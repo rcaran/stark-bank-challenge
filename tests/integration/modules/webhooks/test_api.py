@@ -149,7 +149,7 @@ class TestInvoiceWebhookEndpoint:
 
         # Assert
         assert response.status_code == 401
-        assert "Invalid webhook signature" in response.json()["detail"]
+        assert "Invalid webhook signature" in response.json()["message"]
 
     @patch("src.modules.webhooks.api._get_webhook_receiver")
     def test_invoice_webhook_processing_error_returns_200(
@@ -250,7 +250,7 @@ class TestTransferWebhookEndpoint:
 
         # Assert
         assert response.status_code == 401
-        assert "Invalid webhook signature" in response.json()["detail"]
+        assert "Invalid webhook signature" in response.json()["message"]
 
     @patch("src.modules.webhooks.api._get_webhook_receiver")
     def test_transfer_webhook_processing_error_returns_200(

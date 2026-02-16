@@ -997,23 +997,23 @@ pytest tests/integration/modules/transfers/ -v
 - `src/scheduler.py`
 
 **Implementação:**
-- [ ] Função `run_scheduler()` - entry point
-- [ ] Configurar APScheduler com IntervalTrigger
-- [ ] Job: `generate_invoices_job()`
-  - [ ] Usar InvoiceGenerator para gerar batch
-  - [ ] Usar InvoiceService para criar cada invoice
-  - [ ] Logging de execução
-  - [ ] Exception handling
-- [ ] Configuração: intervalo (3h), duração (24h = 8 ciclos)
-- [ ] Shutdown graceful
-- [ ] Opção de rodar em thread ou processo separado
+- [X] Função `run_scheduler()` - entry point
+- [X] Configurar APScheduler com IntervalTrigger
+- [X] Job: `generate_invoices_job()`
+  - [X] Usar InvoiceGenerator para gerar batch
+  - [X] Usar InvoiceService para criar cada invoice
+  - [X] Logging de execução
+  - [X] Exception handling
+- [X] Configuração: intervalo (3h), duração (24h = 8 ciclos)
+- [X] Shutdown graceful
+- [X] Opção de rodar em thread ou processo separado
 
 **Testes:**
-- [ ] `tests/unit/test_scheduler.py`
-- [ ] Mock de InvoiceService
-- [ ] Validar agendamento
-- [ ] Validar execução de job
-- [ ] Validar shutdown
+- [X] `tests/unit/test_scheduler.py`
+- [X] Mock de InvoiceService
+- [X] Validar agendamento
+- [X] Validar execução de job
+- [X] Validar shutdown
 
 ### 7.2. FastAPI Main Application
 
@@ -1021,34 +1021,34 @@ pytest tests/integration/modules/transfers/ -v
 - `src/main.py`
 
 **Implementação:**
-- [ ] FastAPI app instance
-- [ ] Lifespan events:
-  - [ ] `startup`:
-    - [ ] Inicializar database (run migrations)
-    - [ ] Inicializar EventBus
-    - [ ] Registrar event handlers (TransferHandler)
-    - [ ] Iniciar scheduler em thread (se configurado)
-    - [ ] Logging de startup
-  - [ ] `shutdown`:
-    - [ ] Parar scheduler
-    - [ ] Fechar database connections
-    - [ ] Logging de shutdown
-- [ ] Incluir routers:
-  - [ ] `invoice_router` com prefix `/invoices`
-  - [ ] `transfer_router` com prefix `/transfers`
-  - [ ] `webhook_router` com prefix `/webhooks`
-- [ ] Endpoint raiz: `GET /` - redirect para `/docs`
-- [ ] Health check: `GET /health`
-- [ ] Exception handlers globais
-- [ ] CORS configuration (se necessário)
-- [ ] Logging middleware
+- [X] FastAPI app instance
+- [X] Lifespan events:
+  - [X] `startup`:
+    - [X] Inicializar database (run migrations)
+    - [X] Inicializar EventBus
+    - [X] Registrar event handlers (TransferHandler)
+    - [X] Iniciar scheduler em thread (se configurado)
+    - [X] Logging de startup
+  - [X] `shutdown`:
+    - [X] Parar scheduler
+    - [X] Fechar database connections
+    - [X] Logging de shutdown
+- [X] Incluir routers:
+  - [X] `invoice_router` com prefix `/invoices`
+  - [X] `transfer_router` com prefix `/transfers`
+  - [X] `webhook_router` com prefix `/webhooks`
+- [X] Endpoint raiz: `GET /` - redirect para `/docs`
+- [X] Health check: `GET /health`
+- [X] Exception handlers globais
+- [X] CORS configuration (se necessário)
+- [X] Logging middleware
 
 **Testes:**
-- [ ] `tests/integration/test_main.py`
-- [ ] Usar TestClient
-- [ ] Validar startup/shutdown
-- [ ] Validar health check
-- [ ] Validar integração de routers
+- [X] `tests/integration/test_main.py`
+- [X] Usar TestClient
+- [X] Validar startup/shutdown
+- [X] Validar health check
+- [X] Validar integração de routers
 
 ### 7.3. Health Check
 
@@ -1056,12 +1056,12 @@ pytest tests/integration/modules/transfers/ -v
 - `src/health.py`
 
 **Implementação:**
-- [ ] Função `check_health() -> dict`
-- [ ] Verificar:
-  - [ ] Database (executar query simples)
-  - [ ] Stark Bank API (opcional - pode ser lento)
-  - [ ] EventBus
-- [ ] Retornar:
+- [X] Função `check_health() -> dict`
+- [X] Verificar:
+  - [X] Database (executar query simples)
+  - [X] Stark Bank API (opcional - pode ser lento)
+  - [X] EventBus
+- [X] Retornar:
   ```json
   {
     "status": "healthy",
@@ -1076,9 +1076,9 @@ pytest tests/integration/modules/transfers/ -v
   ```
 
 **Testes:**
-- [ ] `tests/unit/test_health.py`
-- [ ] Validar health check com tudo OK
-- [ ] Validar health check com database falha
+- [X] `tests/unit/test_health.py`
+- [X] Validar health check com tudo OK
+- [X] Validar health check com database falha
 
 ### 7.4. Dependency Injection Setup
 
@@ -1086,15 +1086,15 @@ pytest tests/integration/modules/transfers/ -v
 - `src/dependencies.py`
 
 **Implementação:**
-- [ ] Factory functions para FastAPI Depends():
-  - [ ] `get_db() -> sqlite3.Connection`
-  - [ ] `get_event_bus() -> EventBus`
-  - [ ] `get_invoice_repository() -> InvoiceRepository`
-  - [ ] `get_invoice_service() -> InvoiceService`
-  - [ ] `get_transfer_repository() -> TransferRepository`
-  - [ ] `get_transfer_service() -> TransferService`
-  - [ ] `get_webhook_validator() -> WebhookValidator`
-- [ ] Singletons onde apropriado (EventBus, Database)
+- [X] Factory functions para FastAPI Depends():
+  - [X] `get_db() -> sqlite3.Connection`
+  - [X] `get_event_bus() -> EventBus`
+  - [X] `get_invoice_repository() -> InvoiceRepository`
+  - [X] `get_invoice_service() -> InvoiceService`
+  - [X] `get_transfer_repository() -> TransferRepository`
+  - [X] `get_transfer_service() -> TransferService`
+  - [X] `get_webhook_validator() -> WebhookValidator`
+- [X] Singletons onde apropriado (EventBus, Database)
 
 ### Entregáveis Fase 7
 - ✅ Scheduler gerando invoices a cada 3h

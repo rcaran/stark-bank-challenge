@@ -59,6 +59,15 @@ class MigrationRunner:
             logger.error(f"Failed to apply migration {filename}: {str(e)}")
             raise
 
-if __name__ == "__main__":
+def run_migrations():
+    """
+    Convenience function to run all migrations.
+    
+    This function creates a MigrationRunner instance and runs all
+    pending migrations from the migrations directory.
+    """
     runner = MigrationRunner()
     runner.run_migrations()
+
+if __name__ == "__main__":
+    run_migrations()
