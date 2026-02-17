@@ -77,8 +77,8 @@ class TestInvoiceService:
         event = mock_event_bus.publish.call_args[0][0]
         assert event.event_type == INVOICE_CREATED
 
-        # Verify return value
-        assert result.amount == 10000
+        # Verify return value (amount is stored in reais, not cents)
+        assert result.amount == 100.0  # 10000 cents = 100.0 reais
         assert result.status == InvoiceStatus.CREATED
 
     def test_create_invoice_stark_failure(

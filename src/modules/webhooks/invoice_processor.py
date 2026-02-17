@@ -68,8 +68,8 @@ class InvoiceWebhookProcessor:
             f"Processing invoice webhook: stark_id={stark_invoice_id}, status={status}"
         )
 
-        # Only process credited (paid) invoices
-        if status != WebhookEventType.INVOICE_CREDITED.value:
+        # Only process paid invoices (status "credited" from Stark Bank)
+        if status != WebhookEventType.INVOICE_CREDITED:
             logger.debug(
                 f"Ignoring non-payment webhook event: {status} for {stark_invoice_id}"
             )

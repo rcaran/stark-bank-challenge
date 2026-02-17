@@ -32,6 +32,7 @@ from src.modules.invoices.models import InvoiceModel, InvoiceStatus
 from src.modules.invoices.repository import InvoiceRepository
 from src.modules.invoices.service import InvoiceService
 from src.modules.transfers import api as transfers_api_module
+from src.modules.transfers.handler import TransferHandler
 from src.modules.transfers.models import TransferModel, TransferStatus
 from src.modules.transfers.repository import TransferRepository
 from src.modules.transfers.service import TransferService
@@ -176,16 +177,27 @@ def mock_stark_transfer_api():
     mock_api = Mock()
     
     # Default behavior: successful transfer creation
-    def create_transfer_side_effect(transfer_data):
-        return {
-            "id": f"stark_transfer_{transfer_data['externalId']}",
-            "amount": transfer_data["amount"],
-            "externalId": transfer_data["externalId"],
-            "status": "created",
-            "bankCode": transfer_data.get("bankCode"),
-            "branchCode": transfer_data.get("branchCode"),
-            "accountNumber": transfer_data.get("accountNumber"),
-        }
+    def create_transfer_side_effect(
+        amount,
+        name,
+        tax_id,
+        bank_code,
+        branch_code,
+        account_number,
+        external_id,
+        tags=None,
+        account_type=None,
+    ):
+        # Create a mock response object with attributes (not a dict)
+        response = Mock()
+        response.id = f"stark_transfer_{external_id}"
+        response.amount = amount
+        response.external_id = external_id
+        response.status = "created"
+        response.bank_code = bank_code
+        response.branch_code = branch_code
+        response.account_number = account_number
+        return response
     
     mock_api.create_transfer.side_effect = create_transfer_side_effect
     
@@ -263,6 +275,13 @@ def e2e_app(e2e_db, e2e_event_bus, mock_stark_api):
         event_bus=e2e_event_bus,
     )
     
+    # Create and register TransferHandler to handle invoice.paid events
+    transfer_handler = TransferHandler(
+        service=transfer_service,
+        invoice_repository=invoice_repository,
+    )
+    e2e_event_bus.subscribe("invoice.paid", transfer_handler.handle_invoice_paid)
+    
     # Create mock webhook validator that always accepts signatures
     mock_validator = Mock(spec=WebhookValidator)
     mock_validator.validate_signature.return_value = True
@@ -318,6 +337,9 @@ def e2e_app(e2e_db, e2e_event_bus, mock_stark_api):
     # Create test client
     client = TestClient(app)
     
+    # Expose mock_validator for tests that need to reconfigure it
+    client._mock_validator = mock_validator
+    
     yield client
     
     # Clean up: restore original singletons
@@ -353,7 +375,7 @@ def sample_invoices():
         {
             "amount": 75000,
             "customer_name": "Tech Solutions LTDA",
-            "customer_tax_id": "12.345.678/0001-90",
+            "customer_tax_id": "11.222.333/0001-81",  # Valid CNPJ
             "customer_email": "contato@techsolutions.com",
         },
     ]
@@ -438,6 +460,33 @@ def sample_webhook_transfer_success():
                     "id": "stark_transfer_001",
                     "amount": 49800,
                     "status": "success",
+                    "externalId": "invoice-invoice_001",
+                },
+            },
+        }
+    }
+
+
+@pytest.fixture
+def sample_webhook_transfer_processing():
+    """
+    Generate sample webhook payload for transfer in processing status.
+    
+    Returns:
+        dict: Webhook payload for transfer in processing status
+    """
+    return {
+        "event": {
+            "id": "9589898251476992",
+            "subscription": "transfer",
+            "log": {
+                "id": "8123328385236992",
+                "created": "2024-01-15T11:15:00.000000+00:00",
+                "type": "processing",
+                "transfer": {
+                    "id": "stark_transfer_001",
+                    "amount": 49800,
+                    "status": "processing",
                     "externalId": "invoice-invoice_001",
                 },
             },

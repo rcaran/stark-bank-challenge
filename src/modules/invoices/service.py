@@ -86,9 +86,12 @@ class InvoiceService:
         # Validate input data
         self._validate_invoice_data(invoice_data)
 
+        # Convert amount from cents to reais
+        amount_reais = invoice_data["amount"] / 100.0
+
         # Create local invoice model (pending status)
         invoice = InvoiceModel(
-            amount=invoice_data["amount"],
+            amount=amount_reais,
             customer_name=invoice_data["customer_name"],
             customer_tax_id=invoice_data["customer_tax_id"],
             customer_email=invoice_data["customer_email"],
@@ -96,9 +99,9 @@ class InvoiceService:
         )
 
         try:
-            # Create invoice in Stark Bank
+            # Create invoice in Stark Bank (amount in cents)
             stark_response = self.stark_api.create_invoice(
-                amount=int(invoice.amount),
+                amount=invoice_data["amount"],  # Pass original cents value to API
                 tax_id=invoice.customer_tax_id,
                 name=invoice.customer_name,
                 due_date=invoice.due_date.date() if invoice.due_date else None,

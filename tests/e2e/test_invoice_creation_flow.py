@@ -203,10 +203,12 @@ class TestInvoiceCreationFlow:
         
         # ===== VERIFY: Invoice amounts match original data =====
         
-        original_amounts = {data["amount"] for data in sample_invoice_data}
+        # Convert original amounts from cents to reais for comparison
+        # (internal storage is in reais, input is in cents)
+        original_amounts_reais = {data["amount"] / 100.0 for data in sample_invoice_data}
         db_amounts = {invoice.amount for invoice in invoices_from_db}
         
-        assert db_amounts == original_amounts
+        assert db_amounts == original_amounts_reais
         logger.info("✓ Invoice amounts preserved correctly")
         
         # ===== SUMMARY =====

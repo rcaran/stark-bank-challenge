@@ -129,7 +129,7 @@ class TestInvoiceWebhookPayload:
         payload = InvoiceWebhookPayload.from_dict(sample_invoice_webhook)
 
         assert payload.invoice_id == "9876543210987654"
-        assert payload.status == "paid"
+        assert payload.status == "credited"  # Event type, not invoice status
         assert payload.amount == 50000
         assert payload.fee == 500
         assert payload.name == "João Silva"
@@ -202,7 +202,7 @@ class TestInvoiceWebhookPayload:
         result = payload.to_dict()
 
         assert result["invoice_id"] == "9876543210987654"
-        assert result["status"] == "paid"
+        assert result["status"] == "credited"  # Event type, not invoice status
         assert result["amount"] == 50000
         assert result["amount_decimal"] == 500.0
         assert result["fee"] == 500

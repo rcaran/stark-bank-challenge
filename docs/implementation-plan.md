@@ -1126,115 +1126,18 @@ open http://localhost:8000/docs
 **Duração Estimada:** 2-3 dias  
 **Objetivo:** Implementar testes E2E que validam fluxos completos
 
-### 8.1. E2E Test Infrastructure
+**Plano detalhado:** [e2e-tests.md](e2e-tests.md)
 
-**Arquivos:**
-- `tests/e2e/conftest.py`
-- `tests/e2e/helpers.py`
+### Resumo
 
-**Implementação:**
-- [X] Fixtures para E2E:
-  - [X] `e2e_app` - FastAPI TestClient com database real/in-memory
-  - [X] `e2e_db` - Database isolada para cada teste
-  - [X] `mock_stark_api` - Mock de Stark Bank API para E2E
-  - [X] `sample_invoices` - Invoices de exemplo
-- [X] Helpers:
-  - [X] `create_test_invoice()` - cria invoice via API
-  - [X] `simulate_webhook()` - simula webhook com assinatura
-  - [X] `wait_for_event()` - aguarda evento ser publicado
-  - [X] `assert_transfer_created()` - valida transfer criada
-
-### 8.2. E2E Test: Invoice Creation Flow
-
-**Arquivos:**
-- `tests/e2e/test_invoice_creation_flow.py`
-
-**Testes:**
-- [X] `test_invoice_creation_success`
-  - [X] Scheduler aciona geração
-  - [X] Invoices criadas no Stark Bank (mock)
-  - [X] Invoices salvas no banco
-  - [X] Eventos `invoice.created` publicados
-  - [X] Validar todas invoices com status="created"
-
-### 8.3. E2E Test: Payment to Transfer Flow
-
-**Arquivos:**
-- `tests/e2e/test_payment_to_transfer_flow.py`
-
-**Testes:**
-- [ ] `test_complete_payment_flow`
-  - [ ] Criar invoice via API
-  - [ ] Simular webhook de pagamento
-  - [ ] Validar invoice com status="paid"
-  - [ ] Validar transfer criada automaticamente
-  - [ ] Validar transfer com external_id correto
-  - [ ] Validar eventos publicados
-  - [ ] Validar logs
-- [ ] `test_idempotency_multiple_webhooks`
-  - [ ] Criar invoice
-  - [ ] Simular webhook de pagamento 3 vezes
-  - [ ] Validar apenas 1 transfer criada
-- [ ] `test_payment_flow_with_retry`
-  - [ ] Criar invoice
-  - [ ] Simular falha temporária no Stark Bank API
-  - [ ] Simular webhook de pagamento
-  - [ ] Validar retry automático
-  - [ ] Validar transfer criada após retry
-
-### 8.4. E2E Test: Transfer Status Updates
-
-**Arquivos:**
-- `tests/e2e/test_transfer_status_flow.py`
-
-**Testes:**
-- [ ] `test_transfer_processing_to_success`
-  - [ ] Criar invoice e simular pagamento
-  - [ ] Transfer criada com status="created"
-  - [ ] Simular webhook transfer status="processing"
-  - [ ] Validar status atualizado
-  - [ ] Simular webhook transfer status="success"
-  - [ ] Validar status="success" e completed_at preenchido
-- [ ] `test_transfer_failed`
-  - [ ] Criar invoice e simular pagamento
-  - [ ] Transfer criada
-  - [ ] Simular webhook transfer status="failed"
-  - [ ] Validar error_message salvo
-  - [ ] Validar evento `transfer.failed` publicado
-
-### 8.5. E2E Test: Query Endpoints
-
-**Arquivos:**
-- `tests/e2e/test_query_endpoints.py`
-
-**Testes:**
-- [ ] `test_list_invoices_with_filters`
-  - [ ] Criar várias invoices
-  - [ ] Testar GET /invoices com filtros
-  - [ ] Validar paginação
-  - [ ] Validar autenticação
-- [ ] `test_get_invoice_by_id`
-- [ ] `test_list_transfers_with_filters`
-- [ ] `test_get_transfer_by_invoice_id`
-
-### 8.6. E2E Test: Error Scenarios
-
-**Arquivos:**
-- `tests/e2e/test_error_scenarios.py`
-
-**Testes:**
-- [ ] `test_invalid_webhook_signature`
-  - [ ] Simular webhook com assinatura inválida
-  - [ ] Validar rejeição
-  - [ ] Validar evento `webhook.validation_failed`
-- [ ] `test_stark_api_timeout`
-  - [ ] Simular timeout no Stark Bank API
-  - [ ] Validar retry automático
-  - [ ] Validar falha após max attempts
-- [ ] `test_database_error_recovery`
-  - [ ] Simular erro de database
-  - [ ] Validar exception handling
-  - [ ] Validar logging de erro
+| Seção | Descrição | Status |
+|-------|-----------|--------|
+| 8.1 E2E Test Infrastructure | Fixtures, helpers, mocks | ✅ Implementado |
+| 8.2 E2E Test: Invoice Creation Flow | 4 testes do fluxo de criação | ✅ Implementado |
+| 8.3 E2E Test: Payment to Transfer Flow | 4 testes do fluxo pagamento → transfer | 🔧 Código existe |
+| 8.4 E2E Test: Transfer Status Updates | Lifecycle de status de transfers | ⬜ Não implementado |
+| 8.5 E2E Test: Query Endpoints | Endpoints de consulta com filtros | ⬜ Não implementado |
+| 8.6 E2E Test: Error Scenarios | Cenários de erro e resiliência | ⬜ Não implementado |
 
 ### Entregáveis Fase 8
 - ✅ Testes E2E cobrindo fluxos principais
@@ -1269,12 +1172,12 @@ open htmlcov/index.html
 - `docs/api.md`
 
 **Conteúdo:**
-- [ ] Listar todos endpoints
-- [ ] Request/Response examples
-- [ ] Authentication headers
-- [ ] Status codes
-- [ ] Error responses
-- [ ] Rate limits
+- [X] Listar todos endpoints
+- [X] Request/Response examples
+- [X] Authentication headers
+- [X] Status codes
+- [X] Error responses
+- [X] Rate limits
 
 ### 9.2. README.md
 
@@ -1282,19 +1185,19 @@ open htmlcov/index.html
 - `README.md`
 
 **Conteúdo:**
-- [ ] Descrição do projeto
-- [ ] Features implementadas
-- [ ] Stack tecnológico
-- [ ] Requisitos (Python 3.14)
-- [ ] Setup instructions:
-  - [ ] Clone repo
-  - [ ] Install dependencies
-  - [ ] Configure .env
-  - [ ] Run migrations
-  - [ ] Start app
-- [ ] Como testar
-- [ ] Deploy instructions (Railway)
-- [ ] Licença
+- [X] Descrição do projeto
+- [X] Features implementadas
+- [X] Stack tecnológico
+- [X] Requisitos (Python 3.14)
+- [X] Setup instructions:
+  - [X] Clone repo
+  - [X] Install dependencies
+  - [X] Configure .env
+  - [X] Run migrations
+  - [X] Start app
+- [X] Como testar
+- [X] Deploy instructions (Railway)
+- [X] Licença
 
 ### 9.3. Environment Configuration
 
@@ -1303,10 +1206,10 @@ open htmlcov/index.html
 - `docs/configuration.md`
 
 **Conteúdo:**
-- [ ] Todas variáveis documentadas
-- [ ] Valores default
-- [ ] Como obter credenciais Stark Bank
-- [ ] Configuração para desenvolvimento vs produção
+- [X] Todas variáveis documentadas
+- [X] Valores default
+- [X] Como obter credenciais Stark Bank
+- [X] Configuração para desenvolvimento vs produção
 
 ### 9.4. Deployment Guide
 

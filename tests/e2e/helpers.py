@@ -126,6 +126,51 @@ def simulate_webhook(
     return result
 
 
+def simulate_webhook_raw(
+    client: TestClient,
+    webhook_type: str,
+    payload: dict,
+    signature: str = "mock_valid_signature"
+):
+    """
+    Simulate a webhook request and return raw Response (without status assertion).
+    
+    This variant of simulate_webhook returns the complete Response object
+    without asserting status 200. Useful for testing error scenarios where
+    we expect status codes like 401, 403, 500, etc.
+    
+    Args:
+        client: FastAPI TestClient
+        webhook_type: Type of webhook ('invoice' or 'transfer')
+        payload: Webhook payload dictionary
+        signature: Digital signature (defaults to mock signature)
+    
+    Returns:
+        Response: Complete Response object with status_code, text, json(), etc.
+    """
+    logger.info(f"Simulating {webhook_type} webhook (raw response)")
+    
+    # Determine endpoint
+    endpoint = f"/webhooks/{webhook_type}"
+    
+    # Prepare request
+    payload_bytes = json.dumps(payload).encode('utf-8')
+    
+    # Make request and return raw response
+    response = client.post(
+        endpoint,
+        content=payload_bytes,
+        headers={
+            "Content-Type": "application/json",
+            "Digital-Signature": signature
+        }
+    )
+    
+    logger.info(f"Webhook response status: {response.status_code}")
+    
+    return response
+
+
 def wait_for_event(
     event_bus: EventBus,
     event_type: str,
@@ -332,8 +377,9 @@ def assert_transfer_completed(
     Raises:
         AssertionError: If transfer not completed
     """
-    repository = TransferRepository()
-    transfer = repository.get_by_id(transfer_id, db_connection)
+    db_adapter = TestDbAdapter(db_connection)
+    repository = TransferRepository(db_adapter)
+    transfer = repository.get_by_id(transfer_id)
     
     assert transfer is not None, f"Transfer not found: {transfer_id}"
     assert transfer.status == TransferStatus.SUCCESS, \
@@ -365,8 +411,9 @@ def assert_transfer_failed(
     Raises:
         AssertionError: If transfer not failed or missing error message
     """
-    repository = TransferRepository()
-    transfer = repository.get_by_id(transfer_id, db_connection)
+    db_adapter = TestDbAdapter(db_connection)
+    repository = TransferRepository(db_adapter)
+    transfer = repository.get_by_id(transfer_id)
     
     assert transfer is not None, f"Transfer not found: {transfer_id}"
     assert transfer.status == TransferStatus.FAILED, \

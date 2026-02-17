@@ -172,7 +172,7 @@ class InvoiceWebhookPayload:
 
         return cls(
             invoice_id=str(invoice.get("id", "")),
-            status=invoice.get("status", ""),
+            status=webhook.event_type,  # Use event type instead of invoice status
             amount=int(invoice.get("amount", 0)),
             fee=int(invoice.get("fee")) if invoice.get("fee") is not None else None,
             name=invoice.get("name"),
@@ -308,7 +308,7 @@ class TransferWebhookPayload:
 
         return cls(
             transfer_id=str(transfer.get("id", "")),
-            status=transfer.get("status", ""),
+            status=webhook.event_type,  # Use event type instead of transfer status
             amount=int(transfer.get("amount", 0)),
             external_id=transfer.get("externalId"),
             bank_code=transfer.get("bankCode"),
