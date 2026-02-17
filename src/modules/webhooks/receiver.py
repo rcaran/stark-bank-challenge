@@ -61,9 +61,7 @@ class WebhookReceiver:
         self._event_bus = event_bus
         logger.debug("WebhookReceiver initialized")
 
-    def receive_invoice_webhook(
-        self, payload: bytes, signature: str
-    ) -> dict[str, str]:
+    def receive_invoice_webhook(self, payload: bytes, signature: str) -> dict[str, str]:
         """
         Receive and process an invoice webhook.
 

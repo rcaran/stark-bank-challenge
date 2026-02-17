@@ -25,8 +25,10 @@ def mock_service():
 @pytest.fixture
 def mock_api_key():
     """Mock API key authentication that always returns a valid key."""
+
     def override():
         return "test-api-key-12345"
+
     return override
 
 
@@ -105,9 +107,7 @@ class TestListTransfersEndpoint:
             status="created", limit=100, offset=0
         )
 
-    def test_list_transfers_with_pagination(
-        self, client, mock_service, valid_api_key
-    ):
+    def test_list_transfers_with_pagination(self, client, mock_service, valid_api_key):
         """Test listing transfers with pagination."""
         mock_service.list_transfers.return_value = []
         mock_service.count_transfers.return_value = 0
@@ -122,9 +122,7 @@ class TestListTransfersEndpoint:
         assert data["limit"] == 50
         assert data["offset"] == 10
 
-    def test_list_transfers_invalid_status(
-        self, client, mock_service, valid_api_key
-    ):
+    def test_list_transfers_invalid_status(self, client, mock_service, valid_api_key):
         """Test listing transfers with invalid status."""
         response = client.get(
             "/transfers?status=invalid_status",
@@ -160,9 +158,7 @@ class TestGetTransferEndpoint:
         assert data["amount"] == 9500.00
         assert data["invoice_id"] == "test-invoice-id"
 
-    def test_get_transfer_not_found(
-        self, client, mock_service, valid_api_key
-    ):
+    def test_get_transfer_not_found(self, client, mock_service, valid_api_key):
         """Test getting non-existent transfer."""
         mock_service.get_transfer.return_value = None
 

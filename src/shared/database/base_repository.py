@@ -1,3 +1,5 @@
+"""Base repository class for database operations."""
+
 from sqlite3 import Cursor, Row
 from typing import TypeVar
 
@@ -7,6 +9,7 @@ from src.shared.utils.logger import get_logger
 logger = get_logger("shared.database.repository")
 
 T = TypeVar("T")
+
 
 class BaseRepository[T]:
     def __init__(self, db_connection: DatabaseConnection = None):

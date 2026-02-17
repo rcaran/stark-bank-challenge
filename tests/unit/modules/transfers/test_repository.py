@@ -70,7 +70,7 @@ class TestTransferRepository:
             datetime.now(UTC).isoformat(),
             datetime.now(UTC).isoformat(),
             None,  # completed_at
-            0,     # retry_count
+            0,  # retry_count
             None,  # last_retry_at
             None,  # error_message
         )
@@ -115,7 +115,10 @@ class TestTransferRepository:
             "processing",
             datetime.now(UTC).isoformat(),
             datetime.now(UTC).isoformat(),
-            None, 0, None, None,
+            None,
+            0,
+            None,
+            None,
         )
 
         mock_conn = MagicMock()
@@ -141,7 +144,10 @@ class TestTransferRepository:
             "created",
             datetime.now(UTC).isoformat(),
             datetime.now(UTC).isoformat(),
-            None, 0, None, None,
+            None,
+            0,
+            None,
+            None,
         )
 
         mock_conn = MagicMock()
@@ -168,7 +174,9 @@ class TestTransferRepository:
             datetime.now(UTC).isoformat(),
             datetime.now(UTC).isoformat(),
             datetime.now(UTC).isoformat(),
-            0, None, None,
+            0,
+            None,
+            None,
         )
 
         mock_conn = MagicMock()
@@ -195,7 +203,10 @@ class TestTransferRepository:
             "pending",
             datetime.now(UTC).isoformat(),
             datetime.now(UTC).isoformat(),
-            None, 0, None, None,
+            None,
+            0,
+            None,
+            None,
         )
 
         mock_conn = MagicMock()
@@ -228,14 +239,34 @@ class TestTransferRepository:
     def test_list_transfers(self, repository, mock_db):
         """Test listing transfers."""
         mock_rows = [
-            ("id1", "inv1", "stark1", "ext1", 9500, "created",
-             datetime.now(UTC).isoformat(),
-             datetime.now(UTC).isoformat(),
-             None, 0, None, None),
-            ("id2", "inv2", "stark2", "ext2", 8500, "processing",
-             datetime.now(UTC).isoformat(),
-             datetime.now(UTC).isoformat(),
-             None, 0, None, None),
+            (
+                "id1",
+                "inv1",
+                "stark1",
+                "ext1",
+                9500,
+                "created",
+                datetime.now(UTC).isoformat(),
+                datetime.now(UTC).isoformat(),
+                None,
+                0,
+                None,
+                None,
+            ),
+            (
+                "id2",
+                "inv2",
+                "stark2",
+                "ext2",
+                8500,
+                "processing",
+                datetime.now(UTC).isoformat(),
+                datetime.now(UTC).isoformat(),
+                None,
+                0,
+                None,
+                None,
+            ),
         ]
 
         mock_conn = MagicMock()
@@ -253,10 +284,20 @@ class TestTransferRepository:
     def test_list_transfers_with_status_filter(self, repository, mock_db):
         """Test listing transfers with status filter."""
         mock_rows = [
-            ("id1", "inv1", "stark1", "ext1", 9500, "success",
-             datetime.now(UTC).isoformat(),
-             datetime.now(UTC).isoformat(),
-             datetime.now(UTC).isoformat(), 0, None, None),
+            (
+                "id1",
+                "inv1",
+                "stark1",
+                "ext1",
+                9500,
+                "success",
+                datetime.now(UTC).isoformat(),
+                datetime.now(UTC).isoformat(),
+                datetime.now(UTC).isoformat(),
+                0,
+                None,
+                None,
+            ),
         ]
 
         mock_conn = MagicMock()
@@ -302,10 +343,20 @@ class TestTransferRepository:
     def test_list_by_status(self, repository, mock_db):
         """Test listing transfers by status."""
         mock_rows = [
-            ("id1", "inv1", None, "ext1", 9500, "pending",
-             datetime.now(UTC).isoformat(),
-             datetime.now(UTC).isoformat(),
-             None, 0, None, None),
+            (
+                "id1",
+                "inv1",
+                None,
+                "ext1",
+                9500,
+                "pending",
+                datetime.now(UTC).isoformat(),
+                datetime.now(UTC).isoformat(),
+                None,
+                0,
+                None,
+                None,
+            ),
         ]
 
         mock_conn = MagicMock()

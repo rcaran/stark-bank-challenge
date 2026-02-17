@@ -10,9 +10,11 @@ from src.shared.utils.errors import StarkBankError, ValidationError
 def mock_starkbank_project(mocker):
     return mocker.patch("starkbank.Project")
 
+
 @pytest.fixture
 def mock_starkbank_user(mocker):
     return mocker.patch("starkbank.user")
+
 
 def test_client_initialization(mock_starkbank_project, mocker):
     mock_settings = mocker.patch("src.shared.stark.client.settings")
@@ -28,12 +30,11 @@ def test_client_initialization(mock_starkbank_project, mocker):
     _ = client.check_user
 
     mock_starkbank_project.assert_called_once_with(
-        environment="sandbox",
-        id="project-123",
-        private_key="private-key"
+        environment="sandbox", id="project-123", private_key="private-key"
     )
     # Verify checking user (which initializes SDK)
     assert client.check_user == mock_starkbank_project.return_value
+
 
 def test_handle_stark_error_input(mocker):
     mocker.patch("src.shared.stark.client.settings")
@@ -53,10 +54,14 @@ def test_handle_stark_error_input(mocker):
 
     assert "Invalid field" in str(excinfo.value.details)
 
+
 def test_handle_stark_error_generic():
     from unittest.mock import patch
-    with patch("src.shared.stark.client.settings"), \
-         patch("src.shared.stark.client.StarkBankClient._initialize_sdk"):
+
+    with (
+        patch("src.shared.stark.client.settings"),
+        patch("src.shared.stark.client.StarkBankClient._initialize_sdk"),
+    ):
         client = StarkBankClient()
     error = Exception("Unknown error")
     with pytest.raises(StarkBankError):

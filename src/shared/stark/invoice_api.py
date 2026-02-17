@@ -1,3 +1,5 @@
+"""Stark Bank Invoice API wrapper with retry logic."""
+
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -16,6 +18,7 @@ from src.shared.utils.errors import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class InvoiceResponse:
@@ -39,20 +42,20 @@ class InvoiceResponse:
             amount=invoice.amount,
             tax_id=invoice.tax_id,
             name=invoice.name,
-            due_date=invoice.due, # 'due' in starkbank object
+            due_date=invoice.due,  # 'due' in starkbank object
             status=invoice.status,
             pdf=invoice.pdf if hasattr(invoice, "pdf") else None,
             fine=invoice.fine,
             interest=invoice.interest,
             tags=invoice.tags,
-            descriptions=invoice.descriptions
+            descriptions=invoice.descriptions,
         )
 
-class StarkInvoiceAPI(StarkBankClient):
 
+class StarkInvoiceAPI(StarkBankClient):
     @retry_with_backoff(
         retriable_exceptions=(StarkBankError, RetriableError, ConnectionError),
-        non_retriable_exceptions=(ValidationError, AuthenticationError)
+        non_retriable_exceptions=(ValidationError, AuthenticationError),
     )
     def create_invoice(
         self,
@@ -63,7 +66,7 @@ class StarkInvoiceAPI(StarkBankClient):
         fine: float = 0,
         interest: float = 0,
         tags: list[str] | None = None,
-        descriptions: list[dict] | None = None
+        descriptions: list[dict] | None = None,
     ) -> InvoiceResponse:
         """
         Creates an invoice in Stark Bank.
@@ -76,21 +79,23 @@ class StarkInvoiceAPI(StarkBankClient):
 
         # Validate amount is int
         if not isinstance(amount, int):
-                raise ValidationError("Amount must be integer (cents)")
+            raise ValidationError("Amount must be integer (cents)")
 
         try:
-            invoices = starkbank.invoice.create([
-                Invoice(
-                    amount=amount,
-                    tax_id=tax_id,
-                    name=name,
-                    due=due_date,
-                    fine=fine,
-                    interest=interest,
-                    tags=tags,
-                    descriptions=descriptions
-                )
-            ])
+            invoices = starkbank.invoice.create(
+                [
+                    Invoice(
+                        amount=amount,
+                        tax_id=tax_id,
+                        name=name,
+                        due=due_date,
+                        fine=fine,
+                        interest=interest,
+                        tags=tags,
+                        descriptions=descriptions,
+                    )
+                ]
+            )
 
             created_invoice = invoices[0]
             logger.info(f"Invoice created: {created_invoice.id}")
@@ -108,10 +113,7 @@ class StarkInvoiceAPI(StarkBankClient):
             self.handle_stark_error(e)
 
     def list_invoices(
-        self,
-        limit: int = 100,
-        after: date | None = None,
-        status: str | None = None
+        self, limit: int = 100, after: date | None = None, status: str | None = None
     ) -> list[InvoiceResponse]:
         _ = self.check_user  # Ensure initialized
         try:

@@ -57,16 +57,12 @@ class InvoiceGenerator:
             max_amount if max_amount is not None else self.DEFAULT_MAX_AMOUNT
         )
         self.due_days_min = (
-            due_days_min if due_days_min is not None
-            else self.DEFAULT_DUE_DAYS_MIN
+            due_days_min if due_days_min is not None else self.DEFAULT_DUE_DAYS_MIN
         )
         self.due_days_max = (
-            due_days_max if due_days_max is not None
-            else self.DEFAULT_DUE_DAYS_MAX
+            due_days_max if due_days_max is not None else self.DEFAULT_DUE_DAYS_MAX
         )
-        self.cpf_ratio = (
-            cpf_ratio if cpf_ratio is not None else self.DEFAULT_CPF_RATIO
-        )
+        self.cpf_ratio = cpf_ratio if cpf_ratio is not None else self.DEFAULT_CPF_RATIO
 
         logger.info(
             "InvoiceGenerator initialized",
@@ -97,12 +93,15 @@ class InvoiceGenerator:
         for i in range(count):
             invoice_data = self._generate_single()
             invoices.append(invoice_data)
-            tax_id_clean = invoice_data["customer_tax_id"].replace(
-                ".", ""
-            ).replace("-", "").replace("/", "")
+            tax_id_clean = (
+                invoice_data["customer_tax_id"]
+                .replace(".", "")
+                .replace("-", "")
+                .replace("/", "")
+            )
             tax_id_type = "CPF" if len(tax_id_clean) == 11 else "CNPJ"
             logger.debug(
-                f"Generated invoice {i+1}/{count}",
+                f"Generated invoice {i + 1}/{count}",
                 amount=invoice_data["amount"],
                 tax_id_type=tax_id_type,
             )

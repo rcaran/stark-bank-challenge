@@ -288,11 +288,13 @@ class TestTransferModel:
 
     def test_status_string_conversion(self):
         """Test that status string is converted to enum."""
-        transfer = TransferModel.from_dict({
-            "invoice_id": str(uuid.uuid4()),
-            "amount": 10000,
-            "status": "success",
-        })
+        transfer = TransferModel.from_dict(
+            {
+                "invoice_id": str(uuid.uuid4()),
+                "amount": 10000,
+                "status": "success",
+            }
+        )
 
         assert isinstance(transfer.status, TransferStatus)
         assert transfer.status == TransferStatus.SUCCESS

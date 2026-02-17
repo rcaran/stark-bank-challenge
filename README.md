@@ -255,6 +255,13 @@ curl -X GET http://localhost:8000/transfers \
 
 ## 🚀 Deploy (Railway)
 
+> 📖 **Para instruções detalhadas de deployment**, consulte o [Guia de Deployment](docs/deployment.md), que inclui:
+> - Configuração passo a passo do Railway
+> - Configuração de variáveis de ambiente
+> - Persistência de banco de dados
+> - Monitoramento e troubleshooting
+> - Deploy alternativo (Heroku, Render, Docker, DigitalOcean)
+
 ### Pré-requisitos
 
 - Conta no [Railway](https://railway.app)

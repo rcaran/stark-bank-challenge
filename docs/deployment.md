@@ -21,7 +21,7 @@ Before deploying, ensure you have:
 - **GitHub Account**: Repository must be hosted on GitHub
 - **Railway Account**: Sign up at [railway.app](https://railway.app)
 - **Stark Bank Account**: Sandbox credentials from [starkbank.com](https://starkbank.com)
-- **API Key**: Generated secure random key (e.g., `openssl rand -hex 32`)
+- **API Key**: Generated secure random key [Como gerar um par de chaves pública e privada no ECDSA](https://starkbank.com/faq/how-to-create-ecdsa-keys)
 
 ---
 
@@ -123,14 +123,9 @@ INVOICE_GENERATION_MAX=12
 ### Generating Secure API Key
 
 ```bash
-# On Linux/Mac
-openssl rand -hex 32
-
-# On Windows (PowerShell)
-[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
-
-# Using Python
-python -c "import secrets; print(secrets.token_hex(32))"
+# On Linux/Mac/Windows
+openssl ecparam -name secp256k1 -genkey -out privateKey.pem
+openssl ec -in privateKey.pem -pubout -out publicKey.pem
 ```
 
 ### Obtaining Stark Bank Credentials

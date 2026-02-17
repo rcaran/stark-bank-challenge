@@ -5,7 +5,6 @@ Provides a wrapper class for validating Stark Bank webhook signatures,
 with structured logging and exception handling.
 """
 
-
 from src.shared.security.signature import (
     InvalidSignatureError,
     compute_payload_hash,

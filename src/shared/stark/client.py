@@ -1,3 +1,5 @@
+"""Stark Bank API client configuration and initialization."""
+
 import logging
 
 import starkbank
@@ -11,6 +13,7 @@ from src.shared.utils.errors import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 class StarkBankClient:
     _instance: StarkBankClient | None = None
@@ -31,7 +34,7 @@ class StarkBankClient:
                 self._user = starkbank.Project(
                     environment=self.environment,
                     id=self.project_id,
-                    private_key=self.private_key_content
+                    private_key=self.private_key_content,
                 )
                 starkbank.user = self._user  # Set default user for the SDK
                 logger.info(
@@ -46,9 +49,9 @@ class StarkBankClient:
 
     @property
     def check_user(self):
-         if not starkbank.user:
-             self._initialize_sdk()
-         return starkbank.user
+        if not starkbank.user:
+            self._initialize_sdk()
+        return starkbank.user
 
     def handle_stark_error(self, e: Exception) -> None:
         """
@@ -65,7 +68,7 @@ class StarkBankClient:
 
         if isinstance(e, InternalServerError):
             # This might be retriable
-             raise StarkBankError(f"Stark Bank Internal Error: {e}") from e
+            raise StarkBankError(f"Stark Bank Internal Error: {e}") from e
 
         # General fallback
         raise StarkBankError(f"Stark Bank Error: {e}") from e

@@ -25,8 +25,10 @@ def mock_service():
 @pytest.fixture
 def mock_api_key():
     """Mock API key authentication that always returns a valid key."""
+
     def override():
         return "test-api-key-12345"
+
     return override
 
 
@@ -95,9 +97,7 @@ class TestCreateInvoiceEndpoint:
         assert data["amount"] == 10000
         assert data["status"] == "created"
 
-    def test_create_invoice_missing_field(
-        self, client, valid_api_key
-    ):
+    def test_create_invoice_missing_field(self, client, valid_api_key):
         """Test creating invoice with missing required field."""
         response = client.post(
             "/invoices",
@@ -112,9 +112,7 @@ class TestCreateInvoiceEndpoint:
 
         assert response.status_code == 422  # Validation error
 
-    def test_create_invoice_invalid_amount(
-        self, client, valid_api_key
-    ):
+    def test_create_invoice_invalid_amount(self, client, valid_api_key):
         """Test creating invoice with invalid amount."""
         response = client.post(
             "/invoices",
@@ -182,9 +180,7 @@ class TestListInvoicesEndpoint:
             status="created", limit=100, offset=0
         )
 
-    def test_list_invoices_with_pagination(
-        self, client, mock_service, valid_api_key
-    ):
+    def test_list_invoices_with_pagination(self, client, mock_service, valid_api_key):
         """Test listing invoices with pagination."""
         mock_service.list_invoices.return_value = []
         mock_service.count_invoices.return_value = 0
@@ -199,9 +195,7 @@ class TestListInvoicesEndpoint:
         assert data["limit"] == 50
         assert data["offset"] == 10
 
-    def test_list_invoices_invalid_status(
-        self, client, mock_service, valid_api_key
-    ):
+    def test_list_invoices_invalid_status(self, client, mock_service, valid_api_key):
         """Test listing invoices with invalid status."""
         response = client.get(
             "/invoices?status=invalid_status",
@@ -236,9 +230,7 @@ class TestGetInvoiceEndpoint:
         assert data["id"] == "test-invoice-id"
         assert data["amount"] == 10000
 
-    def test_get_invoice_not_found(
-        self, client, mock_service, valid_api_key
-    ):
+    def test_get_invoice_not_found(self, client, mock_service, valid_api_key):
         """Test getting non-existent invoice."""
         mock_service.get_invoice.return_value = None
 

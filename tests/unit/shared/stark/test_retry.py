@@ -10,6 +10,7 @@ from src.shared.stark.retry import retry_with_backoff
 def mock_logger(mocker):
     return mocker.patch("src.shared.stark.retry.logger")
 
+
 def test_retry_success(mock_logger):
     mock_func = MagicMock(return_value="success")
 
@@ -22,6 +23,7 @@ def test_retry_success(mock_logger):
     assert mock_func.call_count == 1
     mock_logger.warning.assert_not_called()
 
+
 def test_retry_failure_then_success(mock_logger):
     # Fails first 2 times, succeeds on 3rd
     mock_func = MagicMock(
@@ -33,7 +35,8 @@ def test_retry_failure_then_success(mock_logger):
     )
 
     @retry_with_backoff(
-        max_attempts=3, delays=[0, 0, 0],
+        max_attempts=3,
+        delays=[0, 0, 0],
         retriable_exceptions=(ValueError,),
     )
     def decorated_func():
@@ -45,11 +48,13 @@ def test_retry_failure_then_success(mock_logger):
     # Check if logger.warning was called for retries
     assert mock_logger.warning.call_count == 2
 
+
 def test_max_attempts_reached(mock_logger):
     mock_func = MagicMock(side_effect=ValueError("persistent failure"))
 
     @retry_with_backoff(
-        max_attempts=3, delays=[0, 0, 0],
+        max_attempts=3,
+        delays=[0, 0, 0],
         retriable_exceptions=(ValueError,),
     )
     def decorated_func():
@@ -59,7 +64,8 @@ def test_max_attempts_reached(mock_logger):
         decorated_func()
 
     assert mock_func.call_count == 3
-    assert mock_logger.error.call_count >= 1 # Log max attempts reached
+    assert mock_logger.error.call_count >= 1  # Log max attempts reached
+
 
 def test_non_retriable_exception(mock_logger):
     mock_func = MagicMock(side_effect=TypeError("fatal error"))
@@ -68,7 +74,7 @@ def test_non_retriable_exception(mock_logger):
         max_attempts=3,
         delays=[0, 0, 0],
         retriable_exceptions=(ValueError,),
-        non_retriable_exceptions=(TypeError,)
+        non_retriable_exceptions=(TypeError,),
     )
     def decorated_func():
         mock_func()
@@ -76,8 +82,9 @@ def test_non_retriable_exception(mock_logger):
     with pytest.raises(TypeError, match="fatal error"):
         decorated_func()
 
-    assert mock_func.call_count == 1 # Should fail immediately
-    mock_logger.error.assert_called() # Log non-retriable
+    assert mock_func.call_count == 1  # Should fail immediately
+    mock_logger.error.assert_called()  # Log non-retriable
+
 
 def test_delays(mocker):
     mock_sleep = mocker.patch("time.sleep")

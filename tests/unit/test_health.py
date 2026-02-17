@@ -220,7 +220,8 @@ class TestOverallHealthCheck:
         """Test that health check returns unhealthy when event bus fails."""
         # Setup mocks
         mock_db_check.return_value = {
-            "status": "ok", "message": "DB ok",
+            "status": "ok",
+            "message": "DB ok",
         }
         mock_event_bus_check.return_value = {
             "status": "error",
@@ -244,7 +245,8 @@ class TestOverallHealthCheck:
         """Test that health check returns unhealthy when all components fail."""
         # Setup mocks
         mock_db_check.return_value = {
-            "status": "error", "message": "DB failed",
+            "status": "error",
+            "message": "DB failed",
         }
         mock_event_bus_check.return_value = {
             "status": "error",
@@ -296,7 +298,9 @@ class TestOverallHealthCheck:
     @patch("src.health.check_event_bus")
     @patch("src.health.settings")
     def test_health_check_includes_environment(
-        self, mock_settings, mock_event_bus_check,
+        self,
+        mock_settings,
+        mock_event_bus_check,
         mock_db_check,
     ):
         """Test that health check includes environment information."""

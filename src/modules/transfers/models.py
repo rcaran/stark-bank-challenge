@@ -14,6 +14,7 @@ from typing import Any
 
 class TransferStatus(StrEnum):
     """Transfer status enumeration."""
+
     PENDING = "pending"
     CREATED = "created"
     PROCESSING = "processing"
@@ -29,6 +30,7 @@ class TransferModel:
     This dataclass holds all transfer information including related invoice,
     amounts, status, and retry tracking for failed operations.
     """
+
     # Required fields
     invoice_id: str
     amount: float
@@ -81,12 +83,8 @@ class TransferModel:
             "external_id": self.external_id,
             "amount": self.amount,
             "status": self.status.value,
-            "created_at": (
-                self.created_at.isoformat() if self.created_at else None
-            ),
-            "updated_at": (
-                self.updated_at.isoformat() if self.updated_at else None
-            ),
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
+            "updated_at": (self.updated_at.isoformat() if self.updated_at else None),
             "completed_at": (
                 self.completed_at.isoformat() if self.completed_at else None
             ),

@@ -1,3 +1,5 @@
+"""Stark Bank Transfer API wrapper with retry logic."""
+
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -15,6 +17,7 @@ from src.shared.utils.errors import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class TransferResponse:
@@ -45,14 +48,14 @@ class TransferResponse:
             status=transfer.status,
             tags=transfer.tags,
             fee=transfer.fee,
-            created=transfer.created if hasattr(transfer, "created") else None
+            created=transfer.created if hasattr(transfer, "created") else None,
         )
 
-class StarkTransferAPI(StarkBankClient):
 
+class StarkTransferAPI(StarkBankClient):
     @retry_with_backoff(
         retriable_exceptions=(StarkBankError, RetriableError, ConnectionError),
-        non_retriable_exceptions=(ValidationError, AuthenticationError)
+        non_retriable_exceptions=(ValidationError, AuthenticationError),
     )
     def create_transfer(
         self,
@@ -79,22 +82,24 @@ class StarkTransferAPI(StarkBankClient):
         )
 
         if not isinstance(amount, int):
-                raise ValidationError("Amount must be integer (cents)")
+            raise ValidationError("Amount must be integer (cents)")
 
         try:
-            transfers = starkbank.transfer.create([
-                Transfer(
-                    amount=amount,
-                    name=name,
-                    tax_id=tax_id,
-                    bank_code=bank_code,
-                    branch_code=branch_code,
-                    account_number=account_number,
-                    external_id=external_id,
-                    tags=tags,
-                    account_type=account_type
-                )
-            ])
+            transfers = starkbank.transfer.create(
+                [
+                    Transfer(
+                        amount=amount,
+                        name=name,
+                        tax_id=tax_id,
+                        bank_code=bank_code,
+                        branch_code=branch_code,
+                        account_number=account_number,
+                        external_id=external_id,
+                        tags=tags,
+                        account_type=account_type,
+                    )
+                ]
+            )
 
             created_transfer = transfers[0]
             logger.info(f"Transfer created: {created_transfer.id}")
@@ -115,15 +120,12 @@ class StarkTransferAPI(StarkBankClient):
         limit: int = 100,
         after: date | None = None,
         status: str | None = None,
-        transaction_ids: list[str] | None = None
+        transaction_ids: list[str] | None = None,
     ) -> list[TransferResponse]:
         _ = self.check_user  # Ensure initialized
         try:
             transfers_gen = starkbank.transfer.query(
-                limit=limit,
-                after=after,
-                status=status,
-                transaction_ids=transaction_ids
+                limit=limit, after=after, status=status, transaction_ids=transaction_ids
             )
             return [TransferResponse.from_stark_transfer(t) for t in transfers_gen]
         except Exception as e:

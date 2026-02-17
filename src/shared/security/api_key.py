@@ -20,6 +20,7 @@ logger = get_logger("security.api_key")
 
 class InvalidAPIKeyError(AuthenticationError):
     """Raised when an invalid API key is provided."""
+
     def __init__(self, message: str = "Invalid API key"):
         super().__init__(message)
 
@@ -51,8 +52,7 @@ def verify_api_key(api_key: str) -> bool:
 
     if not valid_api_key:
         logger.error(
-            "API key verification failed: "
-            "ADMIN_API_KEY not configured in settings"
+            "API key verification failed: ADMIN_API_KEY not configured in settings"
         )
         return False
 
@@ -73,7 +73,7 @@ def verify_api_key(api_key: str) -> bool:
 
 
 def get_api_key_header(
-    x_api_key: str | None = Header(None, alias=API_KEY_HEADER_NAME)
+    x_api_key: str | None = Header(None, alias=API_KEY_HEADER_NAME),
 ) -> str:
     """
     FastAPI dependency to extract and validate API key from request header.
@@ -130,8 +130,7 @@ class APIKeyHeader:
     """
 
     def __call__(
-        self,
-        x_api_key: str | None = Header(None, alias=API_KEY_HEADER_NAME)
+        self, x_api_key: str | None = Header(None, alias=API_KEY_HEADER_NAME)
     ) -> str:
         """
         Extract and validate API key from request header.

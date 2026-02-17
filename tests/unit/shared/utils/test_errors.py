@@ -19,6 +19,7 @@ def test_exception_hierarchy():
     assert issubclass(TimeoutError, RetriableError)
     assert issubclass(RateLimitError, RetriableError)
 
+
 def test_exception_messages():
     error = StarkBankError("test message", {"key": "value"})
     assert str(error) == "test message"

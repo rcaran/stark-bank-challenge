@@ -1,3 +1,5 @@
+"""Retry decorator for handling transient failures."""
+
 import functools
 import logging
 import time
@@ -5,6 +7,7 @@ import time
 from src.config.constants import RETRY_DELAYS, RETRY_MAX_ATTEMPTS
 
 logger = logging.getLogger(__name__)
+
 
 def retry_with_backoff(
     max_attempts: int | None = None,
@@ -58,15 +61,10 @@ def retry_with_backoff(
                         logger.info(f"Retrying in {delay} seconds...")
                         time.sleep(delay)
                 except Exception as e:
-                    # Unexpected exception, not in retriable/non_retriable
-                    # list (if retriable is specific)
-                    # If retriable_exceptions is (Exception,), this block won't be
-                    # reached for standard exceptions unless retriable was narrowed.
-                    # Assuming default (Exception,), everything is caught above
-                    # unless non_retriable matches.
-                    # If retriable is specific, e.g. (ValueError,), and we get
-                    # TypeError, we should raise.
+                    # Non-retriable exception, re-raise immediately
                     raise e
-            return None # Should not be reached
+            return None  # Should not be reached
+
         return wrapper
+
     return decorator

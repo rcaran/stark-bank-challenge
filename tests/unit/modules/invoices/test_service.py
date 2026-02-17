@@ -57,8 +57,12 @@ class TestInvoiceService:
         }
 
     def test_create_invoice_success(
-        self, service, mock_repository, mock_stark_api,
-        mock_event_bus, valid_invoice_data,
+        self,
+        service,
+        mock_repository,
+        mock_stark_api,
+        mock_event_bus,
+        valid_invoice_data,
     ):
         """Test successful invoice creation."""
         result = service.create_invoice(valid_invoice_data)
@@ -82,8 +86,12 @@ class TestInvoiceService:
         assert result.status == InvoiceStatus.CREATED
 
     def test_create_invoice_stark_failure(
-        self, service, mock_repository, mock_stark_api,
-        mock_event_bus, valid_invoice_data,
+        self,
+        service,
+        mock_repository,
+        mock_stark_api,
+        mock_event_bus,
+        valid_invoice_data,
     ):
         """Test invoice creation when Stark Bank fails."""
         mock_stark_api.create_invoice.side_effect = StarkBankError("Connection failed")

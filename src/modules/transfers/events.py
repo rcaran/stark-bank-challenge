@@ -21,6 +21,7 @@ TRANSFER_FAILED = EventType.TRANSFER_FAILED
 @dataclass
 class TransferInitiatedEventPayload:
     """Payload for transfer initiated event."""
+
     transfer_id: str
     invoice_id: str
     stark_transfer_id: str
@@ -43,6 +44,7 @@ class TransferInitiatedEventPayload:
 @dataclass
 class TransferProcessingEventPayload:
     """Payload for transfer processing event."""
+
     transfer_id: str
     invoice_id: str
     stark_transfer_id: str
@@ -63,6 +65,7 @@ class TransferProcessingEventPayload:
 @dataclass
 class TransferCompletedEventPayload:
     """Payload for transfer completed event."""
+
     transfer_id: str
     invoice_id: str
     stark_transfer_id: str
@@ -85,6 +88,7 @@ class TransferCompletedEventPayload:
 @dataclass
 class TransferFailedEventPayload:
     """Payload for transfer failed event."""
+
     transfer_id: str
     invoice_id: str
     stark_transfer_id: str | None

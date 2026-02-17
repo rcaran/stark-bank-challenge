@@ -140,10 +140,7 @@ class TestMainApplication:
     def test_webhook_router_included(self, client):
         """Test that webhook router is included."""
         # Try to access webhook endpoint (POST should exist)
-        response = client.post(
-            "/webhooks/invoice",
-            json={"test": "data"}
-        )
+        response = client.post("/webhooks/invoice", json={"test": "data"})
 
         # Should not get 404, but might get 400 or other error for invalid payload
         assert response.status_code != 404
@@ -164,8 +161,7 @@ class TestMainApplication:
     def test_cors_headers_in_development(self, client):
         """Test that CORS headers are present in development mode."""
         response = client.options(
-            "/health",
-            headers={"Origin": "http://localhost:3000"}
+            "/health", headers={"Origin": "http://localhost:3000"}
         )
 
         # CORS should be configured
@@ -182,7 +178,7 @@ class TestExceptionHandlers:
         response = client.post(
             "/webhooks/invoice",
             json={},  # Missing required fields
-            headers={"Digital-Signature": "invalid"}
+            headers={"Digital-Signature": "invalid"},
         )
 
         # Should handle validation errors gracefully

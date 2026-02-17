@@ -48,6 +48,7 @@ def get_invoice_service() -> InvoiceService:
 
 class CreateInvoiceRequest(BaseModel):
     """Request model for creating an invoice."""
+
     amount: int = Field(..., gt=0, description="Amount in cents")
     customer_name: str = Field(..., min_length=1, max_length=200)
     customer_tax_id: str = Field(..., min_length=11, max_length=18)
@@ -57,6 +58,7 @@ class CreateInvoiceRequest(BaseModel):
 
 class InvoiceResponse(BaseModel):
     """Response model for invoice data."""
+
     id: str
     stark_invoice_id: str | None = None
     amount: float
@@ -75,6 +77,7 @@ class InvoiceResponse(BaseModel):
 
 class InvoiceListResponse(BaseModel):
     """Response model for invoice list."""
+
     invoices: list[InvoiceResponse]
     total: int
     limit: int
@@ -83,6 +86,7 @@ class InvoiceListResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Response model for errors."""
+
     detail: str
     error_code: str | None = None
 
@@ -104,7 +108,7 @@ class ErrorResponse(BaseModel):
 )
 async def create_invoice(
     request: CreateInvoiceRequest,
-    api_key: str = Depends(get_api_key_header),
+    _api_key: str = Depends(get_api_key_header),
     service: InvoiceService = Depends(get_invoice_service),
 ) -> InvoiceResponse:
     """
@@ -173,7 +177,7 @@ async def list_invoices(
     ),
     limit: int = Query(100, ge=1, le=1000, description="Maximum results"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
-    api_key: str = Depends(get_api_key_header),
+    _api_key: str = Depends(get_api_key_header),
     service: InvoiceService = Depends(get_invoice_service),
 ) -> InvoiceListResponse:
     """
@@ -185,8 +189,7 @@ async def list_invoices(
     Requires API key authentication via X-API-Key header.
     """
     logger.debug(
-        f"List invoices request: status={status_filter}, "
-        f"limit={limit}, offset={offset}"
+        f"List invoices request: status={status_filter}, limit={limit}, offset={offset}"
     )
 
     # Validate status if provided
@@ -225,7 +228,7 @@ async def list_invoices(
 )
 async def get_invoice(
     invoice_id: str,
-    api_key: str = Depends(get_api_key_header),
+    _api_key: str = Depends(get_api_key_header),
     service: InvoiceService = Depends(get_invoice_service),
 ) -> InvoiceResponse:
     """

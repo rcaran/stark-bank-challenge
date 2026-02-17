@@ -14,6 +14,7 @@ from typing import Any
 
 class InvoiceStatus(StrEnum):
     """Invoice status enumeration."""
+
     PENDING = "pending"
     CREATED = "created"
     PAID = "paid"
@@ -31,6 +32,7 @@ class InvoiceModel:
     This dataclass holds all invoice information including customer details,
     amounts, status, and retry tracking for failed operations.
     """
+
     # Required fields
     amount: float
     customer_name: str
@@ -109,9 +111,7 @@ class InvoiceModel:
                 if isinstance(self.status, InvoiceStatus)
                 else self.status
             ),
-            "created_at": (
-                self.created_at.isoformat() if self.created_at else None
-            ),
+            "created_at": (self.created_at.isoformat() if self.created_at else None),
             "due_date": self.due_date.isoformat() if self.due_date else None,
             "paid_at": self.paid_at.isoformat() if self.paid_at else None,
             "fee": self.fee,

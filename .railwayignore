@@ -1,0 +1,60 @@
+# Files to ignore when deploying to Railway
+# Similar to .dockerignore but specific to Railway
+
+# Testing
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Scripts (not needed in production)
+scripts/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database (will be created in Railway volume)
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Logs (Railway provides its own logging)
+*.log
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker (not needed for Railway)
+Dockerfile
+docker-compose.yml
+.dockerignore

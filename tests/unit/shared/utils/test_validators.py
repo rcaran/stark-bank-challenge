@@ -18,23 +18,26 @@ from src.shared.utils.validators import (
 cpf_gen = CPF()
 cnpj_gen = CNPJ()
 
+
 def test_validate_cpf():
     valid_cpf = cpf_gen.generate(True)
     assert validate_cpf(valid_cpf) is True
 
-    invalid_cpf = "123.456.789-00" # bad check digit
+    invalid_cpf = "123.456.789-00"  # bad check digit
     assert validate_cpf(invalid_cpf) is False
 
     assert validate_cpf("") is False
+
 
 def test_validate_cnpj():
     valid_cnpj = cnpj_gen.generate(True)
     assert validate_cnpj(valid_cnpj) is True
 
-    invalid_cnpj = "12.345.678/0001-00" # bad check digit
+    invalid_cnpj = "12.345.678/0001-00"  # bad check digit
     assert validate_cnpj(invalid_cnpj) is False
 
     assert validate_cnpj("") is False
+
 
 def test_validate_tax_id():
     valid_cpf = cpf_gen.generate(True)
@@ -43,6 +46,7 @@ def test_validate_tax_id():
     assert validate_tax_id(valid_cpf) is True
     assert validate_tax_id(valid_cnpj) is True
     assert validate_tax_id("123") is False
+
 
 def test_format_cpf():
     raw_cpf = cpf_gen.generate(False)
@@ -54,6 +58,7 @@ def test_format_cpf():
     with pytest.raises(ValueError):
         format_cpf("123")
 
+
 def test_format_cnpj():
     raw_cnpj = cnpj_gen.generate(False)
     formatted = format_cnpj(raw_cnpj)
@@ -62,6 +67,7 @@ def test_format_cnpj():
 
     with pytest.raises(ValueError):
         format_cnpj("123")
+
 
 def test_clean_tax_id():
     assert clean_tax_id("123.456.789-00") == "12345678900"

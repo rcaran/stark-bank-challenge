@@ -5,7 +5,6 @@ This module provides FastAPI endpoints for transfer operations,
 protected by API key authentication.
 """
 
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
@@ -46,6 +45,7 @@ def get_transfer_service() -> TransferService:
 
 class TransferResponse(BaseModel):
     """Response model for transfer data."""
+
     id: str
     invoice_id: str
     stark_transfer_id: str | None = None
@@ -61,6 +61,7 @@ class TransferResponse(BaseModel):
 
 class TransferListResponse(BaseModel):
     """Response model for transfer list."""
+
     transfers: list[TransferResponse]
     total: int
     limit: int
@@ -69,6 +70,7 @@ class TransferListResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Response model for errors."""
+
     detail: str
     error_code: str | None = None
 
@@ -93,7 +95,7 @@ async def list_transfers(
     ),
     limit: int = Query(100, ge=1, le=1000, description="Maximum results"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
-    api_key: str = Depends(get_api_key_header),
+    _api_key: str = Depends(get_api_key_header),
     service: TransferService = Depends(get_transfer_service),
 ) -> TransferListResponse:
     """
@@ -145,7 +147,7 @@ async def list_transfers(
 )
 async def get_transfer(
     transfer_id: str,
-    api_key: str = Depends(get_api_key_header),
+    _api_key: str = Depends(get_api_key_header),
     service: TransferService = Depends(get_transfer_service),
 ) -> TransferResponse:
     """
@@ -179,7 +181,7 @@ async def get_transfer(
 )
 async def get_transfer_by_invoice(
     invoice_id: str,
-    api_key: str = Depends(get_api_key_header),
+    _api_key: str = Depends(get_api_key_header),
     service: TransferService = Depends(get_transfer_service),
 ) -> TransferResponse:
     """

@@ -1,0 +1,76 @@
+# Docker Compose configuration for local development
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stark-bank-challenge
+    ports:
+      - "8000:8000"
+    environment:
+      # Application
+      - APP_NAME=stark-bank-challenge
+      - APP_ENV=development
+      - LOG_LEVEL=DEBUG
+      - API_PORT=8000
+      - API_HOST=0.0.0.0
+
+      # Security
+      - ADMIN_API_KEY=dev-api-key-change-in-production
+
+      # Stark Bank (set your credentials)
+      - STARKBANK_PRIVATE_KEY_CONTENT=${STARKBANK_PRIVATE_KEY_CONTENT}
+      - STARKBANK_PROJECT_ID=${STARKBANK_PROJECT_ID}
+      - STARKBANK_ENVIRONMENT=sandbox
+
+      # Database
+      - DATABASE_URL=sqlite:////app/data/starkbank.db
+
+      # Scheduler
+      - SCHEDULER_INTERVAL_HOURS=3
+      - INVOICE_GENERATION_MIN=8
+      - INVOICE_GENERATION_MAX=12
+
+    volumes:
+      # Mount source code for hot-reload during development
+      - ./src:/app/src
+      # Persist database
+      - ./data:/app/data
+      # Persist logs
+      - ./logs:/app/logs
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+# For production with PostgreSQL:
+#
+# services:
+#   app:
+#     # ... (same as above)
+#     environment:
+#       - DATABASE_URL=postgresql://user:password@db:5432/starkbank
+#     depends_on:
+#       - db
+#   
+#   db:
+#     image: postgres:16-alpine
+#     container_name: stark-bank-db
+#     environment:
+#       - POSTGRES_USER=starkbank
+#       - POSTGRES_PASSWORD=starkbank
+#       - POSTGRES_DB=starkbank
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     ports:
+#       - "5432:5432"
+#
+# volumes:
+#   postgres_data:

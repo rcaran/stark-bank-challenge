@@ -33,7 +33,7 @@ def generate_test_keypair():
 
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
     ).decode("utf-8")
 
     return private_key, public_pem
@@ -41,10 +41,7 @@ def generate_test_keypair():
 
 def sign_payload(private_key, payload: bytes) -> str:
     """Sign a payload and return base64-encoded signature."""
-    signature = private_key.sign(
-        payload,
-        ec.ECDSA(hashes.SHA256())
-    )
+    signature = private_key.sign(payload, ec.ECDSA(hashes.SHA256()))
     return base64.b64encode(signature).decode("utf-8")
 
 

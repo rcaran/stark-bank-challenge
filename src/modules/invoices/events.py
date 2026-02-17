@@ -20,6 +20,7 @@ INVOICE_PAID = EventType.INVOICE_PAID
 @dataclass
 class InvoiceCreatedEventPayload:
     """Payload for invoice created event."""
+
     invoice_id: str
     stark_invoice_id: str
     amount: float
@@ -44,6 +45,7 @@ class InvoiceCreatedEventPayload:
 @dataclass
 class InvoiceCreationFailedEventPayload:
     """Payload for invoice creation failed event."""
+
     invoice_id: str
     amount: float
     customer_name: str
@@ -68,6 +70,7 @@ class InvoiceCreationFailedEventPayload:
 @dataclass
 class InvoicePaidEventPayload:
     """Payload for invoice paid event."""
+
     invoice_id: str
     stark_invoice_id: str
     amount: float

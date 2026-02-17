@@ -160,8 +160,9 @@ class TestSchedulerControl:
 
     def test_get_scheduler_status_not_running(self):
         """Test getting status when scheduler not running."""
-        with patch("src.scheduler._scheduler", None), patch(
-            "src.scheduler._start_time", None
+        with (
+            patch("src.scheduler._scheduler", None),
+            patch("src.scheduler._start_time", None),
         ):
             status = get_scheduler_status()
 

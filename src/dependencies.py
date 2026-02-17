@@ -132,9 +132,7 @@ def get_invoice_service() -> InvoiceService:
     event_bus = get_event_bus()
 
     return InvoiceService(
-        repository=repository,
-        stark_api=stark_api,
-        event_bus=event_bus
+        repository=repository, stark_api=stark_api, event_bus=event_bus
     )
 
 
@@ -160,9 +158,7 @@ def get_transfer_service() -> TransferService:
     event_bus = get_event_bus()
 
     return TransferService(
-        repository=repository,
-        stark_api=stark_api,
-        event_bus=event_bus
+        repository=repository, stark_api=stark_api, event_bus=event_bus
     )
 
 
@@ -185,12 +181,10 @@ def get_webhook_receiver() -> WebhookReceiver:
     """
     validator = get_webhook_validator()
     invoice_processor = InvoiceWebhookProcessor(
-        invoice_repository=get_invoice_repository(),
-        event_bus=get_event_bus()
+        invoice_repository=get_invoice_repository(), event_bus=get_event_bus()
     )
     transfer_processor = TransferWebhookProcessor(
-        transfer_repository=get_transfer_repository(),
-        event_bus=get_event_bus()
+        transfer_repository=get_transfer_repository(), event_bus=get_event_bus()
     )
     event_bus = get_event_bus()
 
@@ -198,7 +192,7 @@ def get_webhook_receiver() -> WebhookReceiver:
         validator=validator,
         invoice_processor=invoice_processor,
         transfer_processor=transfer_processor,
-        event_bus=event_bus
+        event_bus=event_bus,
     )
 
 
@@ -217,8 +211,7 @@ def initialize_event_handlers() -> None:
 
     # Initialize and register TransferHandler
     transfer_handler = TransferHandler(
-        service=transfer_service,
-        invoice_repository=invoice_repository
+        service=transfer_service, invoice_repository=invoice_repository
     )
 
     # Subscribe the handler to invoice.paid events

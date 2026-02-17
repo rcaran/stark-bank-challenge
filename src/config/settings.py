@@ -1,3 +1,5 @@
+"""Application configuration settings loaded from environment variables."""
+
 import os
 from dataclasses import dataclass
 
@@ -5,6 +7,7 @@ from dotenv import load_dotenv
 
 # Carrega variáveis do arquivo .env
 load_dotenv()
+
 
 @dataclass(frozen=True)
 class Settings:

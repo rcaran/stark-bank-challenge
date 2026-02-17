@@ -85,8 +85,7 @@ class TransferService:
         # Validate invoice
         if not invoice.net_amount or invoice.net_amount <= 0:
             error_msg = (
-                f"Invalid net_amount for invoice {invoice.id}: "
-                f"{invoice.net_amount}"
+                f"Invalid net_amount for invoice {invoice.id}: {invoice.net_amount}"
             )
             logger.error(error_msg)
             raise ValidationError(error_msg)
@@ -171,8 +170,7 @@ class TransferService:
         except (RetriableError, ConnectionError) as e:
             # Retriable errors - will be retried by the retry decorator
             error_msg = (
-                f"Retriable error creating transfer for invoice "
-                f"{invoice.id}: {e!s}"
+                f"Retriable error creating transfer for invoice {invoice.id}: {e!s}"
             )
             logger.warning(error_msg)
 
@@ -186,9 +184,7 @@ class TransferService:
             try:
                 self.repository.create(transfer)
             except Exception as db_error:
-                logger.error(
-                    f"Failed to save failed transfer to database: {db_error}"
-                )
+                logger.error(f"Failed to save failed transfer to database: {db_error}")
 
             # Publish transfer failed event
             self._publish_transfer_failed_event(transfer, invoice, str(e))
@@ -199,8 +195,7 @@ class TransferService:
         except Exception as e:
             # Non-retriable errors
             error_msg = (
-                f"Non-retriable error creating transfer for invoice "
-                f"{invoice.id}: {e!s}"
+                f"Non-retriable error creating transfer for invoice {invoice.id}: {e!s}"
             )
             logger.error(error_msg, exc_info=True)
 
@@ -212,9 +207,7 @@ class TransferService:
             try:
                 self.repository.create(transfer)
             except Exception as db_error:
-                logger.error(
-                    f"Failed to save failed transfer to database: {db_error}"
-                )
+                logger.error(f"Failed to save failed transfer to database: {db_error}")
 
             # Publish transfer failed event
             self._publish_transfer_failed_event(transfer, invoice, str(e))

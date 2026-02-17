@@ -8,8 +8,8 @@ automatically.
 
 import signal
 import sys
-import time
 import threading
+import time
 from datetime import UTC, datetime, timedelta
 from threading import Event
 
@@ -53,7 +53,7 @@ def generate_invoices_job() -> None:
         logger.info(
             "Generated invoice batch",
             count=len(invoice_data_list),
-            total_amount=sum(inv["amount"] for inv in invoice_data_list)
+            total_amount=sum(inv["amount"] for inv in invoice_data_list),
         )
 
         # Create each invoice
@@ -68,38 +68,34 @@ def generate_invoices_job() -> None:
                     "Invoice created",
                     invoice_id=invoice.id,
                     stark_id=invoice.stark_invoice_id,
-                    amount=invoice.amount
+                    amount=invoice.amount,
                 )
             except Exception as e:
                 failed_count += 1
                 logger.error(
                     "Failed to create invoice",
                     error=str(e),
-                    customer_tax_id=invoice_data.get("customer_tax_id")
+                    customer_tax_id=invoice_data.get("customer_tax_id"),
                 )
 
         logger.info(
             "Invoice generation job completed",
             created=created_count,
             failed=failed_count,
-            total=len(invoice_data_list)
+            total=len(invoice_data_list),
         )
 
     except Exception as e:
-        logger.error(
-            "Invoice generation job failed",
-            error=str(e),
-            exc_info=True
-        )
+        logger.error("Invoice generation job failed", error=str(e), exc_info=True)
 
 
-def _signal_handler(signum: int, frame) -> None:
+def _signal_handler(signum: int, _frame) -> None:
     """
     Handle shutdown signals (SIGINT, SIGTERM).
 
     Args:
         signum: Signal number
-        frame: Current stack frame
+        _frame: Current stack frame (unused)
     """
     signal_name = signal.Signals(signum).name
     logger.info(f"Received {signal_name}, initiating graceful shutdown...")
@@ -128,7 +124,7 @@ def _should_continue_running() -> bool:
         if elapsed >= max_duration:
             logger.info(
                 "Maximum duration reached, stopping scheduler",
-                elapsed_hours=elapsed.total_seconds() / 3600
+                elapsed_hours=elapsed.total_seconds() / 3600,
             )
             return False
 
@@ -138,7 +134,7 @@ def _should_continue_running() -> bool:
 def run_scheduler(
     interval_hours: int | None = None,
     max_duration_hours: int | None = None,
-    run_immediately: bool = False
+    run_immediately: bool = False,
 ) -> None:
     """
     Start the invoice generation scheduler.
@@ -165,7 +161,7 @@ def run_scheduler(
         "Starting scheduler",
         interval_hours=interval_hours,
         max_duration_hours=max_duration_hours,
-        run_immediately=run_immediately
+        run_immediately=run_immediately,
     )
 
     # Record start time
@@ -183,8 +179,8 @@ def run_scheduler(
             job_defaults={
                 "coalesce": True,  # Combine missed runs
                 "max_instances": 1,  # Only one instance at a time
-                "misfire_grace_time": 300  # 5 minutes grace period
-            }
+                "misfire_grace_time": 300,  # 5 minutes grace period
+            },
         )
 
         # Add job with interval trigger
@@ -193,7 +189,7 @@ def run_scheduler(
             trigger=IntervalTrigger(hours=interval_hours),
             id="generate_invoices",
             name="Generate Invoices Batch",
-            replace_existing=True
+            replace_existing=True,
         )
 
         # Start scheduler
@@ -212,11 +208,7 @@ def run_scheduler(
         logger.info("Scheduler stopping gracefully...")
 
     except Exception as e:
-        logger.error(
-            "Scheduler encountered an error",
-            error=str(e),
-            exc_info=True
-        )
+        logger.error("Scheduler encountered an error", error=str(e), exc_info=True)
         raise
 
     finally:
@@ -261,7 +253,7 @@ def get_scheduler_status() -> dict:
         "running": _scheduler is not None and _scheduler.running,
         "start_time": _start_time.isoformat() if _start_time else None,
         "uptime_seconds": None,
-        "jobs": []
+        "jobs": [],
     }
 
     if _start_time:
@@ -270,13 +262,15 @@ def get_scheduler_status() -> dict:
 
     if _scheduler and _scheduler.running:
         for job in _scheduler.get_jobs():
-            status["jobs"].append({
-                "id": job.id,
-                "name": job.name,
-                "next_run_time": (
-                    job.next_run_time.isoformat() if job.next_run_time else None
-                ),
-            })
+            status["jobs"].append(
+                {
+                    "id": job.id,
+                    "name": job.name,
+                    "next_run_time": (
+                        job.next_run_time.isoformat() if job.next_run_time else None
+                    ),
+                }
+            )
 
     return status
 

@@ -148,9 +148,7 @@ class TestTransferService:
         # Verify existing transfer was returned
         assert result == existing_transfer
 
-    def test_create_transfer_invalid_net_amount(
-        self, service, paid_invoice
-    ):
+    def test_create_transfer_invalid_net_amount(self, service, paid_invoice):
         """Test transfer creation with invalid net amount."""
         # Setup: invoice with zero net amount
         paid_invoice.net_amount = 0
@@ -161,9 +159,7 @@ class TestTransferService:
 
         assert "Invalid net_amount" in str(exc_info.value)
 
-    def test_create_transfer_negative_net_amount(
-        self, service, paid_invoice
-    ):
+    def test_create_transfer_negative_net_amount(self, service, paid_invoice):
         """Test transfer creation with negative net amount."""
         # Setup: invoice with negative net amount
         paid_invoice.net_amount = -10.0
@@ -279,9 +275,7 @@ class TestTransferService:
         result = service.list_transfers()
 
         # Verify
-        mock_repository.list.assert_called_once_with(
-            status=None, limit=100, offset=0
-        )
+        mock_repository.list.assert_called_once_with(status=None, limit=100, offset=0)
         assert result == transfers
 
     def test_list_transfers_with_filter(self, service, mock_repository):

@@ -5,7 +5,6 @@ This module provides database operations for invoices,
 extending the BaseRepository with invoice-specific methods.
 """
 
-
 import builtins
 
 from src.modules.invoices.models import InvoiceModel, InvoiceStatus
@@ -188,10 +187,7 @@ class InvoiceRepository(BaseRepository[InvoiceModel]):
         logger.info(f"Invoice updated successfully: {invoice.id}")
 
     def list(
-        self,
-        status: str | None = None,
-        limit: int = 100,
-        offset: int = 0
+        self, status: str | None = None, limit: int = 100, offset: int = 0
     ) -> builtins.list[InvoiceModel]:
         """
         List invoices with optional filtering.
@@ -279,19 +275,21 @@ class InvoiceRepository(BaseRepository[InvoiceModel]):
         Returns:
             InvoiceModel instance
         """
-        return InvoiceModel.from_dict({
-            "id": row[0],
-            "stark_invoice_id": row[1],
-            "amount": row[2],
-            "customer_name": row[3],
-            "customer_tax_id": row[4],
-            "customer_email": row[5],
-            "status": row[6],
-            "created_at": row[7],
-            "paid_at": row[8],
-            "fee": row[9],
-            "net_amount": row[10],
-            "retry_count": row[11],
-            "last_retry_at": row[12],
-            "error_message": row[13],
-        })
+        return InvoiceModel.from_dict(
+            {
+                "id": row[0],
+                "stark_invoice_id": row[1],
+                "amount": row[2],
+                "customer_name": row[3],
+                "customer_tax_id": row[4],
+                "customer_email": row[5],
+                "status": row[6],
+                "created_at": row[7],
+                "paid_at": row[8],
+                "fee": row[9],
+                "net_amount": row[10],
+                "retry_count": row[11],
+                "last_retry_at": row[12],
+                "error_message": row[13],
+            }
+        )

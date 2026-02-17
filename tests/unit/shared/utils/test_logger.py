@@ -29,6 +29,7 @@ def test_structured_logger_format():
     assert "timestamp" in log_data
     assert log_data["logger"] == "test_logger"
 
+
 def test_context_binding():
     # This implementation of bind just returns a new logger, simplistic.
     # But let's verify context passing in log calls.
@@ -46,6 +47,7 @@ def test_context_binding():
     log_data = json.loads(log_output)
 
     assert log_data["correlation_id"] == "123"
+
 
 def test_get_logger():
     logger = get_logger("my_module")

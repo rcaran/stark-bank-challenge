@@ -303,7 +303,10 @@ class InvoiceService:
             ValidationError: If data is invalid
         """
         required_fields = [
-            "amount", "customer_name", "customer_tax_id", "customer_email"
+            "amount",
+            "customer_name",
+            "customer_tax_id",
+            "customer_email",
         ]
 
         for field in required_fields:

@@ -109,7 +109,9 @@ class TestReceiveInvoiceWebhook:
     """Tests for receive_invoice_webhook method."""
 
     def test_receive_invoice_webhook_success(
-        self, webhook_receiver, mock_validator,
+        self,
+        webhook_receiver,
+        mock_validator,
         mock_invoice_processor,
         sample_invoice_webhook_payload,
     ):
@@ -153,7 +155,9 @@ class TestReceiveInvoiceWebhook:
         mock_event_bus.publish.assert_called_once()
 
     def test_receive_invoice_webhook_processing_error(
-        self, webhook_receiver, mock_validator,
+        self,
+        webhook_receiver,
+        mock_validator,
         mock_invoice_processor,
         sample_invoice_webhook_payload,
     ):
@@ -202,7 +206,9 @@ class TestReceiveTransferWebhook:
     """Tests for receive_transfer_webhook method."""
 
     def test_receive_transfer_webhook_success(
-        self, webhook_receiver, mock_validator,
+        self,
+        webhook_receiver,
+        mock_validator,
         mock_transfer_processor,
         sample_transfer_webhook_payload,
     ):
@@ -246,7 +252,9 @@ class TestReceiveTransferWebhook:
         mock_event_bus.publish.assert_called_once()
 
     def test_receive_transfer_webhook_processing_error(
-        self, webhook_receiver, mock_validator,
+        self,
+        webhook_receiver,
+        mock_validator,
         mock_transfer_processor,
         sample_transfer_webhook_payload,
     ):
@@ -296,8 +304,11 @@ class TestWebhookReceiverLogging:
 
     @patch("src.modules.webhooks.receiver.logger")
     def test_logs_invoice_webhook_reception(
-        self, mock_logger, webhook_receiver,
-        mock_validator, sample_invoice_webhook_payload,
+        self,
+        mock_logger,
+        webhook_receiver,
+        mock_validator,
+        sample_invoice_webhook_payload,
     ):
         """Test that invoice webhook reception is logged."""
         # Arrange
@@ -313,8 +324,11 @@ class TestWebhookReceiverLogging:
 
     @patch("src.modules.webhooks.receiver.logger")
     def test_logs_transfer_webhook_reception(
-        self, mock_logger, webhook_receiver,
-        mock_validator, sample_transfer_webhook_payload,
+        self,
+        mock_logger,
+        webhook_receiver,
+        mock_validator,
+        sample_transfer_webhook_payload,
     ):
         """Test that transfer webhook reception is logged."""
         # Arrange

@@ -72,7 +72,7 @@ class TestInvoiceRepository:
             None,  # paid_at
             None,  # fee
             None,  # net_amount
-            0,     # retry_count
+            0,  # retry_count
             None,  # last_retry_at
             None,  # error_message
         )
@@ -115,7 +115,12 @@ class TestInvoiceRepository:
             "test@test.com",
             "created",
             datetime.now(UTC).isoformat(),
-            None, None, None, 0, None, None,
+            None,
+            None,
+            None,
+            0,
+            None,
+            None,
         )
 
         mock_conn = MagicMock()
@@ -135,10 +140,19 @@ class TestInvoiceRepository:
         # First mock for get_by_id (to check existence)
         existing_row = (
             sample_invoice.id,
-            None, 10000, "Test User", "123.456.789-09",
-            "test@test.com", "pending",
+            None,
+            10000,
+            "Test User",
+            "123.456.789-09",
+            "test@test.com",
+            "pending",
             datetime.now(UTC).isoformat(),
-            None, None, None, 0, None, None,
+            None,
+            None,
+            None,
+            0,
+            None,
+            None,
         )
 
         mock_conn = MagicMock()
@@ -171,12 +185,38 @@ class TestInvoiceRepository:
     def test_list_invoices(self, repository, mock_db):
         """Test listing invoices."""
         mock_rows = [
-            ("id1", "stark1", 10000, "User1", "111.111.111-11", "u1@test.com",
-             "pending", datetime.now(UTC).isoformat(),
-             None, None, None, 0, None, None),
-            ("id2", "stark2", 20000, "User2", "222.222.222-22", "u2@test.com",
-             "created", datetime.now(UTC).isoformat(),
-             None, None, None, 0, None, None),
+            (
+                "id1",
+                "stark1",
+                10000,
+                "User1",
+                "111.111.111-11",
+                "u1@test.com",
+                "pending",
+                datetime.now(UTC).isoformat(),
+                None,
+                None,
+                None,
+                0,
+                None,
+                None,
+            ),
+            (
+                "id2",
+                "stark2",
+                20000,
+                "User2",
+                "222.222.222-22",
+                "u2@test.com",
+                "created",
+                datetime.now(UTC).isoformat(),
+                None,
+                None,
+                None,
+                0,
+                None,
+                None,
+            ),
         ]
 
         mock_conn = MagicMock()
@@ -194,9 +234,22 @@ class TestInvoiceRepository:
     def test_list_invoices_with_status_filter(self, repository, mock_db):
         """Test listing invoices with status filter."""
         mock_rows = [
-            ("id1", "stark1", 10000, "User1", "111.111.111-11", "u1@test.com",
-             "paid", datetime.now(UTC).isoformat(),
-             datetime.now(UTC).isoformat(), 500, 9500, 0, None, None),
+            (
+                "id1",
+                "stark1",
+                10000,
+                "User1",
+                "111.111.111-11",
+                "u1@test.com",
+                "paid",
+                datetime.now(UTC).isoformat(),
+                datetime.now(UTC).isoformat(),
+                500,
+                9500,
+                0,
+                None,
+                None,
+            ),
         ]
 
         mock_conn = MagicMock()
@@ -242,9 +295,22 @@ class TestInvoiceRepository:
     def test_list_by_status(self, repository, mock_db):
         """Test listing invoices by status."""
         mock_rows = [
-            ("id1", None, 10000, "User1", "111.111.111-11", "u1@test.com",
-             "pending", datetime.now(UTC).isoformat(),
-             None, None, None, 0, None, None),
+            (
+                "id1",
+                None,
+                10000,
+                "User1",
+                "111.111.111-11",
+                "u1@test.com",
+                "pending",
+                datetime.now(UTC).isoformat(),
+                None,
+                None,
+                None,
+                0,
+                None,
+                None,
+            ),
         ]
 
         mock_conn = MagicMock()

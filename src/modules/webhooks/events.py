@@ -27,6 +27,7 @@ class InvoicePaidEventPayload:
     Published when a webhook confirms an invoice has been paid.
     Contains all payment details including fees and net amount.
     """
+
     invoice_id: str
     stark_invoice_id: str
     amount: float
@@ -56,6 +57,7 @@ class TransferProcessingEventPayload:
     Published when a transfer webhook indicates the transfer
     is being processed by the bank.
     """
+
     transfer_id: str
     stark_transfer_id: str
     invoice_id: str | None
@@ -82,6 +84,7 @@ class TransferCompletedEventPayload:
 
     Published when a transfer webhook confirms successful completion.
     """
+
     transfer_id: str
     stark_transfer_id: str
     invoice_id: str | None
@@ -113,6 +116,7 @@ class TransferFailedEventPayload:
     Published when a transfer webhook indicates failure.
     Contains error details for debugging and logging.
     """
+
     transfer_id: str
     stark_transfer_id: str
     invoice_id: str | None
@@ -144,6 +148,7 @@ class WebhookValidationFailedEventPayload:
     Published when a webhook signature validation fails,
     indicating potential security issues or malformed requests.
     """
+
     webhook_type: str  # "invoice" or "transfer"
     source_ip: str | None
     error_message: str

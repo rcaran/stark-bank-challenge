@@ -1,9 +1,12 @@
+"""In-memory event bus for publish-subscribe messaging."""
+
 from collections import defaultdict
 
 from src.shared.events.types import Event, EventHandler, EventType
 from src.shared.utils.logger import get_logger
 
 logger = get_logger("shared.events.bus")
+
 
 class EventBus:
     _instance = None
@@ -43,10 +46,11 @@ class EventBus:
                 logger.error(
                     f"Error handling event {event.event_type} with {handler.__name__}",
                     error=str(e),
-                    event_id=event.event_id
+                    event_id=event.event_id,
                 )
                 # We catch exceptions to prevent one handler from blocking others
                 # In a real system we might want a dead letter queue or retry mechanism
+
 
 def get_event_bus() -> EventBus:
     return EventBus()

@@ -1,3 +1,5 @@
+"""Database connection management using SQLite."""
+
 import sqlite3
 from collections.abc import Generator
 from contextlib import contextmanager
@@ -6,6 +8,7 @@ from src.config.settings import settings
 from src.shared.utils.logger import get_logger
 
 logger = get_logger("shared.database.connection")
+
 
 class DatabaseConnection:
     _instance = None
@@ -46,8 +49,10 @@ class DatabaseConnection:
         # We don't close the connection here because we're using a singleton connection
         # for SQLite in this simple architecture.
 
+
 def get_db_connection() -> sqlite3.Connection:
     return DatabaseConnection().connection
+
 
 @contextmanager
 def get_db_cursor() -> Generator[sqlite3.Cursor]:

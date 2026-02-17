@@ -9,6 +9,7 @@ def test_event_bus_singleton():
     bus2 = EventBus()
     assert bus1 is bus2
 
+
 def test_subscribe_and_publish():
     bus = EventBus()
     # Reset subscribers for test
@@ -23,6 +24,7 @@ def test_subscribe_and_publish():
     bus.publish(event)
 
     mock_handler.assert_called_once_with(event)
+
 
 def test_no_handlers():
     bus = EventBus()

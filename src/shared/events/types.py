@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
+"""Event type definitions and data structures."""
 
 class EventType(StrEnum):
     # Invoice Events
@@ -26,6 +27,7 @@ class EventType(StrEnum):
     SCHEDULER_TICK = "scheduler.tick"
     ERROR_OCCURRED = "system.error"
 
+
 @dataclass
 class Event:
     event_type: EventType
@@ -33,5 +35,6 @@ class Event:
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     metadata: dict[str, Any] | None = None
+
 
 EventHandler = Callable[[Event], None]

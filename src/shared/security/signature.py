@@ -28,6 +28,7 @@ logger = get_logger("security.signature")
 
 class InvalidSignatureError(ValidationError):
     """Raised when webhook signature validation fails."""
+
     def __init__(self, message: str = "Invalid webhook signature"):
         super().__init__(message)
 
@@ -58,18 +59,14 @@ def _load_public_key(public_key_pem: str) -> ec.EllipticCurvePublicKey:
         ValueError: If the key cannot be loaded
     """
     try:
-        return serialization.load_pem_public_key(
-            public_key_pem.encode("utf-8")
-        )
+        return serialization.load_pem_public_key(public_key_pem.encode("utf-8"))
     except Exception as e:
         logger.error(f"Failed to load public key: {e}")
         raise ValueError(f"Invalid public key format: {e}") from e
 
 
 def validate_webhook_signature(
-    payload: bytes,
-    signature: str,
-    public_key_pem: str | None = None
+    payload: bytes, signature: str, public_key_pem: str | None = None
 ) -> bool:
     """
     Validate a webhook signature using ECDSA.
@@ -111,19 +108,13 @@ def validate_webhook_signature(
         try:
             signature_bytes = base64.b64decode(signature)
         except Exception as e:
-            logger.warning(
-                f"Signature validation failed: invalid base64 encoding: {e}"
-            )
+            logger.warning(f"Signature validation failed: invalid base64 encoding: {e}")
             return False
 
         # Verify the signature
         # Stark Bank uses ECDSA with SHA-256
         try:
-            public_key.verify(
-                signature_bytes,
-                payload,
-                ec.ECDSA(hashes.SHA256())
-            )
+            public_key.verify(signature_bytes, payload, ec.ECDSA(hashes.SHA256()))
             logger.info("Webhook signature validation successful")
             return True
 
@@ -139,9 +130,7 @@ def validate_webhook_signature(
 
 
 def verify_webhook_signature(
-    payload: bytes,
-    signature: str,
-    public_key_pem: str | None = None
+    payload: bytes, signature: str, public_key_pem: str | None = None
 ) -> None:
     """
     Verify webhook signature and raise exception if invalid.

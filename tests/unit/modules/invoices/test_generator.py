@@ -212,13 +212,15 @@ class TestInvoiceGeneratorCustomConfig:
         invoices = generator.generate_batch(count=50)
 
         cpf_count = sum(
-            1 for inv in invoices
+            1
+            for inv in invoices
             if len(
                 inv["customer_tax_id"]
                 .replace(".", "")
                 .replace("-", "")
                 .replace("/", "")
-            ) == 11
+            )
+            == 11
         )
 
         assert cpf_count / 50 >= 0.75  # Expect at least 75% CPF with 90% ratio

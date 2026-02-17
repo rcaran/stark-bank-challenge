@@ -34,7 +34,7 @@ _scheduler_thread: Thread | None = None
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     """
     Application lifespan context manager.
 
@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
     logger.info(
         f"Starting {settings.app_name} v1.0.0",
         environment=settings.app_env,
-        log_level=settings.log_level
+        log_level=settings.log_level,
     )
 
     try:
@@ -66,9 +66,7 @@ async def lifespan(app: FastAPI):
         if settings.app_env != "test":
             logger.info("Starting invoice generation scheduler")
             _scheduler_thread = Thread(
-                target=run_scheduler,
-                daemon=True,
-                name="SchedulerThread"
+                target=run_scheduler, daemon=True, name="SchedulerThread"
             )
             _scheduler_thread.start()
             logger.info("Scheduler started in background thread")
@@ -113,7 +111,7 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
 )
 
 # Configure CORS
@@ -128,54 +126,45 @@ app.add_middleware(
 
 # Exception Handlers
 
+
 @app.exception_handler(InvalidAPIKeyError)
-async def invalid_api_key_handler(request: Request, exc: InvalidAPIKeyError):
+async def invalid_api_key_handler(request: Request, _exc: InvalidAPIKeyError):
     """Handle invalid API key errors."""
     logger.warning(
         "Invalid API key attempt",
         path=request.url.path,
-        client=request.client.host if request.client else "unknown"
+        client=request.client.host if request.client else "unknown",
     )
     return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        content={
-            "error": "Unauthorized",
-            "message": "Invalid API key"
-        }
+        content={"error": "Unauthorized", "message": "Invalid API key"},
     )
 
 
 @app.exception_handler(InvalidSignatureError)
-async def invalid_signature_handler(request: Request, exc: InvalidSignatureError):
+async def invalid_signature_handler(request: Request, _exc: InvalidSignatureError):
     """Handle invalid webhook signature errors."""
     logger.warning(
         "Invalid webhook signature",
         path=request.url.path,
-        client=request.client.host if request.client else "unknown"
+        client=request.client.host if request.client else "unknown",
     )
     return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        content={
-            "error": "Unauthorized",
-            "message": "Invalid signature"
-        }
+        content={"error": "Unauthorized", "message": "Invalid signature"},
     )
 
 
 @app.exception_handler(StarkBankError)
 async def stark_bank_api_error_handler(request: Request, exc: StarkBankError):
     """Handle Stark Bank API errors."""
-    logger.error(
-        "Stark Bank API error",
-        path=request.url.path,
-        error=str(exc)
-    )
+    logger.error("Stark Bank API error", path=request.url.path, error=str(exc))
     return JSONResponse(
         status_code=status.HTTP_502_BAD_GATEWAY,
         content={
             "error": "External API Error",
-            "message": "Error communicating with Stark Bank API"
-        }
+            "message": "Error communicating with Stark Bank API",
+        },
     )
 
 
@@ -183,29 +172,24 @@ async def stark_bank_api_error_handler(request: Request, exc: StarkBankError):
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle request validation errors."""
     logger.warning(
-        "Request validation error",
-        path=request.url.path,
-        errors=exc.errors()
+        "Request validation error", path=request.url.path, errors=exc.errors()
     )
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         content={
             "error": "Validation Error",
             "message": "Invalid request data",
-            "details": exc.errors()
-        }
+            "details": exc.errors(),
+        },
     )
 
 
 @app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
+async def http_exception_handler(_request: Request, exc: HTTPException):
     """Handle HTTP exceptions."""
     return JSONResponse(
         status_code=exc.status_code,
-        content={
-            "error": exc.detail,
-            "message": str(exc.detail)
-        }
+        content={"error": exc.detail, "message": str(exc.detail)},
     )
 
 
@@ -213,21 +197,19 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle all other unexpected exceptions."""
     logger.error(
-        "Unexpected error",
-        path=request.url.path,
-        error=str(exc),
-        exc_info=True
+        "Unexpected error", path=request.url.path, error=str(exc), exc_info=True
     )
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
             "error": "Internal Server Error",
-            "message": "An unexpected error occurred"
-        }
+            "message": "An unexpected error occurred",
+        },
     )
 
 
 # Middleware
+
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
@@ -236,7 +218,7 @@ async def log_requests(request: Request, call_next):
         f"{request.method} {request.url.path}",
         method=request.method,
         path=request.url.path,
-        client=request.client.host if request.client else "unknown"
+        client=request.client.host if request.client else "unknown",
     )
 
     response = await call_next(request)
@@ -245,7 +227,7 @@ async def log_requests(request: Request, call_next):
         f"Response {response.status_code}",
         method=request.method,
         path=request.url.path,
-        status_code=response.status_code
+        status_code=response.status_code,
     )
 
     return response
@@ -258,6 +240,7 @@ app.include_router(webhook_router)
 
 
 # Root endpoints
+
 
 @app.get("/", include_in_schema=False)
 async def root():
@@ -279,5 +262,4 @@ async def health_check():
     Returns:
         Dict with health status and component checks
     """
-    return check_health(include_stark=False)
-
+    return check_health()

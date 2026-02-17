@@ -179,9 +179,7 @@ class TestInvoiceWebhookProcessor:
         processor.process(paid_webhook_payload)
 
         updated_invoice = mock_repository.update.call_args[0][0]
-        assert updated_invoice.paid_at == datetime(
-            2026, 2, 16, 14, 30, 0, tzinfo=UTC
-        )
+        assert updated_invoice.paid_at == datetime(2026, 2, 16, 14, 30, 0, tzinfo=UTC)
 
     def test_process_sets_current_time_when_updated_missing(
         self,
@@ -208,9 +206,7 @@ class TestInvoiceWebhookProcessor:
         updated_invoice = mock_repository.update.call_args[0][0]
         assert updated_invoice.paid_at is not None
         # Should be close to now
-        time_diff = abs(
-            (datetime.now(UTC) - updated_invoice.paid_at).total_seconds()
-        )
+        time_diff = abs((datetime.now(UTC) - updated_invoice.paid_at).total_seconds())
         assert time_diff < 5  # Within 5 seconds
 
     def test_process_handles_zero_fee(
@@ -349,9 +345,7 @@ class TestInvoiceWebhookProcessor:
         )
 
         # Should be close to now
-        time_diff = abs(
-            (datetime.now(UTC) - result.paid_at).total_seconds()
-        )
+        time_diff = abs((datetime.now(UTC) - result.paid_at).total_seconds())
         assert time_diff < 5
 
     # ==========================================================================

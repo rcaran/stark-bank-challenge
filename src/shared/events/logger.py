@@ -1,3 +1,5 @@
+"""Event logging and history tracking."""
+
 import json
 from datetime import datetime
 
@@ -6,6 +8,7 @@ from src.shared.events.types import Event, EventType
 from src.shared.utils.logger import get_logger
 
 logger = get_logger("shared.events.event_logger")
+
 
 class EventLogger(BaseRepository):
     def log_event(self, event: Event) -> None:
@@ -22,13 +25,16 @@ class EventLogger(BaseRepository):
                 json.dumps(event.metadata, default=str) if event.metadata else None
             )
 
-            self._execute(query, (
-                event.event_id,
-                event.event_type.value,
-                payload_json,
-                metadata_json,
-                event.timestamp.isoformat()
-            ))
+            self._execute(
+                query,
+                (
+                    event.event_id,
+                    event.event_type.value,
+                    payload_json,
+                    metadata_json,
+                    event.timestamp.isoformat(),
+                ),
+            )
             logger.debug(f"Event {event.event_id} persisted to database")
         except Exception as e:
             logger.error(f"Failed to persist event {event.event_id}: {e!s}")
@@ -57,13 +63,14 @@ class EventLogger(BaseRepository):
                     event_type=EventType(row["event_type"]),
                     payload=json.loads(row["payload"]),
                     metadata=json.loads(row["metadata"]) if row["metadata"] else None,
-                    timestamp=datetime.fromisoformat(row["timestamp"])
+                    timestamp=datetime.fromisoformat(row["timestamp"]),
                 )
                 events.append(event)
             return events
         except Exception as e:
             logger.error(f"Failed to fetch events: {e!s}")
             return []
+
 
 def event_logger_handler(event: Event) -> None:
     repository = EventLogger()

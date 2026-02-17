@@ -1,3 +1,5 @@
+"""Data generation utilities for invoices and customer information."""
+
 import random
 from typing import Any
 
@@ -9,8 +11,6 @@ from src.shared.utils.validators import validator_cnpj, validator_cpf
 class DataGenerator:
     def __init__(self, locale: str = "pt_BR"):
         self.faker = Faker(locale)
-        # Seed for reproducibility if needed, but usually we want randomness
-        # self.faker.seed_instance(42)
 
     def generate_valid_cpf(self) -> str:
         """Generates a valid, formatted CPF."""
@@ -26,7 +26,7 @@ class DataGenerator:
             "name": self.faker.name(),
             "tax_id": self.generate_valid_cpf(),
             "email": self.faker.email(),
-            "type": "individual"
+            "type": "individual",
         }
 
     def generate_company_data(self) -> dict[str, Any]:
@@ -35,7 +35,7 @@ class DataGenerator:
             "name": self.faker.company(),
             "tax_id": self.generate_valid_cnpj(),
             "email": self.faker.company_email(),
-            "type": "company"
+            "type": "company",
         }
 
     def generate_customer_data(self, prefer_cpf: bool = True) -> dict[str, Any]:

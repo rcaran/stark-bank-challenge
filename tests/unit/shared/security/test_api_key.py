@@ -103,8 +103,7 @@ class TestVerifyAPIKey:
 
             # Check that success was logged
             assert any(
-                "successful" in record.message.lower()
-                for record in caplog.records
+                "successful" in record.message.lower() for record in caplog.records
             )
 
     def test_verify_api_key_logging_failure(self, caplog):

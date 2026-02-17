@@ -1219,22 +1219,25 @@ open htmlcov/index.html
 - `railway.toml` (ou similar)
 
 **Conteúdo:**
-- [ ] Railway setup instructions
-- [ ] Environment variables configuration
-- [ ] Database persistence
-- [ ] Monitoring setup
-- [ ] Troubleshooting
+- [X] Railway setup instructions
+- [X] Environment variables configuration
+- [X] Database persistence
+- [X] Monitoring setup
+- [X] Troubleshooting
 
 ### 9.5. Code Quality
 
 **Tarefas:**
-- [ ] Rodar linting em todo código: `ruff check src/`
-- [ ] Rodar formatting: `ruff format src/`
-- [ ] Rodar type checking: `mypy src/` (se configurado)
-- [ ] Revisar TODOs e FIXMEs
-- [ ] Revisar comentários
-- [ ] Remover código morto
-- [ ] Validar docstrings
+- [X] Rodar linting em todo código: `ruff check src/`
+- [X] Rodar linting em todo código: `ruff check tests/`
+- [X] Rodar formatting: `ruff format src/`
+- [X] Rodar formatting: `ruff format tests/`
+- [X] Rodar type checking: `mypy src/` (se configurado)
+- [X] Rodar type checking: `mypy tests/` (se configurado)
+- [X] Revisar TODOs e FIXMEs
+- [X] Revisar comentários
+- [X] Remover código morto
+- [X] Validar docstrings
 
 ### 9.6. Performance Testing (Opcional)
 

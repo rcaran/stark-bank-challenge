@@ -8,19 +8,14 @@ Tests all query endpoints with filters, pagination, and authentication:
 - Get transfer by invoice ID
 """
 
-import json
 import time
-from typing import Dict, Any
+from typing import Any
 
-import pytest
-
-from src.modules.invoices.models import InvoiceStatus
-from src.modules.transfers.models import TransferStatus
 from tests.e2e.helpers import (
-    create_test_invoice,
-    simulate_webhook,
     assert_invoice_paid,
     assert_transfer_created,
+    create_test_invoice,
+    simulate_webhook,
 )
 
 
@@ -32,13 +27,13 @@ class TestQueryEndpoints:
         e2e_app,
         e2e_db,
         mock_stark_api,
-        invoice_data: Dict[str, Any],
-        api_key_header: Dict[str, str],
+        invoice_data: dict[str, Any],
+        api_key_header: dict[str, str],
         fee: int = 100,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Helper to create an invoice and simulate payment.
-        
+
         Args:
             e2e_app: FastAPI test client
             e2e_db: Test database connection
@@ -46,19 +41,17 @@ class TestQueryEndpoints:
             invoice_data: Invoice data to create
             api_key_header: API key header for authentication
             fee: Fee to use in payment webhook (default: 100)
-            
+
         Returns:
             Dictionary with invoice and transfer data
         """
         # Step 1: Create invoice via API
         invoice_response = create_test_invoice(
-            e2e_app,
-            invoice_data,
-            api_key_header.get("X-API-Key", "test-api-key")
+            e2e_app, invoice_data, api_key_header.get("X-API-Key", "test-api-key")
         )
         invoice_id = invoice_response["id"]
         stark_invoice_id = invoice_response["stark_invoice_id"]
-        
+
         # Step 2: Simulate payment webhook
         webhook_payload = {
             "event": {
@@ -77,23 +70,21 @@ class TestQueryEndpoints:
                 },
             }
         }
-        
-        simulate_webhook(
-            e2e_app,
-            "invoice",
-            webhook_payload
-        )
-        
+
+        simulate_webhook(e2e_app, "invoice", webhook_payload)
+
         # Short wait for event bus processing
         time.sleep(0.1)
-        
+
         # Step 3: Validate invoice paid
-        expected_net_amount = (invoice_data["amount"] - fee) / 100.0  # Convert to currency units
+        expected_net_amount = (
+            invoice_data["amount"] - fee
+        ) / 100.0  # Convert to currency units
         assert_invoice_paid(e2e_db, invoice_id, expected_net_amount)
-        
+
         # Step 4: Validate transfer created
         transfer = assert_transfer_created(e2e_db, invoice_id)
-        
+
         return {
             "invoice_id": invoice_id,
             "invoice": invoice_response,
@@ -110,13 +101,13 @@ class TestQueryEndpoints:
     ):
         """
         Test list invoices endpoint with filters and pagination.
-        
+
         Flow:
         1. Create 5 invoices with different amounts
         2. Pay 2 of them (status=PAID)
         3. Leave 3 with status=CREATED
         4. Test filters and pagination
-        
+
         Validates:
         - List all invoices without filters
         - Filter by status (paid/created)
@@ -157,17 +148,17 @@ class TestQueryEndpoints:
                 "customer_email": "customer5@example.com",
             },
         ]
-        
+
         # Create all invoices
         created_invoices = []
         for invoice_data in invoice_data_list:
             invoice_response = create_test_invoice(
                 client=e2e_app,
                 invoice_data=invoice_data,
-                api_key=api_key_header.get("X-API-Key", "test-api-key")
+                api_key=api_key_header.get("X-API-Key", "test-api-key"),
             )
             created_invoices.append(invoice_response)
-        
+
         # Step 2: Pay first 2 invoices (others remain CREATED)
         for i in range(2):
             invoice = created_invoices[i]
@@ -189,21 +180,23 @@ class TestQueryEndpoints:
                 }
             }
             simulate_webhook(e2e_app, "invoice", webhook_payload)
-        
+
         # Wait for webhook processing
         time.sleep(0.1)
-        
+
         # Step 3: Test queries and assertions
-        
+
         # Assertion 1: GET /invoices without filter returns all 5
         response = e2e_app.get("/invoices", headers=api_key_header)
         assert response.status_code == 200
         data = response.json()
-        invoices_list = data.get("invoices", data)  # Handle both list and dict responses
+        invoices_list = data.get(
+            "invoices", data
+        )  # Handle both list and dict responses
         if isinstance(invoices_list, dict):
             invoices_list = invoices_list.get("invoices", [])
         assert len(invoices_list) == 5
-        
+
         # Assertion 2: GET /invoices?status=paid returns only 2
         response = e2e_app.get("/invoices?status=paid", headers=api_key_header)
         assert response.status_code == 200
@@ -214,7 +207,7 @@ class TestQueryEndpoints:
         assert len(paid_invoices) == 2
         for invoice in paid_invoices:
             assert invoice["status"] == "paid"
-        
+
         # Assertion 3: GET /invoices?status=created returns only 3
         response = e2e_app.get("/invoices?status=created", headers=api_key_header)
         assert response.status_code == 200
@@ -225,7 +218,7 @@ class TestQueryEndpoints:
         assert len(created_invoices_response) == 3
         for invoice in created_invoices_response:
             assert invoice["status"] == "created"
-        
+
         # Assertion 4: GET /invoices?limit=2&offset=0 returns 2 items
         response = e2e_app.get("/invoices?limit=2&offset=0", headers=api_key_header)
         assert response.status_code == 200
@@ -234,7 +227,7 @@ class TestQueryEndpoints:
         if isinstance(invoices_list, dict):
             invoices_list = invoices_list.get("invoices", [])
         assert len(invoices_list) == 2
-        
+
         # Assertion 5: GET /invoices?limit=2&offset=2 returns next 2 items
         response = e2e_app.get("/invoices?limit=2&offset=2", headers=api_key_header)
         assert response.status_code == 200
@@ -243,7 +236,7 @@ class TestQueryEndpoints:
         if isinstance(invoices_list, dict):
             invoices_list = invoices_list.get("invoices", [])
         assert len(invoices_list) == 2
-        
+
         # Assertion 6: GET /invoices?limit=2&offset=4 returns 1 item (last)
         response = e2e_app.get("/invoices?limit=2&offset=4", headers=api_key_header)
         assert response.status_code == 200
@@ -252,11 +245,11 @@ class TestQueryEndpoints:
         if isinstance(invoices_list, dict):
             invoices_list = invoices_list.get("invoices", [])
         assert len(invoices_list) == 1
-        
+
         # Assertion 7: GET /invoices without X-API-Key returns 401 or 403
         response = e2e_app.get("/invoices")
         assert response.status_code in [401, 403]
-        
+
         # Assertion 8: Each invoice has required fields
         response = e2e_app.get("/invoices", headers=api_key_header)
         data = response.json()
@@ -285,11 +278,11 @@ class TestQueryEndpoints:
     ):
         """
         Test get invoice by ID endpoint.
-        
+
         Flow:
         1. Create invoice via API
         2. Query by ID
-        
+
         Validates:
         - GET /invoices/{id} with valid ID returns 200 and complete invoice
         - All mandatory fields are present
@@ -303,20 +296,20 @@ class TestQueryEndpoints:
             "customer_tax_id": "012.345.678-90",  # Valid CPF
             "customer_email": "test@example.com",
         }
-        
+
         invoice_response = create_test_invoice(
             client=e2e_app,
             invoice_data=invoice_data,
-            api_key=api_key_header.get("X-API-Key", "test-api-key")
+            api_key=api_key_header.get("X-API-Key", "test-api-key"),
         )
         invoice_id = invoice_response["id"]
-        
+
         # Step 2: Query by ID
-        
+
         # Assertion 1: GET /invoices/{id} with valid ID returns 200
         response = e2e_app.get(f"/invoices/{invoice_id}", headers=api_key_header)
         assert response.status_code == 200
-        
+
         # Assertion 2: Check all mandatory fields are present
         invoice = response.json()
         required_fields = [
@@ -331,7 +324,7 @@ class TestQueryEndpoints:
         ]
         for field in required_fields:
             assert field in invoice, f"Field '{field}' is missing from invoice response"
-        
+
         # Validate field values
         assert invoice["id"] == invoice_id
         # Amount is converted from centavos to currency units (divide by 100)
@@ -342,12 +335,12 @@ class TestQueryEndpoints:
         assert invoice["status"] in ["created", "paid", "failed"]
         assert isinstance(invoice["stark_invoice_id"], str)
         assert isinstance(invoice["created_at"], str)
-        
+
         # Assertion 3: GET /invoices/non-existent-uuid returns 404
         non_existent_id = "00000000-0000-0000-0000-000000000000"
         response = e2e_app.get(f"/invoices/{non_existent_id}", headers=api_key_header)
         assert response.status_code == 404
-        
+
         # Assertion 4: GET /invoices/{id} without X-API-Key returns 401 or 403
         response = e2e_app.get(f"/invoices/{invoice_id}")
         assert response.status_code in [401, 403]
@@ -361,13 +354,13 @@ class TestQueryEndpoints:
     ):
         """
         Test list transfers endpoint with filters and pagination.
-        
+
         Flow:
         1. Create 3 invoices and simulate payment for all 3
         2. For transfer 1: simulate webhook success
         3. For transfer 2: simulate webhook failed
         4. Transfer 3: remains with status CREATED
-        
+
         Validates:
         - GET /transfers returns 3 transfers
         - Filter by status (success/failed/created)
@@ -395,7 +388,7 @@ class TestQueryEndpoints:
                 "customer_email": "transfer3@example.com",
             },
         ]
-        
+
         # Create and pay all 3 invoices
         transfers_data = []
         for i, invoice_data in enumerate(invoice_data_list):
@@ -408,10 +401,10 @@ class TestQueryEndpoints:
                 fee=100 + (i * 50),
             )
             transfers_data.append(result)
-        
+
         # Wait for event bus processing
         time.sleep(0.1)
-        
+
         # Step 2: For transfer 1 - simulate webhook success
         transfer_1 = transfers_data[0]["transfer"]
         webhook_success = {
@@ -432,7 +425,7 @@ class TestQueryEndpoints:
             }
         }
         simulate_webhook(e2e_app, "transfer", webhook_success)
-        
+
         # Step 3: For transfer 2 - simulate webhook failed
         transfer_2 = transfers_data[1]["transfer"]
         webhook_failed = {
@@ -454,14 +447,14 @@ class TestQueryEndpoints:
             }
         }
         simulate_webhook(e2e_app, "transfer", webhook_failed)
-        
+
         # Step 4: Transfer 3 remains with status CREATED (no webhook sent)
-        
+
         # Wait for webhook processing
         time.sleep(0.1)
-        
+
         # Step 5: Test queries and assertions
-        
+
         # Assertion 1: GET /transfers returns 3 transfers
         response = e2e_app.get("/transfers", headers=api_key_header)
         assert response.status_code == 200
@@ -470,7 +463,7 @@ class TestQueryEndpoints:
         if isinstance(transfers_list, dict):
             transfers_list = transfers_list.get("transfers", [])
         assert len(transfers_list) == 3
-        
+
         # Assertion 2: GET /transfers?status=success returns 1
         response = e2e_app.get("/transfers?status=success", headers=api_key_header)
         assert response.status_code == 200
@@ -480,7 +473,7 @@ class TestQueryEndpoints:
             success_transfers = success_transfers.get("transfers", [])
         assert len(success_transfers) == 1
         assert success_transfers[0]["status"] == "success"
-        
+
         # Assertion 3: GET /transfers?status=failed returns 1
         response = e2e_app.get("/transfers?status=failed", headers=api_key_header)
         assert response.status_code == 200
@@ -490,7 +483,7 @@ class TestQueryEndpoints:
             failed_transfers = failed_transfers.get("transfers", [])
         assert len(failed_transfers) == 1
         assert failed_transfers[0]["status"] == "failed"
-        
+
         # Assertion 4: GET /transfers?status=created returns 1
         response = e2e_app.get("/transfers?status=created", headers=api_key_header)
         assert response.status_code == 200
@@ -500,7 +493,7 @@ class TestQueryEndpoints:
             created_transfers = created_transfers.get("transfers", [])
         assert len(created_transfers) == 1
         assert created_transfers[0]["status"] == "created"
-        
+
         # Assertion 5: Pagination - GET /transfers?limit=1 returns 1 item
         response = e2e_app.get("/transfers?limit=1", headers=api_key_header)
         assert response.status_code == 200
@@ -509,24 +502,32 @@ class TestQueryEndpoints:
         if isinstance(transfers_list, dict):
             transfers_list = transfers_list.get("transfers", [])
         assert len(transfers_list) == 1
-        
+
         # Assertion 6: Each transfer has required fields
         response = e2e_app.get("/transfers", headers=api_key_header)
         data = response.json()
         all_transfers = data.get("transfers", data)
         if isinstance(all_transfers, dict):
             all_transfers = all_transfers.get("transfers", [])
-        
+
         required_fields = ["id", "invoice_id", "amount", "status", "external_id"]
         for transfer in all_transfers:
             for field in required_fields:
-                assert field in transfer, f"Field '{field}' is missing from transfer response"
-            
+                assert field in transfer, (
+                    f"Field '{field}' is missing from transfer response"
+                )
+
             # Validate types and values
             assert isinstance(transfer["id"], str)
             assert isinstance(transfer["invoice_id"], str)
             assert isinstance(transfer["amount"], (int, float))
-            assert transfer["status"] in ["created", "processing", "success", "failed", "canceled"]
+            assert transfer["status"] in [
+                "created",
+                "processing",
+                "success",
+                "failed",
+                "canceled",
+            ]
             assert isinstance(transfer["external_id"], str)
             assert transfer["external_id"].startswith("invoice-")
 
@@ -539,12 +540,12 @@ class TestQueryEndpoints:
     ):
         """
         Test get transfer by invoice ID endpoint.
-        
+
         Flow:
         1. Create invoice and simulate payment
         2. Transfer is auto-created via event handler
         3. Query transfer by invoice_id
-        
+
         Validates:
         - GET /transfers/invoice/{invoice_id} returns 200 and transfer
         - Transfer amount equals invoice net_amount
@@ -560,7 +561,7 @@ class TestQueryEndpoints:
             "customer_tax_id": "012.345.678-90",
             "customer_email": "transferquery@example.com",
         }
-        
+
         fee = 250
         result = self._create_and_pay_invoice(
             e2e_app=e2e_app,
@@ -570,59 +571,57 @@ class TestQueryEndpoints:
             api_key_header=api_key_header,
             fee=fee,
         )
-        
+
         invoice_id = result["invoice_id"]
         transfer_id = result["transfer_id"]
         transfer = result["transfer"]
-        
+
         # Calculate expected net_amount (in currency units)
         expected_net_amount = (invoice_data["amount"] - fee) / 100.0
-        
+
         # Step 2: Query transfer by invoice_id
-        
+
         # Assertion 1: GET /transfers/invoice/{invoice_id} returns 200 and transfer
         response = e2e_app.get(
-            f"/transfers/invoice/{invoice_id}",
-            headers=api_key_header
+            f"/transfers/invoice/{invoice_id}", headers=api_key_header
         )
         assert response.status_code == 200
-        
+
         transfer_response = response.json()
-        
+
         # Assertion 2: Transfer amount equals invoice net_amount
         # Transfer amount is stored in centavos, API returns in currency units
         assert transfer_response["amount"] == expected_net_amount, (
             f"Transfer amount {transfer_response['amount']} "
             f"does not match expected net_amount {expected_net_amount}"
         )
-        
+
         # Assertion 3: Transfer external_id equals "invoice-{invoice_id}"
         expected_external_id = f"invoice-{invoice_id}"
         assert transfer_response["external_id"] == expected_external_id, (
             f"Transfer external_id {transfer_response['external_id']} "
             f"does not match expected {expected_external_id}"
         )
-        
+
         # Assertion 4: Transfer invoice_id matches the invoice
         assert transfer_response["invoice_id"] == invoice_id, (
             f"Transfer invoice_id {transfer_response['invoice_id']} "
             f"does not match expected {invoice_id}"
         )
-        
+
         # Validate other required fields are present
         assert "id" in transfer_response
         assert "status" in transfer_response
         assert "created_at" in transfer_response
         assert transfer_response["id"] == str(transfer_id)
-        
+
         # Assertion 5: GET /transfers/invoice/non-existent-uuid returns 404
         non_existent_id = "00000000-0000-0000-0000-000000000000"
         response = e2e_app.get(
-            f"/transfers/invoice/{non_existent_id}",
-            headers=api_key_header
+            f"/transfers/invoice/{non_existent_id}", headers=api_key_header
         )
         assert response.status_code == 404
-        
+
         # Assertion 6: GET /transfers/invoice/{id} without X-API-Key returns 401 or 403
         response = e2e_app.get(f"/transfers/invoice/{invoice_id}")
         assert response.status_code in [401, 403]

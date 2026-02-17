@@ -1,0 +1,36 @@
+# Railway Configuration File
+# https://docs.railway.app/deploy/config-as-code
+
+[build]
+# Use Nixpacks builder (automatically detects Python)
+builder = "NIXPACKS"
+
+# Build settings
+[build.nixpacksSettings]
+nixPkgs = ["python314"]
+
+[deploy]
+# Number of replicas (1 for free tier)
+numReplicas = 1
+
+# Start command (will use PORT environment variable from Railway)
+startCommand = "uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+
+# Restart policy: restart on failure
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+# Health check configuration
+[deploy.healthcheck]
+path = "/health"
+initialDelaySeconds = 60
+periodSeconds = 30
+timeoutSeconds = 10
+successThreshold = 1
+failureThreshold = 3
+
+# Region (use closest to Stark Bank API)
+# us-west1 = US West (Oregon)
+# us-east4 = US East (Virginia)
+# Leave commented to use default
+# region = "us-west1"

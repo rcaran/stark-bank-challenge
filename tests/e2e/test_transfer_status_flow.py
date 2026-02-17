@@ -12,29 +12,26 @@ Note: The 'canceled' status is rare and occurs when a transfer is manually cance
 before processing. Current tests focus on the two main flows (success and failed).
 """
 
-import json
 import time
-import pytest
 
 from src.modules.invoices.models import InvoiceStatus
 from src.modules.transfers.models import TransferStatus
-
 from tests.e2e.helpers import (
-    create_test_invoice,
-    simulate_webhook,
     assert_invoice_paid,
     assert_transfer_created,
+    create_test_invoice,
+    simulate_webhook,
 )
 
 
 class TestTransferStatusFlow:
     """
     Test suite for transfer status update flows.
-    
+
     Validates that the system correctly handles all transfer lifecycle events
     received via webhooks from Stark Bank API.
     """
-    
+
     def test_transfer_processing_to_success(
         self,
         e2e_app,
@@ -46,7 +43,7 @@ class TestTransferStatusFlow:
     ):
         """
         Test complete transfer lifecycle: CREATED -> PROCESSING -> SUCCESS.
-        
+
         Flow:
         1. Create invoice via API
         2. Simulate invoice payment webhook (creates transfer with status CREATED)
@@ -57,24 +54,24 @@ class TestTransferStatusFlow:
         7. Validate transfer status updated to SUCCESS with completed_at timestamp
         8. Validate transfer queryable via API with correct status
         """
-        from tests.e2e.helpers import TestDbAdapter
         from src.modules.transfers.repository import TransferRepository
-        
+        from tests.e2e.helpers import TestDbAdapter
+
         # ===== STEP 1: Create Invoice via API =====
         invoice_data = sample_invoices[0]  # João Silva, 50000
-        
+
         invoice_response = create_test_invoice(
             client=e2e_app,
             invoice_data=invoice_data,
-            api_key=api_key_header.get("X-API-Key", "test-api-key")
+            api_key=api_key_header.get("X-API-Key", "test-api-key"),
         )
-        
+
         invoice_id = invoice_response["id"]
         stark_invoice_id = invoice_response["stark_invoice_id"]
-        
+
         assert invoice_response["status"] == InvoiceStatus.CREATED.value
         assert invoice_response["amount"] == invoice_data["amount"] / 100.0
-        
+
         # ===== STEP 2: Simulate Invoice Payment Webhook =====
         payment_webhook_payload = {
             "event": {
@@ -95,39 +92,39 @@ class TestTransferStatusFlow:
                 },
             }
         }
-        
+
         webhook_response = simulate_webhook(
             client=e2e_app,
             webhook_type="invoice",
             payload=payment_webhook_payload,
-            signature="mock_valid_signature"
+            signature="mock_valid_signature",
         )
-        
+
         assert webhook_response["status"] == "ok"
-        
+
         # ===== STEP 3: Validate Intermediate State =====
         # Invoice should be PAID with fee and net_amount
         invoice = assert_invoice_paid(
             db_connection=e2e_db,
             invoice_id=invoice_id,
-            expected_net_amount=(invoice_data["amount"] - 200) / 100.0
+            expected_net_amount=(invoice_data["amount"] - 200) / 100.0,
         )
-        
+
         # Give event bus time to process transfer creation
         time.sleep(0.5)
-        
+
         # Transfer should be auto-created with status CREATED
         transfer = assert_transfer_created(
             db_connection=e2e_db,
             invoice_id=invoice_id,
             expected_status=TransferStatus.CREATED,
-            expected_amount=invoice.net_amount
+            expected_amount=invoice.net_amount,
         )
-        
+
         transfer_id = transfer.id
         stark_transfer_id = transfer.stark_transfer_id
         external_id = transfer.external_id
-        
+
         # ===== STEP 4: Simulate Transfer "processing" Webhook =====
         processing_webhook_payload = {
             "event": {
@@ -146,29 +143,30 @@ class TestTransferStatusFlow:
                 },
             }
         }
-        
+
         webhook_response = simulate_webhook(
             client=e2e_app,
             webhook_type="transfer",
             payload=processing_webhook_payload,
-            signature="mock_valid_signature"
+            signature="mock_valid_signature",
         )
-        
+
         assert webhook_response["status"] == "ok"
-        
+
         # ===== STEP 5: Validate Status = PROCESSING =====
         time.sleep(0.2)
-        
+
         # Fetch transfer from database
         db_adapter = TestDbAdapter(e2e_db)
         repository = TransferRepository(db_adapter)
         transfer = repository.get_by_id(transfer_id)
-        
+
         assert transfer is not None, f"Transfer not found: {transfer_id}"
-        assert transfer.status == TransferStatus.PROCESSING, \
+        assert transfer.status == TransferStatus.PROCESSING, (
             f"Expected status PROCESSING, got {transfer.status}"
+        )
         assert transfer.updated_at is not None, "Transfer updated_at should be set"
-        
+
         # ===== STEP 6: Simulate Transfer "success" Webhook =====
         success_webhook_payload = {
             "event": {
@@ -187,35 +185,36 @@ class TestTransferStatusFlow:
                 },
             }
         }
-        
+
         webhook_response = simulate_webhook(
             client=e2e_app,
             webhook_type="transfer",
             payload=success_webhook_payload,
-            signature="mock_valid_signature"
+            signature="mock_valid_signature",
         )
-        
+
         assert webhook_response["status"] == "ok"
-        
+
         # ===== STEP 7: Validate Final State = SUCCESS =====
         time.sleep(0.2)
-        
+
         # Fetch transfer again
         transfer = repository.get_by_id(transfer_id)
-        
+
         assert transfer is not None, f"Transfer not found: {transfer_id}"
-        assert transfer.status == TransferStatus.SUCCESS, \
+        assert transfer.status == TransferStatus.SUCCESS, (
             f"Expected status SUCCESS, got {transfer.status}"
-        assert transfer.completed_at is not None, \
+        )
+        assert transfer.completed_at is not None, (
             "Transfer completed_at should be set for SUCCESS status"
+        )
         assert transfer.updated_at is not None, "Transfer updated_at should be set"
-        
+
         # ===== STEP 8: Validate via API =====
         transfer_response = e2e_app.get(
-            f"/transfers/{transfer_id}",
-            headers=api_key_header
+            f"/transfers/{transfer_id}", headers=api_key_header
         )
-        
+
         assert transfer_response.status_code == 200
         transfer_data = transfer_response.json()
         assert transfer_data["id"] == transfer_id
@@ -233,7 +232,7 @@ class TestTransferStatusFlow:
     ):
         """
         Test transfer lifecycle with failure: CREATED -> FAILED.
-        
+
         Flow:
         1. Create invoice via API
         2. Simulate invoice payment webhook (creates transfer with status CREATED)
@@ -243,23 +242,23 @@ class TestTransferStatusFlow:
         6. Validate event "transfer.failed" was published
         7. Validate transfer queryable via API with status "failed"
         """
-        from tests.e2e.helpers import TestDbAdapter
         from src.modules.transfers.repository import TransferRepository
-        
+        from tests.e2e.helpers import TestDbAdapter
+
         # ===== STEP 1: Create Invoice via API =====
         invoice_data = sample_invoices[1]  # Maria Santos, 100000
-        
+
         invoice_response = create_test_invoice(
             client=e2e_app,
             invoice_data=invoice_data,
-            api_key=api_key_header.get("X-API-Key", "test-api-key")
+            api_key=api_key_header.get("X-API-Key", "test-api-key"),
         )
-        
+
         invoice_id = invoice_response["id"]
         stark_invoice_id = invoice_response["stark_invoice_id"]
-        
+
         assert invoice_response["status"] == InvoiceStatus.CREATED.value
-        
+
         # ===== STEP 2: Simulate Invoice Payment Webhook =====
         payment_webhook_payload = {
             "event": {
@@ -280,49 +279,49 @@ class TestTransferStatusFlow:
                 },
             }
         }
-        
+
         webhook_response = simulate_webhook(
             client=e2e_app,
             webhook_type="invoice",
             payload=payment_webhook_payload,
-            signature="mock_valid_signature"
+            signature="mock_valid_signature",
         )
-        
+
         assert webhook_response["status"] == "ok"
-        
+
         # ===== STEP 3: Validate Transfer Created =====
         # Validate invoice is PAID
         invoice = assert_invoice_paid(
             db_connection=e2e_db,
             invoice_id=invoice_id,
-            expected_net_amount=(invoice_data["amount"] - 500) / 100.0
+            expected_net_amount=(invoice_data["amount"] - 500) / 100.0,
         )
-        
+
         # Give event bus time to process transfer creation
         time.sleep(0.5)
-        
+
         # Transfer should be auto-created with status CREATED
         transfer = assert_transfer_created(
             db_connection=e2e_db,
             invoice_id=invoice_id,
             expected_status=TransferStatus.CREATED,
-            expected_amount=invoice.net_amount
+            expected_amount=invoice.net_amount,
         )
-        
+
         transfer_id = transfer.id
         stark_transfer_id = transfer.stark_transfer_id
         external_id = transfer.external_id
-        
+
         # ===== STEP 4: Simulate Transfer "failed" Webhook =====
         # Subscribe to capture transfer.failed event
         captured_events = []
-        
+
         def capture_transfer_failed_event(event):
             """Capture transfer.failed event for validation."""
             captured_events.append(event)
-        
+
         e2e_event_bus.subscribe("transfer.failed", capture_transfer_failed_event)
-        
+
         failed_webhook_payload = {
             "event": {
                 "id": "evt_failed_001",
@@ -334,7 +333,7 @@ class TestTransferStatusFlow:
                     "errors": [
                         {
                             "code": "insufficientFunds",
-                            "message": "Insufficient funds in source account"
+                            "message": "Insufficient funds in source account",
                         }
                     ],
                     "transfer": {
@@ -346,47 +345,50 @@ class TestTransferStatusFlow:
                 },
             }
         }
-        
+
         webhook_response = simulate_webhook(
             client=e2e_app,
             webhook_type="transfer",
             payload=failed_webhook_payload,
-            signature="mock_valid_signature"
+            signature="mock_valid_signature",
         )
-        
+
         assert webhook_response["status"] == "ok"
-        
+
         # ===== STEP 5: Validate Final State = FAILED =====
         time.sleep(0.2)
-        
+
         # Fetch transfer from database
         db_adapter = TestDbAdapter(e2e_db)
         repository = TransferRepository(db_adapter)
         transfer = repository.get_by_id(transfer_id)
-        
+
         assert transfer is not None, f"Transfer not found: {transfer_id}"
-        assert transfer.status == TransferStatus.FAILED, \
+        assert transfer.status == TransferStatus.FAILED, (
             f"Expected status FAILED, got {transfer.status}"
-        assert transfer.error_message is not None, \
+        )
+        assert transfer.error_message is not None, (
             "Transfer error_message should be set for FAILED status"
+        )
         assert transfer.updated_at is not None, "Transfer updated_at should be set"
-        
+
         # ===== STEP 6: Validate Event Published =====
-        assert len(captured_events) == 1, \
+        assert len(captured_events) == 1, (
             f"Expected 1 transfer.failed event, got {len(captured_events)}"
-        
+        )
+
         event = captured_events[0]
         assert event.payload is not None, "Event should have payload"
-        assert event.payload.get("transfer_id") == transfer_id, \
+        assert event.payload.get("transfer_id") == transfer_id, (
             f"Event transfer_id mismatch: expected {transfer_id}, got {event.payload.get('transfer_id')}"
+        )
         assert "error_message" in event.payload, "Event should contain error_message"
-        
+
         # ===== STEP 7: Validate via API =====
         transfer_response = e2e_app.get(
-            f"/transfers/{transfer_id}",
-            headers=api_key_header
+            f"/transfers/{transfer_id}", headers=api_key_header
         )
-        
+
         assert transfer_response.status_code == 200
         transfer_data = transfer_response.json()
         assert transfer_data["id"] == transfer_id
@@ -405,7 +407,7 @@ class TestTransferStatusFlow:
     ):
         """
         Test transfer going directly from CREATED to SUCCESS (skipping PROCESSING).
-        
+
         Flow:
         1. Create invoice via API
         2. Simulate invoice payment webhook (creates transfer with status CREATED)
@@ -413,28 +415,28 @@ class TestTransferStatusFlow:
         4. Simulate transfer "success" webhook directly (skip processing)
         5. Validate transfer status updated to SUCCESS with completed_at timestamp
         6. Validate transfer queryable via API with correct status
-        
+
         This tests an edge case where Stark Bank API sends success notification
         without an intermediate processing state.
         """
-        from tests.e2e.helpers import TestDbAdapter
         from src.modules.transfers.repository import TransferRepository
-        
+        from tests.e2e.helpers import TestDbAdapter
+
         # ===== STEP 1: Create Invoice via API =====
         invoice_data = sample_invoices[2]  # Pedro Costa, 25000
-        
+
         invoice_response = create_test_invoice(
             client=e2e_app,
             invoice_data=invoice_data,
-            api_key=api_key_header.get("X-API-Key", "test-api-key")
+            api_key=api_key_header.get("X-API-Key", "test-api-key"),
         )
-        
+
         invoice_id = invoice_response["id"]
         stark_invoice_id = invoice_response["stark_invoice_id"]
-        
+
         assert invoice_response["status"] == InvoiceStatus.CREATED.value
         assert invoice_response["amount"] == invoice_data["amount"] / 100.0
-        
+
         # ===== STEP 2: Simulate Invoice Payment Webhook =====
         payment_webhook_payload = {
             "event": {
@@ -455,39 +457,39 @@ class TestTransferStatusFlow:
                 },
             }
         }
-        
+
         webhook_response = simulate_webhook(
             client=e2e_app,
             webhook_type="invoice",
             payload=payment_webhook_payload,
-            signature="mock_valid_signature"
+            signature="mock_valid_signature",
         )
-        
+
         assert webhook_response["status"] == "ok"
-        
+
         # ===== STEP 3: Validate Transfer Created =====
         # Validate invoice is PAID
         invoice = assert_invoice_paid(
             db_connection=e2e_db,
             invoice_id=invoice_id,
-            expected_net_amount=(invoice_data["amount"] - 100) / 100.0
+            expected_net_amount=(invoice_data["amount"] - 100) / 100.0,
         )
-        
+
         # Give event bus time to process transfer creation
         time.sleep(0.5)
-        
+
         # Transfer should be auto-created with status CREATED
         transfer = assert_transfer_created(
             db_connection=e2e_db,
             invoice_id=invoice_id,
             expected_status=TransferStatus.CREATED,
-            expected_amount=invoice.net_amount
+            expected_amount=invoice.net_amount,
         )
-        
+
         transfer_id = transfer.id
         stark_transfer_id = transfer.stark_transfer_id
         external_id = transfer.external_id
-        
+
         # ===== STEP 4: Simulate Transfer "success" Webhook (Skip Processing) =====
         success_webhook_payload = {
             "event": {
@@ -506,37 +508,38 @@ class TestTransferStatusFlow:
                 },
             }
         }
-        
+
         webhook_response = simulate_webhook(
             client=e2e_app,
             webhook_type="transfer",
             payload=success_webhook_payload,
-            signature="mock_valid_signature"
+            signature="mock_valid_signature",
         )
-        
+
         assert webhook_response["status"] == "ok"
-        
+
         # ===== STEP 5: Validate Final State = SUCCESS =====
         time.sleep(0.2)
-        
+
         # Fetch transfer from database
         db_adapter = TestDbAdapter(e2e_db)
         repository = TransferRepository(db_adapter)
         transfer = repository.get_by_id(transfer_id)
-        
+
         assert transfer is not None, f"Transfer not found: {transfer_id}"
-        assert transfer.status == TransferStatus.SUCCESS, \
+        assert transfer.status == TransferStatus.SUCCESS, (
             f"Expected status SUCCESS, got {transfer.status}"
-        assert transfer.completed_at is not None, \
+        )
+        assert transfer.completed_at is not None, (
             "Transfer completed_at should be set for SUCCESS status"
+        )
         assert transfer.updated_at is not None, "Transfer updated_at should be set"
-        
+
         # ===== STEP 6: Validate via API =====
         transfer_response = e2e_app.get(
-            f"/transfers/{transfer_id}",
-            headers=api_key_header
+            f"/transfers/{transfer_id}", headers=api_key_header
         )
-        
+
         assert transfer_response.status_code == 200
         transfer_data = transfer_response.json()
         assert transfer_data["id"] == transfer_id

@@ -5,7 +5,6 @@ This module provides FastAPI endpoints for receiving webhooks from Stark Bank.
 These endpoints are publicly accessible but require valid signatures.
 """
 
-
 from fastapi import APIRouter, Header, Request, status
 from fastapi.responses import JSONResponse
 
@@ -82,11 +81,7 @@ def _get_webhook_receiver() -> WebhookReceiver:
     responses={
         200: {
             "description": "Webhook processed successfully",
-            "content": {
-                "application/json": {
-                    "example": {"status": "ok"}
-                }
-            },
+            "content": {"application/json": {"example": {"status": "ok"}}},
         },
         401: {
             "description": "Invalid signature",
@@ -185,11 +180,7 @@ async def receive_invoice_webhook(
     responses={
         200: {
             "description": "Webhook processed successfully",
-            "content": {
-                "application/json": {
-                    "example": {"status": "ok"}
-                }
-            },
+            "content": {"application/json": {"example": {"status": "ok"}}},
         },
         401: {
             "description": "Invalid signature",

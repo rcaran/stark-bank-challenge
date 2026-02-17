@@ -5,7 +5,6 @@ This module provides database operations for transfers,
 extending the BaseRepository with transfer-specific methods.
 """
 
-
 import builtins
 
 from src.modules.transfers.models import TransferModel, TransferStatus
@@ -236,10 +235,7 @@ class TransferRepository(BaseRepository[TransferModel]):
         logger.info(f"Transfer updated successfully: {transfer.id}")
 
     def list(
-        self,
-        status: str | None = None,
-        limit: int = 100,
-        offset: int = 0
+        self, status: str | None = None, limit: int = 100, offset: int = 0
     ) -> builtins.list[TransferModel]:
         """
         List transfers with optional filtering.
@@ -327,17 +323,19 @@ class TransferRepository(BaseRepository[TransferModel]):
         Returns:
             TransferModel instance
         """
-        return TransferModel.from_dict({
-            "id": row[0],
-            "invoice_id": row[1],
-            "stark_transfer_id": row[2],
-            "external_id": row[3],
-            "amount": row[4],
-            "status": row[5],
-            "created_at": row[6],
-            "updated_at": row[7],
-            "completed_at": row[8],
-            "retry_count": row[9],
-            "last_retry_at": row[10],
-            "error_message": row[11],
-        })
+        return TransferModel.from_dict(
+            {
+                "id": row[0],
+                "invoice_id": row[1],
+                "stark_transfer_id": row[2],
+                "external_id": row[3],
+                "amount": row[4],
+                "status": row[5],
+                "created_at": row[6],
+                "updated_at": row[7],
+                "completed_at": row[8],
+                "retry_count": row[9],
+                "last_retry_at": row[10],
+                "error_message": row[11],
+            }
+        )

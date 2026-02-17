@@ -14,6 +14,7 @@ from typing import Any
 
 class WebhookEventType(StrEnum):
     """Webhook event types from Stark Bank."""
+
     # Invoice events
     INVOICE_CREATED = "created"
     INVOICE_CREDITED = "credited"
@@ -35,6 +36,7 @@ class WebhookEvent:
     This represents the outer structure of a webhook payload
     containing the event log information.
     """
+
     subscription: str
     event_id: str
     event_type: str
@@ -103,6 +105,7 @@ class InvoiceWebhookPayload:
     Extracts invoice-specific information from the webhook event,
     including payment details when an invoice is paid.
     """
+
     invoice_id: str
     status: str
     amount: int  # In centavos
@@ -222,6 +225,7 @@ class TransferWebhookPayload:
     Extracts transfer-specific information from the webhook event,
     including status updates and error information.
     """
+
     transfer_id: str
     status: str
     amount: int  # In centavos
