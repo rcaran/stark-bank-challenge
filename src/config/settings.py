@@ -22,7 +22,7 @@ class Settings:
     admin_api_key: str | None = os.getenv("ADMIN_API_KEY")
 
     # Stark Bank
-    starkbank_private_key_content: str = os.getenv("STARKBANK_PRIVATE_KEY_CONTENT", "")
+    starkbank_private_key_content: str = os.getenv("STARKBANK_PRIVATE_KEY_CONTENT", "").replace("\\n", "\n")
     starkbank_project_id: str = os.getenv("STARKBANK_PROJECT_ID", "")
     starkbank_environment: str = os.getenv("STARKBANK_ENVIRONMENT", "sandbox")
 

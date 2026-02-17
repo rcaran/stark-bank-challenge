@@ -1239,16 +1239,6 @@ open htmlcov/index.html
 - [X] Remover código morto
 - [X] Validar docstrings
 
-### 9.6. Performance Testing (Opcional)
-
-**Arquivos:**
-- `tests/performance/test_load.py`
-
-**Testes:**
-- [ ] Load test de criação de invoices
-- [ ] Load test de webhooks
-- [ ] Verificar tempos de resposta
-- [ ] Verificar memory leaks
 
 ### Entregáveis Fase 9
 - ✅ Documentação completa

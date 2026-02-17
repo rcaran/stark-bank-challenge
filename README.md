@@ -27,7 +27,6 @@ Desenvolvido como parte do processo seletivo do Stark Bank, demonstrando capacid
 - **Stark Bank SDK**: Integração oficial com Stark Bank
 - **SQLite**: Banco de dados (fácil migração para PostgreSQL)
 - **APScheduler**: Agendamento de tarefas periódicas
-- **Pydantic**: Validação de dados e settings
 - **pytest**: Framework de testes
 - **Ruff**: Linting e formatação de código
 - **Uvicorn**: Servidor ASGI de alta performance
