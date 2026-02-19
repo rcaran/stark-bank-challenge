@@ -574,7 +574,6 @@ class TestQueryEndpoints:
 
         invoice_id = result["invoice_id"]
         transfer_id = result["transfer_id"]
-        transfer = result["transfer"]
 
         # Calculate expected net_amount (in currency units)
         expected_net_amount = (invoice_data["amount"] - fee) / 100.0

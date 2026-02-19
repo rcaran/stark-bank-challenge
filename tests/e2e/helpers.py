@@ -236,7 +236,8 @@ def assert_invoice_exists(
 
     if expected_status is not None:
         assert invoice.status == expected_status, (
-            f"Invoice {invoice_id} status mismatch: expected {expected_status}, got {invoice.status}"
+            f"Invoice {invoice_id} status mismatch: "
+            f"expected {expected_status}, got {invoice.status}"
         )
 
     logger.info(f"Invoice assertion passed: {invoice_id} (status: {invoice.status})")
@@ -273,12 +274,14 @@ def assert_transfer_created(
 
     if expected_status is not None:
         assert transfer.status == expected_status, (
-            f"Transfer status mismatch: expected {expected_status}, got {transfer.status}"
+            f"Transfer status mismatch: "
+            f"expected {expected_status}, got {transfer.status}"
         )
 
     if expected_amount is not None:
         assert transfer.amount == expected_amount, (
-            f"Transfer amount mismatch: expected {expected_amount}, got {transfer.amount}"
+            f"Transfer amount mismatch: "
+            f"expected {expected_amount}, got {transfer.amount}"
         )
 
     logger.info(
@@ -336,7 +339,8 @@ def assert_invoice_paid(
 
     if expected_net_amount is not None:
         assert invoice.net_amount == expected_net_amount, (
-            f"Net amount mismatch: expected {expected_net_amount}, got {invoice.net_amount}"
+            f"Net amount mismatch: "
+            f"expected {expected_net_amount}, got {invoice.net_amount}"
         )
 
     logger.info(

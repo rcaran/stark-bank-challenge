@@ -152,7 +152,8 @@ class TestInvoiceCreationFlow:
             assert db_invoice["status"] == InvoiceStatus.CREATED.value
             assert db_invoice["created_at"] is not None
             logger.debug(
-                f"  - Invoice {db_invoice['id']}: {db_invoice['customer_name']} - {db_invoice['amount'] / 100:.2f}"
+                f"  - Invoice {db_invoice['id']}: {db_invoice['customer_name']}"
+                f" - {db_invoice['amount'] / 100:.2f}"
             )
 
         logger.info("✓ All invoices have required fields")

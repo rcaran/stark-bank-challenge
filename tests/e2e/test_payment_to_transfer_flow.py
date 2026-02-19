@@ -184,7 +184,7 @@ class TestPaymentToTransferFlow:
         }
 
         # ===== STEP 3: Send Webhook 3 Times (Simulate Duplicates) =====
-        for i in range(3):
+        for _ in range(3):
             webhook_response = simulate_webhook(
                 client=e2e_app,
                 webhook_type="invoice",
@@ -413,7 +413,7 @@ class TestPaymentToTransferFlow:
             # ===== Validate Net Amount =====
             expected_net_amount = (amount - fee) / 100.0  # Convert to reais
 
-            invoice = assert_invoice_paid(
+            assert_invoice_paid(
                 db_connection=e2e_db,
                 invoice_id=invoice_id,
                 expected_net_amount=expected_net_amount,

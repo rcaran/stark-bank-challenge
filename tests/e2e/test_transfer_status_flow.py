@@ -380,7 +380,8 @@ class TestTransferStatusFlow:
         event = captured_events[0]
         assert event.payload is not None, "Event should have payload"
         assert event.payload.get("transfer_id") == transfer_id, (
-            f"Event transfer_id mismatch: expected {transfer_id}, got {event.payload.get('transfer_id')}"
+            f"Event transfer_id mismatch: expected {transfer_id}, "
+            f"got {event.payload.get('transfer_id')}"
         )
         assert "error_message" in event.payload, "Event should contain error_message"
 

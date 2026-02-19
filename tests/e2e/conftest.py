@@ -11,6 +11,7 @@ This module provides fixtures for end-to-end testing including:
 import sqlite3
 import tempfile
 from contextlib import contextmanager
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -82,9 +83,8 @@ def e2e_db():
         TestDatabaseConnection: Test database connection wrapper
     """
     # Create temporary database file
-    temp_db = tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".db")
-    temp_db_path = temp_db.name
-    temp_db.close()
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".db") as temp_db:
+        temp_db_path = temp_db.name
 
     logger.info(f"Creating E2E test database: {temp_db_path}")
 
@@ -106,10 +106,8 @@ def e2e_db():
     finally:
         # Clean up
         conn.close()
-        import os
-
         try:
-            os.unlink(temp_db_path)
+            Path(temp_db_path).unlink()
             logger.info(f"Cleaned up E2E test database: {temp_db_path}")
         except Exception as e:
             logger.warning(f"Failed to clean up test database: {e}")
@@ -147,9 +145,7 @@ def mock_stark_invoice_api():
     # Default behavior: successful invoice creation
     def create_invoice_side_effect(**kwargs):
         amount = kwargs.get("amount")
-        name = kwargs.get("name")
         tax_id = kwargs.get("tax_id")
-        due_date = kwargs.get("due_date")
 
         # Create a mock response object with an id attribute
         response = Mock()

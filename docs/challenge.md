@@ -1,243 +1,242 @@
-# Stark Bank Challenge - Requisitos de Negócio
+# Stark Bank Challenge - Business Requirements
 
-**Versão:** 1.0  
-**Data:** Fevereiro 2026  
-**Autor:** Candidato Processo Seletivo Stark Bank
+**Version:** 1.0  
+**Date:** February 2026  
+**Author:** Stark Bank Selection Process Candidate
 
-## 1. Contexto
+## 1. Context
 
-Este documento descreve os requisitos de negócio para o desafio técnico do processo seletivo Stark Bank. O objetivo é desenvolver uma aplicação que automatize a emissão de faturas (invoices), processe pagamentos via webhooks e realize transferências automáticas dos valores recebidos.
+This document describes the business requirements for the Stark Bank technical challenge. The goal is to develop an application that automates invoice issuance, processes payments via webhooks, and performs automatic transfers of received amounts.
 
-### 1.1. Ambiente
+### 1.1. Environment
 
-- Plataforma: Stark Bank Sandbox
+- Platform: Stark Bank Sandbox
 - Python 3.14
 - FastAPI
 
-## 2. Objetivos
+## 2. Objectives
 
-### 2.1. Objetivo Principal
-Desenvolver uma integração automatizada com os serviços do Stark Bank que demonstre:
+### 2.1. Main Objective
+Develop an automated integration with Stark Bank services that demonstrates:
 
-- Capacidade de integração com APIs externas
-- Arquitetura orientada a eventos
-- Tratamento robusto de erros e retry
-- Boas práticas de segurança e logging
-- Monolito modular
-- Não deve utilizar pydantic
+- Ability to integrate with external APIs
+- Event-driven architecture
+- Robust error handling and retry
+- Security and logging best practices
+- Modular monolith
 
-### 2.2. Objetivos Específicos
+### 2.2. Specific Objectives
 
-- Automatizar a emissão periódica de invoices
-- Processar notificações de pagamento via webhooks
-- Executar transferências automáticas de valores recebidos
-- Garantir rastreabilidade completa das operações
-- Implementar mecanismos de resiliência e tolerância a falhas
+- Automate periodic invoice issuance
+- Process payment notifications via webhooks
+- Execute automatic transfers of received amounts
+- Ensure complete traceability of operations
+- Implement resilience and fault tolerance mechanisms
 
-## 3. Requisitos Funcionais
+## 3. Functional Requirements
 
-### RF001: Geração Automática de Invoices
-**Descrição:** O sistema deve emitir invoices automaticamente a cada 3 horas durante 24 horas.
+### RF001: Automatic Invoice Generation
+**Description:** The system must automatically issue invoices every 3 hours for 24 hours.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- Emitir entre 8 e 12 invoices por ciclo (quantidade aleatória)
-- Gerar dados de pagadores aleatórios (nome, CPF/CNPJ, email)
-- Validar CPF/CNPJ antes de criar invoice
-- Executar 8 ciclos completos (24 horas / 3 horas)
-- Persistir todas as invoices criadas no banco de dados
-- Publicar evento InvoiceCreated para cada invoice gerada
-- Continuar execução mesmo se algumas invoices falharem
+- Issue between 8 and 12 invoices per cycle (random quantity)
+- Generate random payer data (name, CPF/CNPJ, email)
+- Validate CPF/CNPJ before creating an invoice
+- Execute 8 complete cycles (24 hours / 3 hours)
+- Persist all created invoices in the database
+- Publish an InvoiceCreated event for each generated invoice
+- Continue execution even if some invoices fail
 
-**Regras de Negócio:**
+**Business Rules:**
 
-- Valor da invoice: entre R$ 100,00 e R$ 1.000,00 (aleatório)
-- Vencimento: 3 dias após criação
-- CPF deve ter 11 dígitos e ser válido
-- CNPJ deve ter 14 dígitos e ser válido
+- Invoice amount: between R$ 100.00 and R$ 1,000.00 (random)
+- Due date: 3 days after creation
+- CPF must have 11 digits and be valid
+- CNPJ must have 14 digits and be valid
 
-### RF002: Processamento de Webhooks de Pagamento
-**Descrição:** O sistema deve receber e processar notificações de pagamento enviadas pelo Stark Bank.
+### RF002: Payment Webhook Processing
+**Description:** The system must receive and process payment notifications sent by Stark Bank.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- Endpoint público `POST /webhooks/invoice`
-- Validar assinatura digital do webhook (segurança)
-- Extrair dados do pagamento (invoice_id, amount, fee)
-- Atualizar status da invoice no banco de dados
-- Calcular valor líquido (amount - fee)
-- Publicar evento InvoicePaid após processar
-- Retornar HTTP 200 em caso de sucesso
-- Retornar HTTP 401 se assinatura inválida
-- Retornar HTTP 400 se payload malformado
+- Public endpoint `POST /webhooks/invoice`
+- Validate webhook digital signature (security)
+- Extract payment data (invoice_id, amount, fee)
+- Update invoice status in the database
+- Calculate net amount (amount - fee)
+- Publish InvoicePaid event after processing
+- Return HTTP 200 on success
+- Return HTTP 401 if signature is invalid
+- Return HTTP 400 if payload is malformed
 
-**Regras de Negócio:**
+**Business Rules:**
 
-- Apenas invoices com status "paid" devem acionar transferência
-- Valor líquido = valor bruto - taxas do Stark Bank
-- Webhook deve ser idempotente (processar duplicatas sem erro)
+- Only invoices with "paid" status should trigger a transfer
+- Net amount = gross amount - Stark Bank fees
+- Webhook must be idempotent (process duplicates without error)
 
-### RF003: Transferências Automáticas
-**Descrição:** O sistema deve transferir automaticamente os valores recebidos (líquidos) para a conta do Stark Bank.
+### RF003: Automatic Transfers
+**Description:** The system must automatically transfer received amounts (net) to the Stark Bank account.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- Transferir valor líquido (amount - fee)
-- Usar dados da conta destino especificada
-- Garantir idempotência via external_id
-- Persistir transferência no banco de dados
-- Publicar evento TransferCompleted após sucesso
-- Não duplicar transferências para mesma invoice
+- Transfer net amount (amount - fee)
+- Use the specified destination account details
+- Ensure idempotency via external_id
+- Persist transfer in the database
+- Publish TransferCompleted event after success
+- Do not duplicate transfers for the same invoice
 
-**Dados da Conta Destino:**
+**Destination Account Details:**
 
-- Banco: 20018183
-- Agência: 0001
-- Conta: 6341320293482496
-- Nome: Stark Bank S.A.
+- Bank: 20018183
+- Branch: 0001
+- Account: 6341320293482496
+- Name: Stark Bank S.A.
 - CNPJ: 20.018.183/0001-80
-- Tipo: pagamento
+- Type: payment
 
-**Regras de Negócio:**
+**Business Rules:**
 
-- `external_id = invoice-{invoice_id}` (garante idempotência)
-- Transferência só deve ser criada após confirmação de pagamento
-- Em caso de falha, sistema deve realizar retry automático
+- `external_id = invoice-{invoice_id}` (ensures idempotency)
+- Transfer must only be created after payment confirmation
+- In case of failure, the system must perform automatic retry
 
-### RF004: Processamento de Webhooks de Transferência
-**Descrição:** O sistema deve receber e processar notificações de status de transferência enviadas pelo Stark Bank.
+### RF004: Transfer Webhook Processing
+**Description:** The system must receive and process transfer status notifications sent by Stark Bank.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- Endpoint público `POST /webhooks/transfer`
-- Validar assinatura digital do webhook (segurança)
-- Extrair dados da transferência (transfer_id, status, amount)
-- Atualizar status da transferência no banco de dados
-- Publicar evento TransferStatusUpdated após processar
-- Retornar HTTP 200 em caso de sucesso
-- Retornar HTTP 401 se assinatura inválida
-- Retornar HTTP 400 se payload malformado
+- Public endpoint `POST /webhooks/transfer`
+- Validate webhook digital signature (security)
+- Extract transfer data (transfer_id, status, amount)
+- Update transfer status in the database
+- Publish TransferStatusUpdated event after processing
+- Return HTTP 200 on success
+- Return HTTP 401 if signature is invalid
+- Return HTTP 400 if payload is malformed
 
-**Regras de Negócio:**
+**Business Rules:**
 
-- Processar atualizações de status: processing, success, failed
-- Status "success" indica transferência completada com sucesso
-- Status "failed" indica falha definitiva (requer análise manual)
-- Webhook deve ser idempotente (processar duplicatas sem erro)
-- Registrar todas as atualizações em auditoria
+- Process status updates: processing, success, failed
+- Status "success" indicates transfer completed successfully
+- Status "failed" indicates definitive failure (requires manual review)
+- Webhook must be idempotent (process duplicates without error)
+- Record all updates in audit log
 
-### RF005: Consulta de Invoices
-**Descrição:** O sistema deve expor endpoints para consulta de invoices criadas.
+### RF005: Invoice Query
+**Description:** The system must expose endpoints for querying created invoices.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- `GET /invoices` - lista todas as invoices
-- `GET /invoices/{id}` - consulta invoice específica
-- Suportar filtros por status (created, paid, failed)
-- Suportar paginação (limit, offset)
-- Retornar dados completos da invoice
-- Requer autenticação via API Key
+- `GET /invoices` - lists all invoices
+- `GET /invoices/{id}` - queries a specific invoice
+- Support filtering by status (created, paid, failed)
+- Support pagination (limit, offset)
+- Return complete invoice data
+- Requires API Key authentication
 
-### RF006: Consulta de Transferências
-**Descrição:** O sistema deve expor endpoints para consulta de transferências realizadas.
+### RF006: Transfer Query
+**Description:** The system must expose endpoints for querying performed transfers.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- `GET /transfers` - lista todas as transferências
-- `GET /transfers/{id}` - consulta transferência específica
-- Suportar filtros por status (processing, success, failed)
-- Suportar paginação (limit, offset)
-- Retornar dados completos da transferência
-- Requer autenticação via API Key
+- `GET /transfers` - lists all transfers
+- `GET /transfers/{id}` - queries a specific transfer
+- Support filtering by status (processing, success, failed)
+- Support pagination (limit, offset)
+- Return complete transfer data
+- Requires API Key authentication
 
 ### RF007: Health Check
-**Descrição:** O sistema deve expor endpoint para verificação de saúde da aplicação.
+**Description:** The system must expose an endpoint for checking application health.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- `GET /health` - verifica status da aplicação
-- Verificar conectividade com banco de dados
-- Retornar timestamp da verificação
-- Endpoint público (sem autenticação)
+- `GET /health` - checks application status
+- Verify database connectivity
+- Return check timestamp
+- Public endpoint (no authentication)
 
-## 4. Requisitos Não-Funcionais
+## 4. Non-Functional Requirements
 
-### RNF001: Confiabilidade e Resiliência
-**Descrição:** O sistema deve ser resiliente a falhas temporárias da API do Stark Bank.
+### NFR001: Reliability and Resilience
+**Description:** The system must be resilient to temporary failures of the Stark Bank API.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- Implementar retry automático em todas as integrações
-- Estratégia de retry: 5 tentativas com backoff exponencial
+- Implement automatic retry in all integrations
+- Retry strategy: 5 attempts with exponential backoff
 
-  - Tentativa 1: imediata
-  - Tentativa 2: após 1 minuto (60s)
-  - Tentativa 3: após 2 minutos (120s)
-  - Tentativa 4: após 4 minutos (240s)
-  - Tentativa 5: após 8 minutos (480s)
+  - Attempt 1: immediate
+  - Attempt 2: after 1 minute (60s)
+  - Attempt 3: after 2 minutes (120s)
+  - Attempt 4: after 4 minutes (240s)
+  - Attempt 5: after 8 minutes (480s)
 
-- Fazer retry apenas em erros retriáveis (timeout, 5xx, 429)
-- NÃO fazer retry em erros de validação (4xx exceto 429)
-- Registrar todas as tentativas em logs
-- Persistir contadores de retry no banco de dados
+- Retry only on retriable errors (timeout, 5xx, 429)
+- Do NOT retry on validation errors (4xx except 429)
+- Log all attempts
+- Persist retry counters in the database
 
-**Erros Retriáveis:**
+**Retriable Errors:**
 
-- Timeout de conexão
-- Erros 5xx (server error)
-- Erro 429 (rate limit)
-- Erros de rede (ConnectionError)
+- Connection timeout
+- 5xx errors (server error)
+- 429 error (rate limit)
+- Network errors (ConnectionError)
 
-**Erros Não-Retriáveis:**
+**Non-Retriable Errors:**
 
-- Erros 400, 401, 403, 404, 422 (client error)
-- Erros de validação de dados
-- Erros de autenticação
+- 400, 401, 403, 404, 422 errors (client error)
+- Data validation errors
+- Authentication errors
 
-### RNF002: Rastreabilidade e Auditoria
-**Descrição:** O sistema deve manter registro completo de todas as operações.
+### NFR002: Traceability and Audit
+**Description:** The system must maintain a complete record of all operations.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- Logging estruturado (formato JSON) de todas operações
-- Persistir todos os eventos na tabela `events_log`
-- Logs devem incluir: timestamp, event_type, payload, metadata
-- Níveis de log apropriados (INFO, WARNING, ERROR)
-- Não expor dados sensíveis em logs (chaves, senhas)
-- Correlacionar operações via event_id único
-- Armazenar logs em arquivo e console
+- Structured logging (JSON format) for all operations
+- Persist all events in the `events_log` table
+- Logs must include: timestamp, event_type, payload, metadata
+- Appropriate log levels (INFO, WARNING, ERROR)
+- Do not expose sensitive data in logs (keys, passwords)
+- Correlate operations via unique event_id
+- Store logs in file and console
 
-**Eventos Auditados:**
+**Audited Events:**
 
-- invoice.created - Invoice criada
-- invoice.paid - Invoice paga (via webhook)
-- transfer.initiated - Transferência iniciada
-- transfer.processing - Transferência em processamento (via webhook)
-- transfer.completed - Transferência concluída (via webhook)
-- transfer.failed - Transferência falhou (via webhook)
-- operation.failed - Operação falhou após todos os retries
-- error.occurred - Erro capturado
+- invoice.created - Invoice created
+- invoice.paid - Invoice paid (via webhook)
+- transfer.initiated - Transfer initiated
+- transfer.processing - Transfer in processing (via webhook)
+- transfer.completed - Transfer completed (via webhook)
+- transfer.failed - Transfer failed (via webhook)
+- operation.failed - Operation failed after all retries
+- error.occurred - Error captured
 
-### RNF003: Segurança
-**Descrição:** O sistema deve implementar controles de segurança adequados.
+### NFR003: Security
+**Description:** The system must implement appropriate security controls.
 
-**Critérios de Aceitação:**
+**Acceptance Criteria:**
 
-- Validar assinatura digital de todos os webhooks
-- Autenticação via API Key para endpoints sensíveis
-- Credenciais em variáveis de ambiente (nunca no código)
-- Comparação segura de API Keys (proteção contra timing attacks)
-- HTTPS obrigatório em produção
-- Não expor stack traces em respostas de erro
-- Rate limiting em endpoints públicos (futuro)
+- Validate digital signature of all webhooks
+- API Key authentication for sensitive endpoints
+- Credentials in environment variables (never in code)
+- Secure API Key comparison (protection against timing attacks)
+- HTTPS mandatory in production
+- Do not expose stack traces in error responses
+- Rate limiting on public endpoints (future)
 
-**Endpoints Públicos:**
+**Public Endpoints:**
 
-- `GET /health` - Sem autenticação
-- `POST /webhooks/invoice` - Validado por assinatura digital
-- `POST /webhooks/transfer` - Validado por assinatura digital
+- `GET /health` - No authentication
+- `POST /webhooks/invoice` - Validated by digital signature
+- `POST /webhooks/transfer` - Validated by digital signature
 
-**Endpoints Protegidos (requerem API Key via header X-API-Key):**
+**Protected Endpoints (require API Key via X-API-Key header):**
 
 - `GET /invoices`
 - `GET /invoices/{id}`
@@ -246,143 +245,141 @@ Desenvolver uma integração automatizada com os serviços do Stark Bank que dem
 - `GET /docs` (Swagger)
 - `GET /openapi.json`
 
-### RNF004: Performance
-**Critérios de Aceitação:**
+### NFR004: Performance
+**Acceptance Criteria:**
 
-- Criar invoice: < 5 segundos (sem retry)
-- Processar webhook: < 2 segundos
-- Criar transferência: < 5 segundos (sem retry)
-- Consultar invoices/transfers: < 1 segundo
-- Scheduler deve executar pontualmente a cada 3 horas
+- Create invoice: < 5 seconds (without retry)
+- Process webhook: < 2 seconds
+- Create transfer: < 5 seconds (without retry)
+- Query invoices/transfers: < 1 second
+- Scheduler must execute punctually every 3 hours
 
-### RNF005: Escalabilidade
+### NFR005: Scalability
 
-- Suportar criação de 96 invoices em 24 horas (8 ciclos × 12 max)
-- Processar webhooks concorrentemente (se múltiplos chegarem)
-- Banco de dados deve suportar crescimento de dados
-- Arquitetura modular permite futura extração de microserviços
+- Support creation of 96 invoices in 24 hours (8 cycles × 12 max)
+- Process webhooks concurrently (if multiple arrive)
+- Database must support data growth
+- Modular architecture allows future extraction of microservices
 
-### RNF006: Manutenibilidade
+### NFR006: Maintainability
 
-- Arquitetura modular (monolito modular)
-- Desacoplamento via Event Bus
-- Código testável (cobertura > 85%)
-- Documentação completa (negócio + arquitetura + API)
-- Python 3.13 com bibliotecas atualizadas
-- NÃO usar Pydantic (alinhamento com stack Stark Bank)
-- Type hints em todo o código
-- Linting e formatação automatizados (Ruff)
+- Modular architecture (modular monolith)
+- Decoupling via Event Bus
+- Testable code (coverage > 85%)
+- Complete documentation (business + architecture + API)
+- Python 3.14 with updated libraries
+- Type hints throughout the code
+- Automated linting and formatting (Ruff)
 
-## 5. Regras de Negócio
+## 5. Business Rules
 
-### RN001: Geração de Dados Aleatórios
+### BR001: Random Data Generation
 
-- Usar biblioteca Faker para gerar nomes realistas
-- 70% de invoices com CPF (pessoa física)
-- 30% de invoices com CNPJ (pessoa jurídica)
-- Valores aleatórios entre R$ 100,00 e R$ 1.000,00
-- Quantidade aleatória entre 8 e 12 invoices por ciclo
+- Use Faker library to generate realistic names
+- 70% of invoices with CPF (individual)
+- 30% of invoices with CNPJ (company)
+- Random amounts between R$ 100.00 and R$ 1,000.00
+- Random quantity between 8 and 12 invoices per cycle
 
-### RN002: Validação de Documentos
+### BR002: Document Validation
 
-- CPF: 11 dígitos numéricos, validar dígitos verificadores
-- CNPJ: 14 dígitos numéricos, validar dígitos verificadores
-- Rejeitar CPF/CNPJ com todos os dígitos iguais (ex: 111.111.111-11)
+- CPF: 11 numeric digits, validate check digits
+- CNPJ: 14 numeric digits, validate check digits
+- Reject CPF/CNPJ with all identical digits (e.g. 111.111.111-11)
 
-### RN003: Cálculo de Valor Líquido
+### BR003: Net Amount Calculation
 
-- valor_liquido = valor_bruto - taxas
-- Taxas são informadas pelo Stark Bank no webhook
-- Valor líquido nunca pode ser negativo
+- net_amount = gross_amount - fees
+- Fees are provided by Stark Bank in the webhook
+- Net amount can never be negative
 
-### RN004: Idempotência de Transferências
+### BR004: Transfer Idempotency
 
-- Usar `external_id = invoice-{invoice_id}` em todas as transferências
-- Se transferência com mesmo external_id já existe, retornar a existente
-- Não criar transferências duplicadas para mesma invoice
+- Use `external_id = invoice-{invoice_id}` in all transfers
+- If a transfer with the same external_id already exists, return the existing one
+- Do not create duplicate transfers for the same invoice
 
-### RN005: Estados de Invoice
+### BR005: Invoice States
 
-Estados válidos:
+Valid states:
 
-- `created` - Invoice criada, aguardando pagamento
-- `paid` - Invoice paga, confirmada via webhook
-- `canceled` - Invoice cancelada
-- `expired` - Invoice expirada 
+- `created` - Invoice created, awaiting payment
+- `paid` - Invoice paid, confirmed via webhook
+- `canceled` - Invoice canceled
+- `expired` - Invoice expired
 
-### RN006: Estados de Transferência
+### BR006: Transfer States
 
-Estados válidos:
+Valid states:
 
-- `created` - Transferência criada localmente
-- `processing` - Transferência em processamento no Stark Bank
-- `success` - Transferência concluída com sucesso
-- `failed` - Transferência falhou definitivamente
+- `created` - Transfer created locally
+- `processing` - Transfer being processed at Stark Bank
+- `success` - Transfer completed successfully
+- `failed` - Transfer failed definitively
 
-## 6. Restrições
+## 6. Constraints
 
-**Técnicas**
+**Technical**
 
-- Linguagem: Python 3.13 obrigatório
-- Stack: Alinhada com Stark Bank (sem Pydantic)
+- Language: Python 3.14 mandatory
 - API: Stark Bank SDK v2.14.0+
-- Banco de dados: SQLite (persistente)
+- Database: SQLite (persistent)
 - Deploy: Railway free tier
 
-**Temporais**
+**Temporal**
 
-- Execução: 24 horas contínuas
-- Intervalo de geração: 3 horas (fixo)
+- Execution: 24 continuous hours
+- Generation interval: 3 hours (fixed)
 
-**Funcionais**
+**Functional**
 
-- Ambiente: Stark Bank Sandbox apenas
-- Conta destino: Fixa, conforme especificado
-- Scheduler: Processo separado da API
+- Environment: Stark Bank Sandbox only
+- Destination account: Fixed, as specified
+- Scheduler: Separate process from the API
 
-## 7. Diagramas
+## 7. Diagrams
 
-### 7.1. Fluxo Geral do Processo
+### 7.1. General Process Flow
 
 ```mermaid
 graph TB
-    Start([Início - 00:00]) --> Scheduler[Scheduler Inicia]
-    Scheduler --> Cycle{Executar<br/>Ciclo?}
+    Start([Start - 00:00]) --> Scheduler[Scheduler Starts]
+    Scheduler --> Cycle{Run<br/>Cycle?}
     
-    Cycle -->|A cada 3h| Generate[Gerar 8-12 Invoices]
-    Generate --> CreateInv[Criar Invoice via<br/>Stark Bank API]
-    CreateInv --> SaveInv[Salvar no Banco]
-    SaveInv --> EventInv[Publicar Evento<br/>InvoiceCreated]
-    EventInv --> MoreInv{Mais<br/>Invoices?}
+    Cycle -->|Every 3h| Generate[Generate 8-12 Invoices]
+    Generate --> CreateInv[Create Invoice via<br/>Stark Bank API]
+    CreateInv --> SaveInv[Save to Database]
+    SaveInv --> EventInv[Publish Event<br/>InvoiceCreated]
+    EventInv --> MoreInv{More<br/>Invoices?}
     
-    MoreInv -->|Sim| CreateInv
-    MoreInv -->|Não| Wait[Aguardar 3 horas]
-    Wait --> Check{24h<br/>completas?}
+    MoreInv -->|Yes| CreateInv
+    MoreInv -->|No| Wait[Wait 3 hours]
+    Wait --> Check{24h<br/>complete?}
     
-    Check -->|Não| Cycle
-    Check -->|Sim| End([Fim])
+    Check -->|No| Cycle
+    Check -->|Yes| End([End])
     
-    %% Fluxo paralelo - Webhooks de Invoice
-    StarkBank[(Stark Bank<br/>Sandbox)] -.Simula<br/>Pagamento.-> Webhook[POST /webhooks/invoice]
-    Webhook --> ValidateSig{Assinatura<br/>Válida?}
-    ValidateSig -->|Não| Reject[HTTP 401]
-    ValidateSig -->|Sim| ProcessWH[Processar Webhook]
-    ProcessWH --> UpdateInv[Atualizar Invoice<br/>status=paid]
-    UpdateInv --> EventPaid[Publicar Evento<br/>InvoicePaid]
-    EventPaid --> ListenTransfer[Handler Escuta<br/>InvoicePaid]
-    ListenTransfer --> CalcNet[Calcular Valor Líquido<br/>amount - fee]
-    CalcNet --> CreateTransfer[Criar Transfer via<br/>Stark Bank API]
-    CreateTransfer --> SaveTransfer[Salvar no Banco<br/>status=created]
-    SaveTransfer --> EventTransfer[Publicar Evento<br/>TransferInitiated]
+    %% Parallel flow - Invoice Webhooks
+    StarkBank[(Stark Bank<br/>Sandbox)] -.Simulates<br/>Payment.-> Webhook[POST /webhooks/invoice]
+    Webhook --> ValidateSig{Signature<br/>Valid?}
+    ValidateSig -->|No| Reject[HTTP 401]
+    ValidateSig -->|Yes| ProcessWH[Process Webhook]
+    ProcessWH --> UpdateInv[Update Invoice<br/>status=paid]
+    UpdateInv --> EventPaid[Publish Event<br/>InvoicePaid]
+    EventPaid --> ListenTransfer[Handler Listens<br/>InvoicePaid]
+    ListenTransfer --> CalcNet[Calculate Net Amount<br/>amount - fee]
+    CalcNet --> CreateTransfer[Create Transfer via<br/>Stark Bank API]
+    CreateTransfer --> SaveTransfer[Save to Database<br/>status=created]
+    SaveTransfer --> EventTransfer[Publish Event<br/>TransferInitiated]
     EventTransfer --> Done[HTTP 200]
     
-    %% Fluxo paralelo - Webhooks de Transfer
-    StarkBank -.Atualização<br/>Status.-> WebhookTrf[POST /webhooks/transfer]
-    WebhookTrf --> ValidateSigTrf{Assinatura<br/>Válida?}
-    ValidateSigTrf -->|Não| RejectTrf[HTTP 401]
-    ValidateSigTrf -->|Sim| ProcessWHTrf[Processar Webhook]
-    ProcessWHTrf --> UpdateTrf[Atualizar Transfer<br/>status no Banco]
-    UpdateTrf --> EventTrfStatus[Publicar Evento<br/>TransferStatus]
+    %% Parallel flow - Transfer Webhooks
+    StarkBank -.Status<br/>Update.-> WebhookTrf[POST /webhooks/transfer]
+    WebhookTrf --> ValidateSigTrf{Signature<br/>Valid?}
+    ValidateSigTrf -->|No| RejectTrf[HTTP 401]
+    ValidateSigTrf -->|Yes| ProcessWHTrf[Process Webhook]
+    ProcessWHTrf --> UpdateTrf[Update Transfer<br/>status in Database]
+    UpdateTrf --> EventTrfStatus[Publish Event<br/>TransferStatus]
     EventTrfStatus --> DoneTrf[HTTP 200]
     
     style Start fill:#90EE90
@@ -396,7 +393,7 @@ graph TB
     style DoneTrf fill:#90EE90
 ```
 
-### 7.2. Diagrama de Sequência - Fluxo Completo
+### 7.2. Sequence Diagram - Complete Flow
 
 ```mermaid
 sequenceDiagram
@@ -408,160 +405,160 @@ sequenceDiagram
     participant WH as Webhook Endpoint
     participant TH as Transfer Handler
     
-    Note over S: A cada 3 horas (8x em 24h)
+    Note over S: Every 3 hours (8x in 24h)
     
-    S->>IG: Executar geração
-    loop 8 a 12 vezes
-        IG->>IG: Gerar dados aleatórios (Faker)
-        IG->>IG: Validar CPF/CNPJ
-        IG->>SB: POST /invoices (com retry)
-        alt Sucesso
-            SB-->>IG: Invoice criada (ID, status)
-            IG->>DB: Salvar invoice
+    S->>IG: Execute generation
+    loop 8 to 12 times
+        IG->>IG: Generate random data (Faker)
+        IG->>IG: Validate CPF/CNPJ
+        IG->>SB: POST /invoices (with retry)
+        alt Success
+            SB-->>IG: Invoice created (ID, status)
+            IG->>DB: Save invoice
             IG->>EB: Publish InvoiceCreated
-        else Falha após retries
-            SB-->>IG: Erro
-            IG->>DB: Salvar com status=failed
+        else Failure after retries
+            SB-->>IG: Error
+            IG->>DB: Save with status=failed
             IG->>EB: Publish OperationFailed
         end
     end
     
-    Note over SB: Sandbox simula pagamento
+    Note over SB: Sandbox simulates payment
     
     SB->>WH: POST /webhooks/invoice + Digital-Signature
-    WH->>WH: Validar assinatura digital
-    alt Assinatura inválida
+    WH->>WH: Validate digital signature
+    alt Invalid signature
         WH-->>SB: HTTP 401 Unauthorized
-    else Assinatura válida
-        WH->>WH: Parsear payload
-        WH->>DB: Atualizar invoice (status=paid, fee, net_amount)
+    else Valid signature
+        WH->>WH: Parse payload
+        WH->>DB: Update invoice (status=paid, fee, net_amount)
         WH->>EB: Publish InvoicePaid
         WH-->>SB: HTTP 200 OK
         
-        EB->>TH: Notificar InvoicePaid
-        TH->>TH: Calcular valor líquido
-        TH->>DB: Verificar transferência existente
-        alt Transferência já existe
-            TH->>TH: Idempotência - ignorar
-        else Transferência não existe
-            TH->>SB: POST /transfers (com retry, external_id)
-            alt Sucesso
-                SB-->>TH: Transfer criada
-                TH->>DB: Salvar transfer (status=created)
+        EB->>TH: Notify InvoicePaid
+        TH->>TH: Calculate net amount
+        TH->>DB: Check existing transfer
+        alt Transfer already exists
+            TH->>TH: Idempotency - ignore
+        else Transfer does not exist
+            TH->>SB: POST /transfers (with retry, external_id)
+            alt Success
+                SB-->>TH: Transfer created
+                TH->>DB: Save transfer (status=created)
                 TH->>EB: Publish TransferInitiated
-            else Falha após retries
-                SB-->>TH: Erro
-                TH->>DB: Salvar transfer (status=failed)
+            else Failure after retries
+                SB-->>TH: Error
+                TH->>DB: Save transfer (status=failed)
                 TH->>EB: Publish OperationFailed
             end
         end
     end
     
-    Note over SB: Sandbox processa transferência
+    Note over SB: Sandbox processes transfer
     
     SB->>WH: POST /webhooks/transfer + Digital-Signature
-    WH->>WH: Validar assinatura digital
-    alt Assinatura inválida
+    WH->>WH: Validate digital signature
+    alt Invalid signature
         WH-->>SB: HTTP 401 Unauthorized
-    else Assinatura válida
-        WH->>WH: Parsear payload
-        WH->>DB: Atualizar transfer (status=processing/success/failed)
+    else Valid signature
+        WH->>WH: Parse payload
+        WH->>DB: Update transfer (status=processing/success/failed)
         WH->>EB: Publish TransferStatusUpdated
         WH-->>SB: HTTP 200 OK
     end
     
-    Note over DB: Todas operações auditadas em events_log
+    Note over DB: All operations audited in events_log
 ```
 
-### 7.3. Diagrama de Estados - Invoice
+### 7.3. State Diagram - Invoice
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Created: Invoice criada via API
+    [*] --> Created: Invoice created via API
     
-    Created --> Paid: Webhook recebido\n(status=paid)
-    Created --> Canceled: Cancelada manualmente\n(não implementado)
-    Created --> Expired: Vencimento expirado\n(não implementado)
-    Created --> Failed: Erro na criação\n(após retries)
+    Created --> Paid: Webhook received\n(status=paid)
+    Created --> Canceled: Canceled manually\n(not implemented)
+    Created --> Expired: Due date expired\n(not implemented)
+    Created --> Failed: Creation error\n(after retries)
     
-    Paid --> [*]: Transfer criada
+    Paid --> [*]: Transfer created
     Canceled --> [*]
     Expired --> [*]
     Failed --> [*]
     
     note right of Created
-        Estado inicial
-        Aguardando pagamento
+        Initial state
+        Awaiting payment
     end note
     
     note right of Paid
-        Pagamento confirmado
-        Aciona criação de transfer
+        Payment confirmed
+        Triggers transfer creation
     end note
 ```
 
-### 7.4. Diagrama de Estados - Transfer
+### 7.4. State Diagram - Transfer
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Created: Transfer criada via API\nlocalmente
+    [*] --> Created: Transfer created via API\nlocally
     
-    Created --> Processing: Webhook recebido\nstatus=processing
-    Processing --> Success: Webhook recebido\nstatus=success
-    Processing --> Failed: Webhook recebido\nstatus=failed
+    Created --> Processing: Webhook received\nstatus=processing
+    Processing --> Success: Webhook received\nstatus=success
+    Processing --> Failed: Webhook received\nstatus=failed
     
-    Created --> Failed: Erro na criação\n(após retries)
+    Created --> Failed: Creation error\n(after retries)
     
-    Failed --> Created: Retry manual\n(não implementado)
+    Failed --> Created: Manual retry\n(not implemented)
     
     Success --> [*]
     Failed --> [*]
     
     note right of Created
-        Transferência criada localmente
-        Enviada ao Stark Bank
+        Transfer created locally
+        Sent to Stark Bank
     end note
     
     note right of Processing
-        Em processamento
-        Aguardando confirmação
+        Being processed
+        Awaiting confirmation
     end note
     
     note right of Success
-        Transferência confirmada
-        Valor transferido com sucesso
+        Transfer confirmed
+        Amount transferred successfully
     end note
     
     note right of Failed
-        Falha permanente
-        Requer intervenção manual
+        Permanent failure
+        Requires manual intervention
     end note
 ```
 
-### 7.5. Arquitetura de Módulos
+### 7.5. Module Architecture
 
 ```mermaid
 graph TB
-    subgraph "Processos"
-        API[API Web\nFastAPI]
+    subgraph "Processes"
+        API[Web API\nFastAPI]
         SCHED[Scheduler\nAPScheduler]
     end
     
-    subgraph "Shared - Componentes Compartilhados"
+    subgraph "Shared - Shared Components"
         EB[Event Bus\nPub/Sub]
         DB[(SQLite\nDatabase)]
-        LOG[Logger\nEstruturado]
+        LOG[Logger\nStructured]
         SEC[Security\nAPI Key Validator]
     end
     
-    subgraph "Módulos de Domínio"
+    subgraph "Domain Modules"
         INV[Invoices Module\n- Generator\n- Service\n- Events]
         WH[Webhooks Module\n- Receiver\n- Validator\n- Events]
         TRF[Transfers Module\n- Service\n- Handler\n- Events]
         SI[Stark Integration\n- Invoice API\n- Transfer API\n- Retry Logic]
     end
     
-    subgraph "APIs Externas"
+    subgraph "External APIs"
         SB[Stark Bank API\nSandbox]
     end
     
@@ -583,8 +580,8 @@ graph TB
     
     SI --> SB
     
-    EB -.notifica.-> INV
-    EB -.notifica.-> TRF
+    EB -.notifies.-> INV
+    EB -.notifies.-> TRF
     EB --> DB
     
     INV --> LOG
@@ -599,7 +596,7 @@ graph TB
     style SB fill:#FF6B6B
 ```
 
-### 7.6. Fluxo de Eventos (Event Bus)
+### 7.6. Event Flow (Event Bus)
 
 ```mermaid
 graph LR
@@ -620,7 +617,7 @@ graph LR
         M[Metrics Collector]
     end
     
-    subgraph "Persistência"
+    subgraph "Persistence"
         DB[(events_log)]
     end
     
@@ -632,10 +629,10 @@ graph LR
     TS -->|TransferFailed| EB
     TS -->|OperationFailed| EB
     
-    EB -->|todos eventos| L
-    EB -->|todos eventos| A
+    EB -->|all events| L
+    EB -->|all events| A
     EB -->|InvoicePaid| TH
-    EB -->|todos eventos| M
+    EB -->|all events| M
     
     A --> DB
     
@@ -643,38 +640,38 @@ graph LR
     style DB fill:#DDA0DD
 ```
 
-### 7.7. Estratégia de Retry
+### 7.7. Retry Strategy
 
 ```mermaid
 graph TB
-    Start([Operação API]) --> Try1[Tentativa 1\nImediata]
-    Try1 --> Check1{Sucesso?}
-    Check1 -->|Sim| Success([Retornar Resultado])
-    Check1 -->|Erro Retriável| Wait1[Aguardar 1 min]
-    Check1 -->|Erro Não-Retriável| Fail([Lançar Exceção])
+    Start([API Operation]) --> Try1[Attempt 1\nImmediate]
+    Try1 --> Check1{Success?}
+    Check1 -->|Yes| Success([Return Result])
+    Check1 -->|Retriable Error| Wait1[Wait 1 min]
+    Check1 -->|Non-Retriable Error| Fail([Throw Exception])
     
-    Wait1 --> Try2[Tentativa 2]
-    Try2 --> Check2{Sucesso?}
-    Check2 -->|Sim| Success
-    Check2 -->|Erro Retriável| Wait2[Aguardar 2 min]
-    Check2 -->|Erro Não-Retriável| Fail
+    Wait1 --> Try2[Attempt 2]
+    Try2 --> Check2{Success?}
+    Check2 -->|Yes| Success
+    Check2 -->|Retriable Error| Wait2[Wait 2 min]
+    Check2 -->|Non-Retriable Error| Fail
     
-    Wait2 --> Try3[Tentativa 3]
-    Try3 --> Check3{Sucesso?}
-    Check3 -->|Sim| Success
-    Check3 -->|Erro Retriável| Wait3[Aguardar 4 min]
-    Check3 -->|Erro Não-Retriável| Fail
+    Wait2 --> Try3[Attempt 3]
+    Try3 --> Check3{Success?}
+    Check3 -->|Yes| Success
+    Check3 -->|Retriable Error| Wait3[Wait 4 min]
+    Check3 -->|Non-Retriable Error| Fail
     
-    Wait3 --> Try4[Tentativa 4]
-    Try4 --> Check4{Sucesso?}
-    Check4 -->|Sim| Success
-    Check4 -->|Erro Retriável| Wait4[Aguardar 8 min]
-    Check4 -->|Erro Não-Retriável| Fail
+    Wait3 --> Try4[Attempt 4]
+    Try4 --> Check4{Success?}
+    Check4 -->|Yes| Success
+    Check4 -->|Retriable Error| Wait4[Wait 8 min]
+    Check4 -->|Non-Retriable Error| Fail
     
-    Wait4 --> Try5[Tentativa 5\nÚltima]
-    Try5 --> Check5{Sucesso?}
-    Check5 -->|Sim| Success
-    Check5 -->|Erro Qualquer| Fail
+    Wait4 --> Try5[Attempt 5\nLast]
+    Try5 --> Check5{Success?}
+    Check5 -->|Yes| Success
+    Check5 -->|Any Error| Fail
     
     style Success fill:#90EE90
     style Fail fill:#FF6B6B
@@ -685,28 +682,28 @@ graph TB
     style Try5 fill:#FFA500
 ```
 
-**Erros Retriáveis:**
+**Retriable Errors:**
 
 - Timeout (ConnectionTimeout, ReadTimeout)
 - HTTP 5xx (500, 502, 503, 504)
 - HTTP 429 (Rate Limit)
 - ConnectionError
 
-**Erros Não-Retriáveis:**
+**Non-Retriable Errors:**
 
 - HTTP 4xx (400, 401, 403, 404, 422)
 - ValidationError
 - AuthenticationError
 
-## 8. Modelo de Dados
+## 8. Data Model
 
-### 8.1. Estrutura do Banco de Dados
+### 8.1. Database Structure
 
 ```mermaid
 erDiagram
-    INVOICES ||--o{ TRANSFERS : "gera"
-    INVOICES ||--o{ EVENTS_LOG : "registra"
-    TRANSFERS ||--o{ EVENTS_LOG : "registra"
+    INVOICES ||--o{ TRANSFERS : "generates"
+    INVOICES ||--o{ EVENTS_LOG : "logs"
+    TRANSFERS ||--o{ EVENTS_LOG : "logs"
     
     INVOICES {
         uuid id PK
@@ -751,63 +748,63 @@ erDiagram
     }
 ```
 
-## 9. Critérios de Aceite do Projeto
+## 9. Project Acceptance Criteria
 
-### 9.1. Funcionalidade
+### 9.1. Functionality
 
-- Sistema gera 8-12 invoices a cada 3 horas
-- Sistema executa por 24 horas (8 ciclos completos)
-- Webhook de invoice processa pagamentos corretamente
-- Webhook de transfer processa atualizações de status corretamente
-- Transferências são criadas automaticamente
-- Valor líquido calculado corretamente (amount - fee)
-- Dados transferidos para conta Stark Bank especificada
-- Status de transferências atualizado via webhook
-- Endpoints de consulta funcionam corretamente
+- System generates 8-12 invoices every 3 hours
+- System runs for 24 hours (8 complete cycles)
+- Invoice webhook processes payments correctly
+- Transfer webhook processes status updates correctly
+- Transfers are created automatically
+- Net amount calculated correctly (amount - fee)
+- Funds transferred to specified Stark Bank account
+- Transfer statuses updated via webhook
+- Query endpoints work correctly
 
-### 9.2. Qualidade
+### 9.2. Quality
 
-- Cobertura de testes > 85%
-- Todos comportamentos testados
-- Retry funciona conforme especificado
-- Idempotência de transferências validada
-- Validação de CPF/CNPJ implementada
-- API Key protege endpoints corretamente
+- Test coverage > 85%
+- All behaviors tested
+- Retry works as specified
+- Transfer idempotency validated
+- CPF/CNPJ validation implemented
+- API Key protects endpoints correctly
 
-### 9.3. Documentação
+### 9.3. Documentation
 
-- Documento de arquitetura completo
-- Documento de especificação da API
-- README com instruções de execução
-- Diagramas incluídos na documentação
-- Código comentado onde necessário
+- Complete architecture document
+- API specification document
+- README with execution instructions
+- Diagrams included in documentation
+- Code commented where necessary
 
-### 9.4. Entrega
+### 9.4. Delivery
 
-- Código no repositório GitHub público
-- Aplicação deployada no Railway
-- Executando por 24 horas
-- Logs e evidências de execução
-- Todas dependências documentadas
+- Code in public GitHub repository
+- Application deployed on Railway
+- Running for 24 hours
+- Logs and execution evidence
+- All dependencies documented
 
-## 10. Glossário
+## 10. Glossary
 
-- Invoice: Fatura/cobrança gerada para um cliente
-- Transfer: Transferência bancária para conta destino
-- Webhook: Notificação HTTP enviada por evento externo
-- Event Bus: Sistema de mensageria pub/sub para desacoplamento
-- Retry: Tentativa automática após falha
-- Backoff Exponencial: Estratégia de espera crescente entre retries
-- Idempotência: Propriedade de operação produzir mesmo resultado se executada múltiplas vezes
-- External ID: Identificador externo para garantir idempotência
-- API Key: Chave de autenticação para acesso a API
-- CPF: Cadastro de Pessoa Física (11 dígitos)
-- CNPJ: Cadastro Nacional de Pessoa Jurídica (14 dígitos)
-- Sandbox: Ambiente de testes que simula produção
-- DTO: Data Transfer Object - objeto para transferência de dados
-- Valor Líquido: Valor bruto menos taxas
+- Invoice: Bill/charge generated for a customer
+- Transfer: Bank transfer to the destination account
+- Webhook: HTTP notification sent by an external event
+- Event Bus: Pub/sub messaging system for decoupling
+- Retry: Automatic reattempt after failure
+- Exponential Backoff: Strategy of increasing wait times between retries
+- Idempotency: Property of an operation producing the same result if executed multiple times
+- External ID: External identifier to ensure idempotency
+- API Key: Authentication key for API access
+- CPF: Individual Taxpayer Registry (11 digits)
+- CNPJ: National Corporate Taxpayer Registry (14 digits)
+- Sandbox: Testing environment that simulates production
+- DTO: Data Transfer Object - object used for transferring data
+- Net Amount: Gross amount minus fees
 
-## 11. Referências
+## 11. References
 
 - Stark Bank API Documentation ()
 - Stark Bank Python SDK

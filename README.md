@@ -1,86 +1,86 @@
 # Stark Bank Challenge
 
-Sistema automatizado de gestão de invoices e transferências integrado com a API do Stark Bank. O sistema gera invoices periodicamente (a cada 3 horas), processa webhooks de pagamento e executa transferências automaticamente ao receber pagamentos.
+Automated invoice and transfer management system integrated with the Stark Bank API. The system generates invoices periodically (every 3 hours), processes payment webhooks, and automatically executes transfers upon receiving payments.
 
-Desenvolvido como parte do processo seletivo do Stark Bank, demonstrando capacidade de integração com APIs externas, arquitetura orientada a eventos, segurança e tratamento robusto de erros.
+Developed as part of the Stark Bank selection process, demonstrating the ability to integrate with external APIs, event-driven architecture, security, and robust error handling.
 
-## 🚀 Features Implementadas
+## 🚀 Implemented Features
 
-- ✅ **Geração Automática de Invoices**: Scheduler que cria 8-12 invoices a cada 3 horas durante 24h
-- ✅ **Validação de Dados**: Geração de CPF/CNPJ válidos com distribuição 70/30
-- ✅ **Webhook Processing**: Recepção e processamento seguro de webhooks do Stark Bank
-- ✅ **Validação de Assinatura Digital**: Verificação ECDSA de webhooks para garantir autenticidade
-- ✅ **Transferências Automáticas**: Criação automática de transfers ao receber pagamentos de invoices
-- ✅ **Retry Logic**: Sistema de retry exponencial para chamadas à API do Stark Bank
-- ✅ **Idempotência**: Garantia de não duplicação de transferências
-- ✅ **Event Bus**: Arquitetura orientada a eventos para desacoplamento de módulos
-- ✅ **API RESTful**: Endpoints protegidos com API Key para consulta de invoices e transfers
-- ✅ **Logging Estruturado**: Logs detalhados em formato JSON para monitoramento
-- ✅ **Health Check**: Endpoint de verificação de saúde da aplicação
-- ✅ **Persistência**: Banco de dados SQLite com migrations automáticas
-- ✅ **Testes Abrangentes**: Cobertura > 85% (unitários, integração e E2E)
+- ✅ **Automatic Invoice Generation**: Scheduler that creates 8-12 invoices every 3 hours for 24h
+- ✅ **Data Validation**: Generation of valid CPF/CNPJ with 70/30 distribution
+- ✅ **Webhook Processing**: Secure reception and processing of Stark Bank webhooks
+- ✅ **Digital Signature Validation**: ECDSA verification of webhooks to ensure authenticity
+- ✅ **Automatic Transfers**: Automatic transfer creation upon receiving invoice payments
+- ✅ **Retry Logic**: Exponential retry system for Stark Bank API calls
+- ✅ **Idempotency**: Guarantee of no transfer duplication
+- ✅ **Event Bus**: Event-driven architecture for module decoupling
+- ✅ **RESTful API**: API Key-protected endpoints for querying invoices and transfers
+- ✅ **Structured Logging**: Detailed logs in JSON format for monitoring
+- ✅ **Health Check**: Application health verification endpoint
+- ✅ **Persistence**: SQLite database with automatic migrations
+- ✅ **Comprehensive Tests**: Coverage > 85% (unit, integration, and E2E)
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Technology Stack
 
-- **Python 3.14+**: Linguagem principal
-- **FastAPI**: Framework web assíncrono para APIs
-- **Stark Bank SDK**: Integração oficial com Stark Bank
-- **SQLite**: Banco de dados (fácil migração para PostgreSQL)
-- **APScheduler**: Agendamento de tarefas periódicas
-- **pytest**: Framework de testes
-- **Ruff**: Linting e formatação de código
-- **Uvicorn**: Servidor ASGI de alta performance
+- **Python 3.14+**: Primary language
+- **FastAPI**: Asynchronous web framework for APIs
+- **Stark Bank SDK**: Official Stark Bank integration
+- **SQLite**: Database (easy migration to PostgreSQL)
+- **APScheduler**: Periodic task scheduling
+- **pytest**: Testing framework
+- **Ruff**: Linting and code formatting
+- **Uvicorn**: High-performance ASGI server
 
-## 📂 Estrutura do Projeto
+## 📂 Project Structure
 
-O projeto segue uma arquitetura modular baseada em eventos:
+The project follows a modular event-driven architecture:
 
 ```
 stark-bank-challenge/
 ├── src/
-│   ├── modules/           # Módulos de domínio
-│   │   ├── invoices/      # Geração e gestão de invoices
-│   │   ├── webhooks/      # Processamento de webhooks
-│   │   └── transfers/     # Execução de transferências
+│   ├── modules/           # Domain modules
+│   │   ├── invoices/      # Invoice generation and management
+│   │   ├── webhooks/      # Webhook processing
+│   │   └── transfers/     # Transfer execution
 │   │
-│   ├── shared/            # Componentes compartilhados
-│   │   ├── database/      # Camada de dados
+│   ├── shared/            # Shared components
+│   │   ├── database/      # Data layer
 │   │   ├── events/        # Event Bus
-│   │   ├── stark/         # Integração com Stark Bank
-│   │   ├── security/      # Segurança e validação
-│   │   └── utils/         # Utilitários
+│   │   ├── stark/         # Stark Bank integration
+│   │   ├── security/      # Security and validation
+│   │   └── utils/         # Utilities
 │   │
-│   ├── config/            # Configurações globais
-│   ├── main.py            # Entry point da API (FastAPI)
-│   └── scheduler.py       # Scheduler de invoices
+│   ├── config/            # Global configurations
+│   ├── main.py            # API entry point (FastAPI)
+│   └── scheduler.py       # Invoice scheduler
 │
-├── tests/                 # Testes automatizados
-│   ├── unit/              # Testes unitários
-│   ├── integration/       # Testes de integração
-│   └── e2e/               # Testes end-to-end
+├── tests/                 # Automated tests
+│   ├── unit/              # Unit tests
+│   ├── integration/       # Integration tests
+│   └── e2e/               # End-to-end tests
 │
-├── docs/                  # Documentação detalhada
-└── migrations/            # Migrações de banco de dados
+├── docs/                  # Detailed documentation
+└── migrations/            # Database migrations
 ```
 
-## 📋 Requisitos
+## 📋 Requirements
 
-- **Python 3.14+** (ou 3.11+)
-- Conta no [Stark Bank](https://starkbank.com) (ambiente sandbox)
+- **Python 3.14+**
+- Account on [Stark Bank](https://starkbank.com) (sandbox environment)
 - Git
 
-## 🔧 Setup do Ambiente
+## 🔧 Environment Setup
 
-### 1. Clone o Repositório
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/your-username/stark-bank-challenge.git
 cd stark-bank-challenge
 ```
 
-### 2. Instale as Dependências
+### 2. Install Dependencies
 
-**Usando pip (padrão):**
+**Using pip (standard):**
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
@@ -88,25 +88,25 @@ source .venv/bin/activate  # Linux/Mac
 pip install -e .[dev]
 ```
 
-**Usando Rye (recomendado):**
+**Using Rye (recommended):**
 ```bash
 rye sync
 ```
 
-**Usando Poetry:**
+**Using Poetry:**
 ```bash
 poetry install
 ```
 
-### 3. Configure as Variáveis de Ambiente
+### 3. Configure Environment Variables
 
-Crie um arquivo `.env` na raiz do projeto:
+Create a `.env` file in the project root:
 
 ```bash
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` com suas credenciais:
+Edit the `.env` file with your credentials:
 
 ```env
 # Application
@@ -114,8 +114,8 @@ APP_ENV=development
 LOG_LEVEL=INFO
 
 # Stark Bank Credentials
-STARK_BANK_PROJECT_ID=seu-project-id-aqui
-STARK_BANK_PRIVATE_KEY=-----BEGIN EC PRIVATE KEY-----\nSua\nChave\nPrivada\nAqui\n-----END EC PRIVATE KEY-----
+STARK_BANK_PROJECT_ID=your-project-id-here
+STARK_BANK_PRIVATE_KEY=-----BEGIN EC PRIVATE KEY-----\nYour\nPrivate\nKey\nHere\n-----END EC PRIVATE KEY-----
 STARK_BANK_ENVIRONMENT=sandbox
 
 # API Security
@@ -138,94 +138,94 @@ INVOICE_DUE_DAYS_MIN=1
 INVOICE_DUE_DAYS_MAX=7
 ```
 
-**Como obter as credenciais do Stark Bank:**
-1. Acesse [Stark Bank Sandbox](https://web.sandbox.starkbank.com)
-2. Crie uma conta de desenvolvedor
-3. Gere um par de chaves ECDSA (Elliptic Curve)
-4. Registre a chave pública no painel do Stark Bank
-5. Copie o Project ID e a chave privada para o `.env`
+**How to obtain Stark Bank credentials:**
+1. Access [Stark Bank Sandbox](https://web.sandbox.starkbank.com)
+2. Create a developer account
+3. Generate an ECDSA (Elliptic Curve) key pair
+4. Register the public key in the Stark Bank dashboard
+5. Copy the Project ID and private key to the `.env` file
 
-### 4. Execute as Migrações do Banco de Dados
+### 4. Run Database Migrations
 
-As migrações rodam automaticamente ao iniciar a aplicação, mas você pode executá-las manualmente:
+Migrations run automatically on application startup, but you can run them manually:
 
 ```bash
 python -c "from src.shared.database.migrations import run_migrations; run_migrations()"
 ```
 
-### 5. Inicie a Aplicação
+### 5. Start the Application
 
-**Modo Development (com auto-reload):**
+**Development mode (with auto-reload):**
 ```bash
 uvicorn src.main:app --reload --port 8000
 ```
 
-**Modo Production:**
+**Production mode:**
 ```bash
 uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-A aplicação estará disponível em: `http://localhost:8000`
+The application will be available at: `http://localhost:8000`
 
 - **API Docs (Swagger):** `http://localhost:8000/docs`
 - **Health Check:** `http://localhost:8000/health`
 
-### 6. Configure os Webhooks no Stark Bank
+### 6. Configure Webhooks in Stark Bank
 
-Para receber notificações de pagamento:
+To receive payment notifications:
 
-1. Acesse o painel do Stark Bank
-2. Configure os seguintes webhooks:
-   - **Invoice:** `https://sua-url.railway.app/webhooks/invoice`
-   - **Transfer:** `https://sua-url.railway.app/webhooks/transfer`
+1. Access the Stark Bank dashboard
+2. Configure the following webhooks:
+   - **Invoice:** `https://your-url.railway.app/webhooks/invoice`
+   - **Transfer:** `https://your-url.railway.app/webhooks/transfer`
 
-## 🧪 Como Testar
+## 🧪 How to Test
 
-### Executar Todos os Testes
+### Run All Tests
 
 ```bash
 pytest
 ```
 
-### Testes por Categoria
+### Tests by Category
 
 ```bash
-# Apenas testes unitários
+# Unit tests only
 pytest tests/unit -v
 
-# Apenas testes de integração
+# Integration tests only
 pytest tests/integration -v
 
-# Apenas testes E2E
+# E2E tests only
 pytest tests/e2e -v
 ```
 
-### Testes com Cobertura
+### Tests with Coverage
 
 ```bash
-# Gerar relatório de cobertura
+# Generate coverage report
 pytest --cov=src --cov-report=html --cov-report=term
 
-# Ver relatório HTML
-# Abra: htmlcov/index.html no navegador
+# View HTML report
+# Open: htmlcov/index.html in browser
 ```
 
-### Testes Específicos
+### Specific Tests
 
 ```bash
-# Testar módulo específico
+# Test specific module
 pytest tests/unit/modules/invoices/ -v
 
-# Testar arquivo específico
+# Test specific file
 pytest tests/unit/modules/invoices/test_service.py -v
 
-# Testar função específica
+# Test specific function
 pytest tests/unit/modules/invoices/test_service.py::test_create_invoice_success -v
 ```
 
-### Testar Fluxo Completo (Manual)
+### Test Full Flow (Manual)
 
-1. **Criar Invoice:**
+1. **Create Invoice:**
 ```bash
 curl -X POST http://localhost:8000/invoices \
   -H "X-API-Key: dev-key" \
@@ -233,20 +233,20 @@ curl -X POST http://localhost:8000/invoices \
   -d '{
     "amount": 1000,
     "tax_id": "012.345.678-90",
-    "name": "João Silva",
+    "name": "John Smith",
     "due": "2026-02-20"
   }'
 ```
 
-2. **Listar Invoices:**
+2. **List Invoices:**
 ```bash
 curl -X GET "http://localhost:8000/invoices?status=created&limit=10" \
   -H "X-API-Key: dev-key"
 ```
 
-3. **Simular Webhook de Pagamento** (use ferramentas do Stark Bank ou Postman)
+3. **Simulate Payment Webhook** (use Stark Bank tools or Postman)
 
-4. **Verificar Transfer Criada:**
+4. **Check Created Transfer:**
 ```bash
 curl -X GET http://localhost:8000/transfers \
   -H "X-API-Key: dev-key"
@@ -254,79 +254,79 @@ curl -X GET http://localhost:8000/transfers \
 
 ## 🚀 Deploy (Railway)
 
-> 📖 **Para instruções detalhadas de deployment**, consulte o [Guia de Deployment](docs/deployment.md), que inclui:
-> - Configuração passo a passo do Railway
-> - Configuração de variáveis de ambiente
-> - Persistência de banco de dados
-> - Monitoramento e troubleshooting
-> - Deploy alternativo (Heroku, Render, Docker, DigitalOcean)
+> 📖 **For detailed deployment instructions**, see the [Deployment Guide](docs/deployment.md), which includes:
+> - Step-by-step Railway configuration
+> - Environment variable setup
+> - Database persistence
+> - Monitoring and troubleshooting
+> - Alternative deployments (Heroku, Render, Docker, DigitalOcean)
 
-### Pré-requisitos
+### Prerequisites
 
-- Conta no [Railway](https://railway.app)
-- Projeto conectado ao GitHub
+- Account on [Railway](https://railway.app)
+- Project connected to GitHub
 
-### Passos para Deploy
+### Deployment Steps
 
-1. **Crie um novo projeto no Railway:**
-   - Clique em "New Project"
-   - Selecione "Deploy from GitHub repo"
-   - Escolha o repositório `stark-bank-challenge`
+1. **Create a new project on Railway:**
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose the `stark-bank-challenge` repository
 
-2. **Configure as Variáveis de Ambiente:**
-   
-   No Railway, vá em "Variables" e adicione:
+2. **Configure Environment Variables:**
+
+   In Railway, go to "Variables" and add:
    ```
    APP_ENV=production
    LOG_LEVEL=INFO
-   STARK_BANK_PROJECT_ID=<seu-project-id>
-   STARK_BANK_PRIVATE_KEY=<sua-chave-privada>
+   STARK_BANK_PROJECT_ID=<your-project-id>
+   STARK_BANK_PRIVATE_KEY=<your-private-key>
    STARK_BANK_ENVIRONMENT=sandbox
-   API_KEY=<gere-uma-chave-forte>
+   API_KEY=<generate-a-strong-key>
    DATABASE_PATH=/app/data/stark_bank.db
    SCHEDULER_ENABLED=true
    SCHEDULER_INTERVAL_HOURS=3
    SCHEDULER_DURATION_HOURS=24
    ```
 
-3. **Configure o Comando de Start:**
-   
-   No Railway, em "Settings" > "Deploy", configure:
+3. **Configure the Start Command:**
+
+   In Railway, under "Settings" > "Deploy", configure:
    ```
    uvicorn src.main:app --host 0.0.0.0 --port $PORT
    ```
 
-4. **Configure Volume para Persistência (Opcional):**
-   - Railway oferece volumes persistentes
-   - Monte em `/app/data` para manter o banco SQLite
-   - Ou migre para PostgreSQL (Railway oferece PostgreSQL gratuito)
+4. **Configure Volume for Persistence (Optional):**
+   - Railway offers persistent volumes
+   - Mount at `/app/data` to keep the SQLite database
+   - Or migrate to PostgreSQL (Railway offers free PostgreSQL)
 
 5. **Deploy:**
-   - Faça commit no GitHub
-   - Railway fará deploy automaticamente
+   - Commit to GitHub
+   - Railway will deploy automatically
 
-6. **Configure os Webhooks:**
-   - Após deploy, copie a URL do Railway: `https://seu-app.railway.app`
-   - Configure no Stark Bank:
-     - Invoice: `https://seu-app.railway.app/webhooks/invoice`
-     - Transfer: `https://seu-app.railway.app/webhooks/transfer`
+6. **Configure Webhooks:**
+   - After deployment, copy the Railway URL: `https://your-app.railway.app`
+   - Configure in Stark Bank:
+     - Invoice: `https://your-app.railway.app/webhooks/invoice`
+     - Transfer: `https://your-app.railway.app/webhooks/transfer`
 
-7. **Monitore:**
-   - Use Railway Logs para monitorar
-   - Verifique Health Check: `https://seu-app.railway.app/health`
+7. **Monitor:**
+   - Use Railway Logs to monitor
+   - Check Health Check: `https://your-app.railway.app/health`
 
-### Alternativa: Deploy com Docker
+### Alternative: Deploy with Docker
 
 ```bash
-# Dockerfile já configurado no projeto
+# Dockerfile already configured in the project
 docker build -t stark-bank-challenge .
 docker run -p 8000:8000 --env-file .env stark-bank-challenge
 ```
 
-## 💻 Desenvolvimento
+## 💻 Development
 
-### Linting e Formatação
-O projeto utiliza `ruff` para linting e formatação.
+### Linting and Formatting
+The project uses `ruff` for linting and formatting.
 
 ```bash
 # Check linting
@@ -339,80 +339,81 @@ ruff check src/ --fix
 ruff format src/
 ```
 
-### Scripts Disponíveis (Windows)
+### Available Scripts (Windows)
 
 ```bash
-# Formatar código
+# Format code
 .\scripts\format.bat
 
-# Executar linter
+# Run linter
 .\scripts\lint.bat
 
-# Executar testes
+# Run tests
 .\scripts\test.bat
 ```
 
-## 📚 Documentação Adicional
+## 📚 Additional Documentation
 
-- [Arquitetura](docs/architecture.md) - Decisões arquiteturais e padrões utilizados
-- [API](docs/api.md) - Documentação completa da API REST
-- [Plano de Implementação](docs/implementation-plan.md) - Plano detalhado de desenvolvimento
-- [Desafio Original](docs/challenge.md) - Especificação do desafio
+- [Architecture](docs/architecture.md) - Architectural decisions and patterns used
+- [API](docs/api.md) - Complete REST API documentation
+- [Implementation Plan](docs/implementation-plan.md) - Detailed development plan
+- [E2E Details](docs/e2e-details.md) - End-To-End test details
+- [Original Challenge](docs/challenge.md) - Challenge specification
 
-## 📊 Arquitetura
+## 📊 Architecture
 
-O sistema utiliza **arquitetura orientada a eventos** com os seguintes componentes principais:
+The system uses **event-driven architecture** with the following main components:
 
-- **Event Bus**: Desacopla módulos via publish/subscribe
-- **Repository Pattern**: Abstração de acesso a dados
-- **Service Layer**: Lógica de negócio
-- **API Layer**: Endpoints REST com FastAPI
+- **Event Bus**: Decouples modules via publish/subscribe
+- **Repository Pattern**: Data access abstraction
+- **Service Layer**: Business logic
+- **API Layer**: REST endpoints with FastAPI
 
-### Fluxo Principal
+### Main Flow
 
-1. **Scheduler** gera invoices a cada 3h
-2. Invoices são criadas na **Stark Bank API**
-3. Quando paga, **webhook** notifica o sistema
-4. Sistema valida assinatura ECDSA
-5. **Event Bus** publica evento `invoice.paid`
-6. **Transfer Handler** escuta evento e cria transfer
-7. Transfer é executada na Stark Bank
-8. Webhooks notificam status da transfer
+1. **Scheduler** generates invoices every 3h
+2. Invoices are created in the **Stark Bank API**
+3. When paid, a **webhook** notifies the system
+4. System validates ECDSA signature
+5. **Event Bus** publishes `invoice.paid` event
+6. **Transfer Handler** listens to the event and creates a transfer
+7. Transfer is executed in Stark Bank
+8. Webhooks notify transfer status
 
-## 🔒 Segurança
+## 🔒 Security
 
-- Validação de assinatura digital ECDSA em todos webhooks
-- API Key authentication para endpoints privados
-- Validação de dados de entrada com Pydantic
-- Logging de todas operações sensíveis
-- Secrets via variáveis de ambiente
+- ECDSA digital signature validation on all webhooks
+- API Key authentication for private endpoints
+- Input data validation with Pydantic
+- Logging of all sensitive operations
+- Secrets via environment variables
 
-## 🧰 Tecnologias e Padrões
+## 🧰 Technologies and Patterns
 
-- **Clean Architecture**: Separação de camadas
-- **SOLID Principles**: Código manutenível e testável
-- **Dependency Injection**: Desacoplamento de dependências
-- **Repository Pattern**: Abstração de persistência
-- **Event-Driven Architecture**: Comunicação assíncrona entre módulos
-- **Retry Pattern**: Resiliência em chamadas externas
-- **Idempotency**: Prevenção de duplicação
+- **Clean Architecture**: Layer separation
+- **SOLID Principles**: Maintainable and testable code
+- **Dependency Injection**: Dependency decoupling
+- **Repository Pattern**: Persistence abstraction
+- **Event-Driven Architecture**: Asynchronous communication between modules
+- **Retry Pattern**: Resilience in external calls
+- **Idempotency**: Duplication prevention
 
-## 🤝 Contribuindo
+## 🤝 Contributing
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📝 Licença
+## 📝 License
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-## 👤 Autor
+## 👤 Author
 
-Desenvolvido como parte do processo seletivo do Stark Bank.
+Developed as part of the Stark Bank selection process.
 
 ---
 
-**Nota**: Este projeto utiliza o ambiente **sandbox** do Stark Bank. Para uso em produção, ajuste as configurações apropriadamente.
+**Note**: This project uses the Stark Bank **sandbox** environment. For production use, adjust the configurations appropriately.

@@ -1,61 +1,61 @@
-# Stark Bank Challenge - Documento de Arquitetura
+# Stark Bank Challenge - Architecture Document
 
-**Versão:** 1.0  
-**Data:** Fevereiro 2026  
-**Autor:** Candidato Processo Seletivo Stark Bank
+**Version:** 1.0  
+**Date:** February 2026  
+**Author:** Stark Bank Selection Process Candidate
 
-## 1. Visão Geral
+## 1. Overview
 
-### 1.1. Objetivo do Sistema
+### 1.1. System Objective
 
-O sistema implementa uma integração automatizada com a plataforma Stark Bank para:
+The system implements an automated integration with the Stark Bank platform to:
 
-- **Gerar invoices automaticamente** a cada 3 horas durante 24 horas
-- **Processar notificações de pagamento** via webhooks
-- **Executar transferências automáticas** dos valores recebidos
+- **Automatically generate invoices** every 3 hours for 24 hours
+- **Process payment notifications** via webhooks
+- **Execute automatic transfers** of received amounts
 
-### 1.2. Princípios Arquiteturais
+### 1.2. Architectural Principles
 
-#### Monolito Modular
-- Aplicação única com módulos bem definidos e desacoplados
-- Preparada para evolução futura para microserviços
-- Comunicação inter-módulos via Event Bus
+#### Modular Monolith
+- Single application with well-defined and decoupled modules
+- Prepared for future evolution into microservices
+- Inter-module communication via Event Bus
 
 #### Event-Driven Architecture
-- Desacoplamento via publicação/assinatura de eventos
-- Rastreabilidade completa de operações
-- Facilita auditoria e debugging
+- Decoupling via event publish/subscribe
+- Complete operation traceability
+- Facilitates auditing and debugging
 
-#### Resiliência por Design
-- Retry automático com backoff exponencial
-- Tratamento explícito de falhas
+#### Resilience by Design
+- Automatic retry with exponential backoff
+- Explicit failure handling
 - Graceful degradation
 
 #### Security First
-- Validação de assinaturas digitais
-- Autenticação via API Key
-- Princípio do menor privilégio
+- Digital signature validation
+- API Key authentication
+- Principle of least privilege
 
-### 1.3. Stack Tecnológico
+### 1.3. Technology Stack
 
-| Componente | Tecnologia | Versão | Justificativa |
+| Component | Technology | Version | Justification |
 |------------|-----------|---------|---------------|
-| Linguagem | Python | 3.14 | Requisito do projeto |
-| Web Framework | FastAPI | 0.115+ | Performance, async, OpenAPI nativo |
-| Banco de Dados | SQLite | 3.x | Simplicidade, portabilidade, sem setup |
-| HTTP Client | httpx | 0.28+ | Async nativo, retry built-in |
-| Scheduler | APScheduler | 3.10+ | Cron jobs em processo |
-| Stark Bank SDK | starkbank | 2.14+ | SDK oficial |
-| Validação | validate-docbr | 1.10+ | Validação CPF/CNPJ |
-| Faker | Faker | 33+ | Geração de dados fake |
-| Linting | Ruff | 0.8+ | Linting e formatação rápida |
-| Testing | pytest | 8.3+ | Framework de testes padrão |
+| Language | Python | 3.14 | Project requirement |
+| Web Framework | FastAPI | 0.115+ | Performance, async, native OpenAPI |
+| Database | SQLite | 3.x | Simplicity, portability, no setup |
+| HTTP Client | httpx | 0.28+ | Native async, built-in retry |
+| Scheduler | APScheduler | 3.10+ | In-process cron jobs |
+| Stark Bank SDK | starkbank | 2.14+ | Official SDK |
+| Validation | validate-docbr | 1.10+ | CPF/CNPJ validation |
+| Faker | Faker | 33+ | Fake data generation |
+| Linting | Ruff | 0.8+ | Fast linting and formatting |
+| Testing | pytest | 8.3+ | Standard test framework |
 
-**Nota:** Pydantic não é utilizado (alinhamento com stack Stark Bank).
+**Note:** Pydantic is not used (alignment with Stark Bank stack).
 
-## 2. Arquitetura de Alto Nível
+## 2. High-Level Architecture
 
-### 2.1. Visão Geral dos Componentes
+### 2.1. Component Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -95,70 +95,70 @@ O sistema implementa uma integração automatizada com a plataforma Stark Bank p
               └──────────────────┘
 ```
 
-### 2.2. Processos do Sistema
+### 2.2. System Processes
 
-#### Processo 1: API Web (FastAPI)
-- **Porta:** 8000
-- **Responsabilidade:** Expor endpoints REST e processar webhooks
+#### Process 1: Web API (FastAPI)
+- **Port:** 8000
+- **Responsibility:** Expose REST endpoints and process webhooks
 - **Endpoints:**
-  - `POST /webhooks/invoice` - Recebe notificações de pagamento de invoices
-  - `POST /webhooks/transfer` - Recebe notificações de status de transferências
-  - `GET /invoices` - Lista invoices
-  - `GET /invoices/{id}` - Consulta invoice específica
-  - `GET /transfers` - Lista transferências
-  - `GET /transfers/{id}` - Consulta transferência específica
+  - `POST /webhooks/invoice` - Receives invoice payment notifications
+  - `POST /webhooks/transfer` - Receives transfer status notifications
+  - `GET /invoices` - List invoices
+  - `GET /invoices/{id}` - Query specific invoice
+  - `GET /transfers` - List transfers
+  - `GET /transfers/{id}` - Query specific transfer
   - `GET /health` - Health check
   - `GET /docs` - Swagger UI
 
-#### Processo 2: Scheduler (Background)
-- **Responsabilidade:** Executar geração de invoices periodicamente
-- **Schedule:** A cada 3 horas
-- **Duração:** 24 horas (8 ciclos)
-- **Execução:**
-  - Roda em thread separada
-  - Não bloqueia a API
-  - Pode ser extraído para processo independente no futuro
+#### Process 2: Scheduler (Background)
+- **Responsibility:** Execute invoice generation periodically
+- **Schedule:** Every 3 hours
+- **Duration:** 24 hours (8 cycles)
+- **Execution:**
+  - Runs in a separate thread
+  - Does not block the API
+  - Can be extracted to an independent process in the future
 
-## 3. Arquitetura Modular
+## 3. Modular Architecture
 
-### 3.1. Estrutura de Diretórios
+### 3.1. Directory Structure
 
 ```
 stark-bank-challenge/
 ├── src/
 │   ├── __init__.py
-│   ├── main.py                    # Entry point FastAPI
-│   ├── scheduler.py               # Entry point Scheduler
+│   ├── main.py                    # FastAPI entry point
+│   ├── scheduler.py               # Scheduler entry point
 │   │
 │   ├── modules/                   # Domain Modules
 │   │   ├── __init__.py
 │   │   │
 │   │   ├── invoices/              # Invoice Module
 │   │   │   ├── __init__.py
-│   │   │   ├── generator.py      # Geração de invoices
-│   │   │   ├── service.py        # Lógica de negócio
-│   │   │   ├── repository.py     # Acesso ao banco
-│   │   │   ├── models.py         # Modelos de dados
-│   │   │   ├── events.py         # Definição de eventos
-│   │   │   └── api.py            # Endpoints REST
+│   │   │   ├── generator.py      # Invoice generation
+│   │   │   ├── service.py        # Business logic
+│   │   │   ├── repository.py     # Database access
+│   │   │   ├── models.py         # Data models
+│   │   │   ├── events.py         # Event definitions
+│   │   │   └── api.py            # REST endpoints
 │   │   │
 │   │   ├── webhooks/              # Webhook Module
 │   │   │   ├── __init__.py
-│   │   │   ├── receiver.py       # Recebe webhooks
-│   │   │   ├── validator.py      # Valida assinaturas
-│   │   │   ├── invoice_processor.py  # Processa webhooks de invoice
-│   │   │   ├── transfer_processor.py # Processa webhooks de transfer
-│   │   │   ├── events.py         # Definição de eventos
-│   │   │   └── api.py            # Endpoints REST
+│   │   │   ├── receiver.py       # Receives webhooks
+│   │   │   ├── validator.py      # Validates signatures
+│   │   │   ├── invoice_processor.py  # Processes invoice webhooks
+│   │   │   ├── transfer_processor.py # Processes transfer webhooks
+│   │   │   ├── events.py         # Event definitions
+│   │   │   └── api.py            # REST endpoints
 │   │   │
 │   │   └── transfers/             # Transfer Module
 │   │       ├── __init__.py
-│   │       ├── service.py         # Lógica de negócio
+│   │       ├── service.py         # Business logic
 │   │       ├── handler.py         # Event handler
-│   │       ├── repository.py      # Acesso ao banco
-│   │       ├── models.py          # Modelos de dados
-│   │       ├── events.py          # Definição de eventos
-│   │       └── api.py             # Endpoints REST
+│   │       ├── repository.py      # Database access
+│   │       ├── models.py          # Data models
+│   │       ├── events.py          # Event definitions
+│   │       └── api.py             # REST endpoints
 │   │
 │   ├── shared/                    # Shared Components
 │   │   ├── __init__.py
@@ -177,7 +177,7 @@ stark-bank-challenge/
 │   │   │
 │   │   ├── stark/                 # Stark Bank Integration
 │   │   │   ├── __init__.py
-│   │   │   ├── client.py         # Cliente base
+│   │   │   ├── client.py         # Base client
 │   │   │   ├── invoice_api.py    # Invoice API
 │   │   │   ├── transfer_api.py   # Transfer API
 │   │   │   └── retry.py          # Retry logic
@@ -222,113 +222,113 @@ stark-bank-challenge/
 └── README.md                     # Setup instructions
 ```
 
-### 3.2. Módulos de Domínio
+### 3.2. Domain Modules
 
 #### 3.2.1. Invoices Module
 
-**Responsabilidades:**
-- Gerar invoices com dados aleatórios
-- Validar CPF/CNPJ
-- Criar invoices via Stark Bank API
-- Persistir invoices no banco de dados
-- Publicar eventos de criação
-- Expor endpoints de consulta
+**Responsibilities:**
+- Generate invoices with random data
+- Validate CPF/CNPJ
+- Create invoices via Stark Bank API
+- Persist invoices in the database
+- Publish creation events
+- Expose query endpoints
 
-**Componentes:**
-- `InvoiceGenerator`: Gera dados e cria invoices
-- `InvoiceService`: Lógica de negócio
-- `InvoiceRepository`: Persistência
-- `InvoiceAPI`: Endpoints REST
+**Components:**
+- `InvoiceGenerator`: Generates data and creates invoices
+- `InvoiceService`: Business logic
+- `InvoiceRepository`: Persistence
+- `InvoiceAPI`: REST endpoints
 
-**Eventos Publicados:**
-- `InvoiceCreated`: Invoice criada com sucesso
-- `InvoiceCreationFailed`: Falha na criação
+**Published Events:**
+- `InvoiceCreated`: Invoice successfully created
+- `InvoiceCreationFailed`: Creation failure
 
 #### 3.2.2. Webhooks Module
 
-**Responsabilidades:**
-- Receber webhooks do Stark Bank (invoices e transfers)
-- Validar assinatura digital
-- Processar payload de pagamento de invoices
-- Processar payload de status de transferências
-- Atualizar status de invoices e transfers
-- Publicar eventos de pagamento e transferência
+**Responsibilities:**
+- Receive webhooks from Stark Bank (invoices and transfers)
+- Validate digital signature
+- Process invoice payment payloads
+- Process transfer status payloads
+- Update invoice and transfer statuses
+- Publish payment and transfer events
 
-**Componentes:**
-- `WebhookReceiver`: Endpoints HTTP
-- `SignatureValidator`: Validação de assinatura
-- `InvoiceWebhookProcessor`: Processamento de invoices
-- `TransferWebhookProcessor`: Processamento de transfers
+**Components:**
+- `WebhookReceiver`: HTTP endpoints
+- `SignatureValidator`: Signature validation
+- `InvoiceWebhookProcessor`: Invoice processing
+- `TransferWebhookProcessor`: Transfer processing
 
-**Eventos Publicados:**
-- `InvoicePaid`: Invoice paga confirmada
-- `TransferProcessing`: Transferência em processamento
-- `TransferCompleted`: Transferência concluída com sucesso
-- `TransferFailed`: Transferência falhou
-- `WebhookValidationFailed`: Assinatura inválida
+**Published Events:**
+- `InvoicePaid`: Confirmed paid invoice
+- `TransferProcessing`: Transfer in processing
+- `TransferCompleted`: Transfer successfully completed
+- `TransferFailed`: Transfer failed
+- `WebhookValidationFailed`: Invalid signature
 
 #### 3.2.3. Transfers Module
 
-**Responsabilidades:**
-- Escutar eventos `InvoicePaid`
-- Calcular valor líquido (amount - fee)
-- Criar transferências via Stark Bank API
-- Garantir idempotência
-- Persistir transferências
-- Expor endpoints de consulta
+**Responsibilities:**
+- Listen to `InvoicePaid` events
+- Calculate net amount (amount - fee)
+- Create transfers via Stark Bank API
+- Ensure idempotency
+- Persist transfers
+- Expose query endpoints
 
-**Componentes:**
-- `TransferService`: Lógica de negócio
+**Components:**
+- `TransferService`: Business logic
 - `TransferHandler`: Event handler (InvoicePaid)
-- `TransferRepository`: Persistência
-- `TransferAPI`: Endpoints REST
+- `TransferRepository`: Persistence
+- `TransferAPI`: REST endpoints
 
-**Eventos Publicados:**
-- `TransferCompleted`: Transferência concluída
-- `TransferFailed`: Falha na transferência
+**Published Events:**
+- `TransferCompleted`: Transfer completed
+- `TransferFailed`: Transfer failure
 
-### 3.3. Componentes Compartilhados
+### 3.3. Shared Components
 
 #### 3.3.1. Event Bus
 
-**Implementação:**
-- Pattern: Pub/Sub in-memory
-- Sincrono (para simplicidade)
-- Handlers registrados na inicialização
+**Implementation:**
+- Pattern: In-memory Pub/Sub
+- Synchronous (for simplicity)
+- Handlers registered at initialization
 
 **Interface:**
 ```python
 class EventBus:
     def publish(self, event_type: str, payload: dict) -> None:
-        """Publica evento para todos os subscribers"""
+        """Publishes event to all subscribers"""
         
     def subscribe(self, event_type: str, handler: Callable) -> None:
-        """Registra handler para tipo de evento"""
+        """Registers handler for event type"""
         
     def unsubscribe(self, event_type: str, handler: Callable) -> None:
-        """Remove handler"""
+        """Removes handler"""
 ```
 
-**Eventos do Sistema:**
-- `invoice.created` - Invoice criada
-- `invoice.paid` - Invoice paga
-- `transfer.initiated` - Transferência iniciada
-- `transfer.processing` - Transferência em processamento
-- `transfer.completed` - Transferência concluída com sucesso
-- `transfer.failed` - Transferência falhou
-- `operation.failed` - Operação falhou
+**System Events:**
+- `invoice.created` - Invoice created
+- `invoice.paid` - Invoice paid
+- `transfer.initiated` - Transfer initiated
+- `transfer.processing` - Transfer in processing
+- `transfer.completed` - Transfer successfully completed
+- `transfer.failed` - Transfer failed
+- `operation.failed` - Operation failed
 
-**Persistência:**
-- Todos eventos são salvos em `events_log` para auditoria
+**Persistence:**
+- All events are saved in `events_log` for auditing
 
 #### 3.3.2. Database Layer
 
-**Tecnologia:** SQLite
-- Arquivo: `stark_bank.db`
-- Modo: WAL (Write-Ahead Logging) para concorrência
-- Connection pool: sqlite3 nativo
+**Technology:** SQLite
+- File: `stark_bank.db`
+- Mode: WAL (Write-Ahead Logging) for concurrency
+- Connection pool: native sqlite3
 
-**Tabelas:**
+**Tables:**
 ```sql
 -- Invoices
 CREATE TABLE invoices (
@@ -365,7 +365,7 @@ CREATE TABLE transfers (
     FOREIGN KEY (invoice_id) REFERENCES invoices(id)
 );
 
--- Events Log (auditoria)
+-- Events Log (audit)
 CREATE TABLE events_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_id TEXT UNIQUE NOT NULL,
@@ -387,10 +387,10 @@ CREATE INDEX idx_events_timestamp ON events_log(timestamp);
 
 #### 3.3.3. Stark Bank Integration
 
-**Wrapper sobre SDK oficial:**
-- Abstração para facilitar testes
-- Retry automático com backoff exponencial
-- Logging estruturado de todas operações
+**Wrapper over official SDK:**
+- Abstraction to facilitate testing
+- Automatic retry with exponential backoff
+- Structured logging of all operations
 
 **Invoice API:**
 ```python
@@ -402,7 +402,7 @@ class StarkInvoiceAPI:
         name: str,
         due_date: datetime
     ) -> InvoiceResponse:
-        """Cria invoice no Stark Bank com retry"""
+        """Creates invoice in Stark Bank with retry"""
 ```
 
 **Transfer API:**
@@ -419,19 +419,19 @@ class StarkTransferAPI:
         tax_id: str,
         name: str
     ) -> TransferResponse:
-        """Cria transferência no Stark Bank com retry"""
+        """Creates transfer in Stark Bank with retry"""
 ```
 
 **Retry Strategy:**
 ```python
 @retry(
     max_attempts=5,
-    delays=[0, 60, 120, 240, 480],  # segundos
+    delays=[0, 60, 120, 240, 480],  # seconds
     retriable_exceptions=[TimeoutError, RateLimitError, ServerError],
     non_retriable_exceptions=[ValidationError, AuthError]
 )
 def _call_api(self, ...):
-    """Executa chamada com retry automático"""
+    """Executes call with automatic retry"""
 ```
 
 #### 3.3.4. Security Layer
@@ -439,7 +439,7 @@ def _call_api(self, ...):
 **API Key Authentication:**
 ```python
 async def verify_api_key(api_key: str = Header(..., alias="X-API-Key")):
-    """Valida API Key de forma segura (constant-time comparison)"""
+    """Validates API Key securely (constant-time comparison)"""
     if not secrets.compare_digest(api_key, settings.API_KEY):
         raise HTTPException(status_code=401)
 ```
@@ -451,22 +451,22 @@ def validate_webhook_signature(
     signature: str,
     public_key: str
 ) -> bool:
-    """Valida assinatura digital do webhook usando ECDSA"""
+    """Validates webhook digital signature using ECDSA"""
 ```
 
-**Endpoints Protegidos:**
-- `GET /invoices*` - Requer API Key
-- `GET /transfers*` - Requer API Key
-- `GET /docs` - Requer API Key
+**Protected Endpoints:**
+- `GET /invoices*` - Requires API Key
+- `GET /transfers*` - Requires API Key
+- `GET /docs` - Requires API Key
 
-**Endpoints Públicos:**
-- `GET /health` - Sem autenticação
-- `POST /webhooks/invoice` - Validado por assinatura digital
-- `POST /webhooks/transfer` - Validado por assinatura digital
+**Public Endpoints:**
+- `GET /health` - No authentication
+- `POST /webhooks/invoice` - Validated by digital signature
+- `POST /webhooks/transfer` - Validated by digital signature
 
 #### 3.3.5. Logger
 
-**Formato:** JSON estruturado
+**Format:** Structured JSON
 ```json
 {
     "timestamp": "2026-02-14T10:30:00.123Z",
@@ -483,43 +483,43 @@ def validate_webhook_signature(
 }
 ```
 
-**Níveis:**
-- `DEBUG`: Detalhes de desenvolvimento
-- `INFO`: Operações normais
-- `WARNING`: Situações inesperadas não-críticas
-- `ERROR`: Falhas que requerem atenção
+**Levels:**
+- `DEBUG`: Development details
+- `INFO`: Normal operations
+- `WARNING`: Unexpected non-critical situations
+- `ERROR`: Failures requiring attention
 
-**Saídas:**
+**Outputs:**
 - Console (stdout)
-- Arquivo: `logs/app.log` (rotação diária)
+- File: `logs/app.log` (daily rotation)
 
-## 4. Padrões de Design
+## 4. Design Patterns
 
 ### 4.1. Repository Pattern
 
-Abstrai acesso ao banco de dados, facilitando testes e manutenção.
+Abstracts database access, facilitating testing and maintenance.
 
 ```python
 class InvoiceRepository:
     def create(self, invoice: InvoiceModel) -> None:
-        """Insere invoice no banco"""
+        """Inserts invoice into database"""
         
     def get_by_id(self, invoice_id: str) -> Optional[InvoiceModel]:
-        """Busca invoice por ID"""
+        """Fetches invoice by ID"""
         
     def get_by_stark_id(self, stark_id: str) -> Optional[InvoiceModel]:
-        """Busca invoice por Stark ID"""
+        """Fetches invoice by Stark ID"""
         
     def update(self, invoice: InvoiceModel) -> None:
-        """Atualiza invoice"""
+        """Updates invoice"""
         
     def list(self, status: Optional[str], limit: int, offset: int) -> List[InvoiceModel]:
-        """Lista invoices com filtros"""
+        """Lists invoices with filters"""
 ```
 
 ### 4.2. Service Layer
 
-Encapsula lógica de negócio, orquestrando repositórios e APIs externas.
+Encapsulates business logic, orchestrating repositories and external APIs.
 
 ```python
 class InvoiceService:
@@ -534,17 +534,17 @@ class InvoiceService:
         self.event_bus = event_bus
         
     def create_invoice(self, data: dict) -> InvoiceModel:
-        """Cria invoice com lógica de negócio completa"""
-        # 1. Validar dados
-        # 2. Criar no Stark Bank
-        # 3. Salvar no banco
-        # 4. Publicar evento
-        # 5. Retornar modelo
+        """Creates invoice with full business logic"""
+        # 1. Validate data
+        # 2. Create in Stark Bank
+        # 3. Save to database
+        # 4. Publish event
+        # 5. Return model
 ```
 
 ### 4.3. Event-Driven Pattern
 
-Desacoplamento entre módulos via eventos.
+Decoupling between modules via events.
 
 ```python
 # Publisher (Invoice Generator)
@@ -561,12 +561,12 @@ event_bus.subscribe("invoice.paid", transfer_handler.handle_invoice_paid)
 
 ### 4.4. Dependency Injection
 
-Facilita testes e flexibilidade.
+Facilitates testing and flexibility.
 
 ```python
-# Di container (simplificado)
+# DI container (simplified)
 def get_invoice_service() -> InvoiceService:
-    """Factory function para InvoiceService"""
+    """Factory function for InvoiceService"""
     db = get_database()
     repository = InvoiceRepository(db)
     stark_api = StarkInvoiceAPI()
@@ -584,7 +584,7 @@ def create_invoice(
 
 ### 4.5. Retry Pattern
 
-Resiliência automática com backoff exponencial.
+Automatic resilience with exponential backoff.
 
 ```python
 def retry_with_backoff(
@@ -593,12 +593,12 @@ def retry_with_backoff(
     delays: List[int] = [0, 60, 120, 240, 480]
 ) -> Any:
     """
-    Executa função com retry automático
+    Executes function with automatic retry
     
     Args:
-        func: Função a ser executada
-        max_attempts: Número máximo de tentativas
-        delays: Lista de delays em segundos entre tentativas
+        func: Function to execute
+        max_attempts: Maximum number of attempts
+        delays: List of delays in seconds between attempts
     """
     for attempt in range(1, max_attempts + 1):
         try:
@@ -610,18 +610,18 @@ def retry_with_backoff(
             logger.warning(f"Attempt {attempt} failed, retrying in {delay}s")
             time.sleep(delay)
         except NonRetriableError:
-            raise  # Não tenta novamente
+            raise  # Does not retry
 ```
 
 ### 4.6. Factory Pattern
 
-Criação de objetos complexos.
+Creation of complex objects.
 
 ```python
 class InvoiceFactory:
     @staticmethod
     def create_random_invoice() -> dict:
-        """Cria dados de invoice aleatórios"""
+        """Creates random invoice data"""
         faker = Faker('pt_BR')
         
         # 30% CPF, 70% CNPJ
@@ -635,7 +635,7 @@ class InvoiceFactory:
             name = faker.company()
             
         return {
-            "amount": random.randint(10000, 100000),  # centavos
+            "amount": random.randint(10000, 100000),  # cents
             "tax_id": tax_id,
             "name": name,
             "email": faker.email(),
@@ -643,217 +643,217 @@ class InvoiceFactory:
         }
 ```
 
-## 5. Fluxos de Dados
+## 5. Data Flows
 
-### 5.1. Fluxo de Criação de Invoice
+### 5.1. Invoice Creation Flow
 
 ```
-1. Scheduler aciona InvoiceGenerator (a cada 3h)
+1. Scheduler triggers InvoiceGenerator (every 3h)
 2. InvoiceGenerator:
-   a. Gera dados aleatórios (8-12 invoices)
-   b. Valida CPF/CNPJ
+   a. Generates random data (8-12 invoices)
+   b. Validates CPF/CNPJ
 3. InvoiceService:
-   a. Cria invoice via StarkInvoiceAPI (com retry)
-   b. Salva no banco via InvoiceRepository
-   c. Publica evento "invoice.created"
-4. EventBus notifica subscribers:
-   a. Logger: registra em events_log
-   b. Metrics: incrementa contador
+   a. Creates invoice via StarkInvoiceAPI (with retry)
+   b. Saves to database via InvoiceRepository
+   c. Publishes "invoice.created" event
+4. EventBus notifies subscribers:
+   a. Logger: records in events_log
+   b. Metrics: increments counter
 ```
 
-### 5.2. Fluxo de Processamento de Webhook
+### 5.2. Webhook Processing Flow
 
 ```
-1. Stark Bank envia POST /webhooks/invoice
+1. Stark Bank sends POST /webhooks/invoice
 2. WebhookReceiver:
-   a. Valida assinatura digital
-   b. Parseia payload JSON
+   a. Validates digital signature
+   b. Parses JSON payload
 3. WebhookProcessor:
-   a. Extrai dados (invoice_id, amount, fee)
-   b. Calcula net_amount = amount - fee
-   c. Atualiza invoice via InvoiceRepository
-   d. Publica evento "invoice.paid"
-4. TransferHandler (subscriber de "invoice.paid"):
-   a. Escuta evento
-   b. Aciona TransferService
+   a. Extracts data (invoice_id, amount, fee)
+   b. Calculates net_amount = amount - fee
+   c. Updates invoice via InvoiceRepository
+   d. Publishes "invoice.paid" event
+4. TransferHandler (subscriber of "invoice.paid"):
+   a. Listens to event
+   b. Triggers TransferService
 5. TransferService:
-   a. Verifica se transferência já existe (idempotência)
-   b. Cria transfer via StarkTransferAPI (com retry)
-   c. Salva no banco via TransferRepository
-   d. Publica evento "transfer.completed"
-6. WebhookReceiver retorna HTTP 200
+   a. Checks if transfer already exists (idempotency)
+   b. Creates transfer via StarkTransferAPI (with retry)
+   c. Saves to database via TransferRepository
+   d. Publishes "transfer.completed" event
+6. WebhookReceiver returns HTTP 200
 ```
 
-### 5.3. Fluxo de Transferência
+### 5.3. Transfer Flow
 
 ```
-1. TransferHandler recebe evento "invoice.paid"
+1. TransferHandler receives "invoice.paid" event
 2. TransferHandler:
-   a. Extrai invoice_id do evento
-   b. Carrega invoice do banco
-   c. Calcula net_amount
+   a. Extracts invoice_id from event
+   b. Loads invoice from database
+   c. Calculates net_amount
 3. TransferService:
-   a. Verifica transferência existente via external_id
-   b. Se existe: retorna existente (idempotência)
-   c. Se não existe:
-      i. Monta payload de transferência
-      ii. Cria via StarkTransferAPI (com retry)
-      iii. Salva no banco com status="created"
-      iv. Publica evento "transfer.initiated"
+   a. Checks existing transfer via external_id
+   b. If exists: returns existing (idempotency)
+   c. If not exists:
+      i. Builds transfer payload
+      ii. Creates via StarkTransferAPI (with retry)
+      iii. Saves to database with status="created"
+      iv. Publishes "transfer.initiated" event
 ```
 
-### 5.4. Fluxo de Processamento de Webhook de Transfer
+### 5.4. Transfer Webhook Processing Flow
 
 ```
-1. Stark Bank envia POST /webhooks/transfer
+1. Stark Bank sends POST /webhooks/transfer
 2. WebhookReceiver:
-   a. Valida assinatura digital
-   b. Parseia payload JSON
+   a. Validates digital signature
+   b. Parses JSON payload
 3. TransferWebhookProcessor:
-   a. Extrai dados (transfer_id, status)
-   b. Busca transferência no banco via stark_transfer_id
-   c. Atualiza status da transferência
-   d. Salva updated_at timestamp
-   e. Decide qual evento publicar:
-      - status="processing" → publica "transfer.processing"
-      - status="success" → publica "transfer.completed" + atualiza completed_at
-      - status="failed" → publica "transfer.failed" + salva error_message
-4. EventBus notifica subscribers:
-   a. Logger: registra em events_log
-   b. Metrics: atualiza contadores
-   c. Alertas: notifica se falha
-5. WebhookReceiver retorna HTTP 200
+   a. Extracts data (transfer_id, status)
+   b. Fetches transfer from database via stark_transfer_id
+   c. Updates transfer status
+   d. Saves updated_at timestamp
+   e. Decides which event to publish:
+      - status="processing" → publishes "transfer.processing"
+      - status="success" → publishes "transfer.completed" + updates completed_at
+      - status="failed" → publishes "transfer.failed" + saves error_message
+4. EventBus notifies subscribers:
+   a. Logger: records in events_log
+   b. Metrics: updates counters
+   c. Alerts: notifies on failure
+5. WebhookReceiver returns HTTP 200
 ```
 
-**Estados de Transfer pelo Stark Bank:**
-- `created` - Transferência criada (status local inicial)
-- `processing` - Em processamento no Stark Bank
-- `success` - Transferência concluída com sucesso
-- `failed` - Transferência falhou (erro bancário, saldo insuficiente, etc)
+**Transfer States from Stark Bank:**
+- `created` - Transfer created (initial local status)
+- `processing` - Being processed at Stark Bank
+- `success` - Transfer successfully completed
+- `failed` - Transfer failed (banking error, insufficient balance, etc.)
 
-### 5.5. Fluxo de Retry
+### 5.5. Retry Flow
 
 ```
-1. Operação falha com erro retriável
+1. Operation fails with retriable error
 2. RetryLogic:
-   a. Verifica tipo de erro
-   b. Se erro retriável e tentativas < 5:
-      i. Incrementa retry_count
-      ii. Registra last_retry_at
-      iii. Aguarda delay (backoff exponencial)
-      iv. Executa novamente
-   c. Se erro não-retriável ou tentativas = 5:
-      i. Salva error_message
-      ii. Atualiza status para "failed"
-      iii. Publica evento "operation.failed"
-      iv. Lança exceção
+   a. Checks error type
+   b. If retriable error and attempts < 5:
+      i. Increments retry_count
+      ii. Records last_retry_at
+      iii. Waits for delay (exponential backoff)
+      iv. Executes again
+   c. If non-retriable error or attempts = 5:
+      i. Saves error_message
+      ii. Updates status to "failed"
+      iii. Publishes "operation.failed" event
+      iv. Raises exception
 ```
 
-## 6. Estratégias de Resiliência
+## 6. Resilience Strategies
 
-### 6.1. Retry com Backoff Exponencial
+### 6.1. Retry with Exponential Backoff
 
-**Configuração:**
+**Configuration:**
 - Max attempts: 5
 - Delays: [0s, 60s, 120s, 240s, 480s]
-- Total max time: ~15 minutos
+- Total max time: ~15 minutes
 
-**Erros Retriáveis:**
-- `TimeoutError`: Timeout de conexão/leitura
+**Retriable Errors:**
+- `TimeoutError`: Connection/read timeout
 - `RateLimitError`: HTTP 429 (Too Many Requests)
 - `ServerError`: HTTP 5xx (500, 502, 503, 504)
-- `ConnectionError`: Falha de rede
+- `ConnectionError`: Network failure
 
-**Erros Não-Retriáveis:**
+**Non-Retriable Errors:**
 - `ValidationError`: HTTP 422 (Unprocessable Entity)
 - `AuthenticationError`: HTTP 401 (Unauthorized)
 - `PermissionError`: HTTP 403 (Forbidden)
 - `NotFoundError`: HTTP 404 (Not Found)
 - `BadRequestError`: HTTP 400 (Bad Request)
 
-### 6.2. Idempotência
+### 6.2. Idempotency
 
-**Transferências:**
-- Usar `external_id = invoice-{invoice_id}`
-- Stark Bank garante: mesma external_id = mesma transfer
-- Antes de criar: verificar se já existe no banco local
+**Transfers:**
+- Use `external_id = invoice-{invoice_id}`
+- Stark Bank guarantees: same external_id = same transfer
+- Before creating: check if already exists in local database
 
 **Webhooks:**
-- Podem ser enviados múltiplas vezes
-- Processar sempre, mas não duplicar transferência
-- Status da invoice garante idempotência
+- May be sent multiple times
+- Always process, but do not duplicate transfer
+- Invoice status ensures idempotency
 
-### 6.3. Persistência de Estado
+### 6.3. State Persistence
 
-**Registros de Retry:**
+**Retry Records:**
 ```python
 invoice.retry_count = 0
 invoice.last_retry_at = None
 invoice.error_message = None
 
-# A cada retry
+# On each retry
 invoice.retry_count += 1
 invoice.last_retry_at = datetime.now()
 
-# Se falhar definitivamente
+# If definitively failed
 invoice.status = "failed"
 invoice.error_message = str(error)
 ```
 
-**Auditoria Completa:**
-- Todos eventos salvos em `events_log`
-- Permite replay manual se necessário
-- Facilita debugging
+**Complete Audit:**
+- All events saved in `events_log`
+- Allows manual replay if needed
+- Facilitates debugging
 
-### 6.4. Circuit Breaker (Futuro)
+### 6.4. Circuit Breaker (Future)
 
-**Não implementado na v1.0, mas preparado para:**
-- Detectar falhas consecutivas
-- "Abrir circuito" temporariamente
-- Recuperar automaticamente quando serviço volta
+**Not implemented in v1.0, but prepared for:**
+- Detecting consecutive failures
+- Temporarily "opening the circuit"
+- Automatically recovering when service comes back
 
-## 7. Segurança
+## 7. Security
 
-### 7.1. Autenticação
+### 7.1. Authentication
 
-**API Key (para endpoints de consulta):**
+**API Key (for query endpoints):**
 ```
 Header: X-API-Key: <secret-key>
 ```
-- Comparação segura (constant-time)
-- Gerada e armazenada em variável de ambiente
+- Secure comparison (constant-time)
+- Generated and stored as environment variable
 
-**Digital Signature (para webhooks):**
+**Digital Signature (for webhooks):**
 ```
 Header: Digital-Signature: <ecdsa-signature>
 ```
-- Validação usando public key do Stark Bank
-- Previne webhooks forjados
+- Validation using Stark Bank public key
+- Prevents forged webhooks
 
-### 7.2. Autorização
+### 7.2. Authorization
 
-**Modelo simples:**
-- API Key: acesso completo a leitura
-- Webhooks: sem autenticação, mas validação de assinatura
-- Health check: público
+**Simple model:**
+- API Key: full read access
+- Webhooks: no authentication, but signature validation
+- Health check: public
 
-**Futuro:**
-- Implementar roles (admin, readonly)
-- Rate limiting por API Key
-- OAuth2 para integrações externas
+**Future:**
+- Implement roles (admin, readonly)
+- Rate limiting per API Key
+- OAuth2 for external integrations
 
-### 7.3. Proteção de Dados
+### 7.3. Data Protection
 
 **Logs:**
-- Não logar API Keys ou senhas
-- Mascarar CPF/CNPJ parcialmente
-- Nunca logar payloads de webhooks completos (dados sensíveis)
+- Do not log API Keys or passwords
+- Partially mask CPF/CNPJ
+- Never log complete webhook payloads (sensitive data)
 
-**Banco de Dados:**
-- SQLite file com permissões restritas (0600)
-- Backup criptografado (futuro)
+**Database:**
+- SQLite file with restricted permissions (0600)
+- Encrypted backup (future)
 
-**Variáveis de Ambiente:**
+**Environment Variables:**
 ```
 STARK_BANK_PRIVATE_KEY=<base64-encoded-key>
 STARK_BANK_PROJECT_ID=<project-id>
@@ -863,26 +863,26 @@ DATABASE_URL=sqlite:///./stark_bank.db
 
 ### 7.4. HTTPS
 
-**Produção (Railway):**
-- HTTPS obrigatório
-- Certificado gerenciado automaticamente
-- Redirect de HTTP para HTTPS
+**Production (Railway):**
+- HTTPS mandatory
+- Automatically managed certificate
+- HTTP to HTTPS redirect
 
-**Desenvolvimento:**
-- HTTP permitido (localhost)
+**Development:**
+- HTTP allowed (localhost)
 
-## 8. Observabilidade
+## 8. Observability
 
 ### 8.1. Logging
 
-**Estrutura:**
-- Formato: JSON
-- Níveis: DEBUG, INFO, WARNING, ERROR
+**Structure:**
+- Format: JSON
+- Levels: DEBUG, INFO, WARNING, ERROR
 - Context: correlation_id, module, event
 
-**Destinos:**
-- Console (stdout) - para Railway
-- Arquivo: `logs/app.log` - rotação diária
+**Outputs:**
+- Console (stdout) - for Railway
+- File: `logs/app.log` - daily rotation
 
 **Exemplo:**
 ```json
@@ -902,33 +902,33 @@ DATABASE_URL=sqlite:///./stark_bank.db
 }
 ```
 
-### 8.2. Metrics (Futuro)
+### 8.2. Metrics (Future)
 
-**Contadores:**
-- `invoices_created_total` - Total de invoices criadas
-- `invoices_failed_total` - Total de falhas
-- `webhooks_invoice_received_total` - Total de webhooks de invoice recebidos
-- `webhooks_transfer_received_total` - Total de webhooks de transfer recebidos
-- `transfers_initiated_total` - Total de transferências iniciadas
-- `transfers_completed_total` - Total de transferências concluídas
-- `transfers_failed_total` - Total de transferências falhadas
+**Counters:**
+- `invoices_created_total` - Total invoices created
+- `invoices_failed_total` - Total failures
+- `webhooks_invoice_received_total` - Total invoice webhooks received
+- `webhooks_transfer_received_total` - Total transfer webhooks received
+- `transfers_initiated_total` - Total transfers initiated
+- `transfers_completed_total` - Total transfers completed
+- `transfers_failed_total` - Total failed transfers
 
-**Histogramas:**
-- `invoice_creation_duration_seconds` - Tempo de criação
-- `webhook_invoice_processing_duration_seconds` - Tempo de processamento de webhook de invoice
-- `webhook_transfer_processing_duration_seconds` - Tempo de processamento de webhook de transfer
-- `transfer_creation_duration_seconds` - Tempo de transferência
+**Histograms:**
+- `invoice_creation_duration_seconds` - Creation time
+- `webhook_invoice_processing_duration_seconds` - Invoice webhook processing time
+- `webhook_transfer_processing_duration_seconds` - Transfer webhook processing time
+- `transfer_creation_duration_seconds` - Transfer time
 
 **Gauges:**
-- `active_invoices` - Invoices com status=created
-- `processing_transfers` - Transfers com status=processing
+- `active_invoices` - Invoices with status=created
+- `processing_transfers` - Transfers with status=processing
 
-### 8.3. Tracing (Futuro)
+### 8.3. Tracing (Future)
 
 **OpenTelemetry:**
-- Trace completo de cada operação
-- Correlation entre invoice → payment → transfer
-- Visualização em Jaeger/Zipkin
+- Full trace of each operation
+- Correlation between invoice → payment → transfer
+- Visualization in Jaeger/Zipkin
 
 ### 8.4. Health Check
 
@@ -949,47 +949,47 @@ DATABASE_URL=sqlite:///./stark_bank.db
 
 ## 9. Testing Strategy
 
-### 9.1. Pirâmide de Testes
+### 9.1. Testing Pyramid
 
 ```
         ▲
        ╱ ╲
-      ╱ E2E╲         (~10% - 5 testes)
+      ╱ E2E╲         (~10% - 5 tests)
      ╱─────╲
-    ╱  Int  ╲        (~30% - 15 testes)
+    ╱  Int  ╲        (~30% - 15 tests)
    ╱─────────╲
-  ╱   Unit    ╲      (~60% - 30 testes)
+  ╱   Unit    ╲      (~60% - 30 tests)
  ╱─────────────╲
 ```
 
-**Target:** 85%+ cobertura
+**Target:** 85%+ coverage
 
 ### 9.2. Unit Tests
 
-**Escopo:** Funções e métodos isolados
+**Scope:** Isolated functions and methods
 
-**Ferramentas:**
+**Tools:**
 - pytest
 - pytest-mock
-- pytest-cov (cobertura)
+- pytest-cov (coverage)
 
-**Exemplos:**
-- Validação de CPF/CNPJ
-- Cálculo de net_amount
-- Parsing de webhooks
-- Formatação de payloads
-- Lógica de retry
+**Examples:**
+- CPF/CNPJ validation
+- net_amount calculation
+- Webhook parsing
+- Payload formatting
+- Retry logic
 
 **Mocking:**
 - Stark Bank API (mock responses)
-- Database (in-memory ou mock)
-- Faker (seed fixo para previsibilidade)
+- Database (in-memory or mock)
+- Faker (fixed seed for predictability)
 
 ### 9.3. Integration Tests
 
-**Escopo:** Integração entre componentes
+**Scope:** Integration between components
 
-**Exemplos:**
+**Examples:**
 - InvoiceService + InvoiceRepository + EventBus
 - WebhookProcessor + InvoiceRepository
 - TransferService + StarkAPI (mocked)
@@ -997,44 +997,44 @@ DATABASE_URL=sqlite:///./stark_bank.db
 
 **Database:**
 - SQLite in-memory (`:memory:`)
-- Schema criado em setup
+- Schema created in setup
 
 ### 9.4. E2E Tests
 
-**Escopo:** Fluxo completo
+**Scope:** Full flow
 
-**Ferramentas:**
-- TestClient do FastAPI
+**Tools:**
+- FastAPI TestClient
 - pytest-asyncio
 
-**Exemplos:**
+**Examples:**
 1. **Invoice Creation Flow:**
-   - Scheduler inicia
-   - Invoices criadas
-   - Salvos no banco
-   - Eventos publicados
+   - Scheduler starts
+   - Invoices created
+   - Saved to database
+   - Events published
 
 2. **Invoice Webhook Flow:**
    - POST /webhooks/invoice
-   - Assinatura validada
-   - Invoice atualizada
-   - Transfer criada
+   - Signature validated
+   - Invoice updated
+   - Transfer created
 
 3. **Transfer Webhook Flow:**
    - POST /webhooks/transfer
-   - Assinatura validada
-   - Transfer atualizada
-   - Status processado corretamente
+   - Signature validated
+   - Transfer updated
+   - Status correctly processed
 
 4. **Query Flow:**
-   - GET /invoices com filtros
+   - GET /invoices with filters
    - GET /invoices/{id}
-   - GET /transfers com filtros
+   - GET /transfers with filters
    - GET /transfers/{id}
-   - Autenticação via API Key
+   - Authentication via API Key
 
 **Stark Bank API:**
-- Mock para E2E (não bater sandbox)
+- Mocked for E2E (does not hit sandbox)
 
 ### 9.5. Fixtures
 
@@ -1071,24 +1071,24 @@ def event_bus():
 
 ### 9.6. Test Coverage
 
-**Por Módulo:**
-- `invoices/` - 90%+ (lógica crítica)
-- `webhooks/` - 90%+ (segurança crítica)
-- `transfers/` - 90%+ (dinheiro envolvido)
+**Per Module:**
+- `invoices/` - 90%+ (critical logic)
+- `webhooks/` - 90%+ (critical security)
+- `transfers/` - 90%+ (money involved)
 - `shared/` - 80%+
-- `main.py` - 70%+ (integração)
+- `main.py` - 70%+ (integration)
 
-**Executar:**
+**Run:**
 ```bash
 pytest --cov=src --cov-report=html --cov-report=term
 ```
 
 ## 10. Configuration Management
 
-### 10.1. Variáveis de Ambiente
+### 10.1. Environment Variables
 
 ```bash
-# .env (desenvolvimento)
+# .env (development)
 
 # Stark Bank
 STARK_BANK_ENVIRONMENT=sandbox
@@ -1184,8 +1184,8 @@ STARK_BANK_ACCOUNT = {
 }
 
 # Invoice Configuration
-INVOICE_MIN_AMOUNT = 10000  # R$ 100,00 (centavos)
-INVOICE_MAX_AMOUNT = 100000  # R$ 1.000,00 (centavos)
+INVOICE_MIN_AMOUNT = 10000  # R$ 100.00 (cents)
+INVOICE_MAX_AMOUNT = 100000  # R$ 1,000.00 (cents)
 INVOICE_DUE_DAYS = 3
 INVOICE_MIN_BATCH_SIZE = 8
 INVOICE_MAX_BATCH_SIZE = 12
@@ -1195,7 +1195,7 @@ CPF_WEIGHT = 0.7  # 70% CPF, 30% CNPJ
 
 # Retry Configuration
 RETRY_MAX_ATTEMPTS = 5
-RETRY_DELAYS = [0, 60, 120, 240, 480]  # segundos
+RETRY_DELAYS = [0, 60, 120, 240, 480]  # seconds
 
 # Status
 INVOICE_STATUS_CREATED = "created"
@@ -1223,16 +1223,16 @@ EVENT_OPERATION_FAILED = "operation.failed"
 
 ### 11.1. Railway
 
-**Plataforma:** Railway (free tier)
+**Platform:** Railway (free tier)
 
-**Vantagens:**
-- Deploy automático via Git
-- HTTPS nativo
-- Logs centralizados
-- Variáveis de ambiente
-- Domínio gratuito
+**Advantages:**
+- Automatic deployment via Git
+- Native HTTPS
+- Centralized logs
+- Environment variables
+- Free domain
 
-**Configuração:**
+**Configuration:**
 
 ```toml
 # Procfile (Railway)
@@ -1240,10 +1240,10 @@ web: uvicorn src.main:app --host 0.0.0.0 --port $PORT
 scheduler: python src/scheduler.py
 ```
 
-**Nota:** Railway free tier permite 1 processo. Solução:
-- Opção 1: Rodar scheduler em thread dentro da API
-- Opção 2: Usar Railway Pro (2 processos)
-- **Escolhido: Opção 1** (thread dentro da API)
+**Note:** Railway free tier allows 1 process. Solution:
+- Option 1: Run scheduler in a thread inside the API
+- Option 2: Use Railway Pro (2 processes)
+- **Chosen: Option 1** (thread inside the API)
 
 ### 11.2. Environment Variables (Railway)
 
@@ -1259,21 +1259,21 @@ SCHEDULER_ENABLED=true
 
 ### 11.3. Database Persistence
 
-**Problema:** Railway free tier não persiste arquivos
+**Problem:** Railway free tier does not persist files
 
-**Solução:**
-- Usar volume montado (Railway suporta)
-- Configurar volume: `/app/data`
+**Solution:**
+- Use mounted volume (Railway supports)
+- Configure volume: `/app/data`
 - Database path: `/app/data/stark_bank.db`
 
-**Alternativa (se volume não disponível):**
-- PostgreSQL gratuito da Railway
-- Migrar de SQLite para PostgreSQL
+**Alternative (if volume unavailable):**
+- Railway's free PostgreSQL
+- Migrate from SQLite to PostgreSQL
 
 ### 11.4. Build & Startup
 
 ```yaml
-# railway.toml (exemplo)
+# railway.toml (example)
 [build]
 builder = "NIXPACKS"
 
@@ -1284,8 +1284,8 @@ restartPolicyMaxRetries = 10
 ```
 
 **Build steps:**
-1. Detectar Python 3.14
-2. Instalar dependências (pyproject.toml)
+1. Detect Python 3.14
+2. Install dependencies (pyproject.toml)
 3. Run migrations (startup script)
 4. Start API + Scheduler
 
@@ -1312,7 +1312,7 @@ curl https://stark-bank-challenge.railway.app/health
 git clone <repo-url>
 cd stark-bank-challenge
 
-# 2. Install dependencies (exemplo com rye)
+# 2. Install dependencies (example with rye)
 rye sync
 
 # 3. Setup environment
@@ -1360,18 +1360,18 @@ pytest-watch
 ### 12.4. Git Workflow
 
 **Branches:**
-- `main` - Produção (Railway auto-deploy)
-- `develop` - Desenvolvimento
+- `main` - Production (Railway auto-deploy)
+- `develop` - Development
 - `feature/<name>` - Features
 - `fix/<name>` - Bugfixes
 
 **Commits:**
-- feat: Nova funcionalidade
-- fix: Correção de bug
-- refactor: Refatoração
-- docs: Documentação
-- test: Testes
-- chore: Manutenção
+- feat: New feature
+- fix: Bug fix
+- refactor: Refactoring
+- docs: Documentation
+- test: Tests
+- chore: Maintenance
 
 **Exemplo:**
 ```
@@ -1384,53 +1384,53 @@ feat(invoices): add invoice generation with retry logic
 
 ## 13. Troubleshooting
 
-### 13.1. Problemas Comuns
+### 13.1. Common Issues
 
-#### Erro: "Invalid Private Key"
-**Causa:** Private key do Stark Bank incorreta ou mal formatada
+#### Error: "Invalid Private Key"
+**Cause:** Stark Bank private key is incorrect or malformatted
 
-**Solução:**
+**Solution:**
 ```bash
-# Verificar formato (deve ser base64)
+# Check format (should be base64)
 echo $STARK_BANK_PRIVATE_KEY | base64 -d
 
-# Gerar nova key no dashboard Stark Bank
+# Generate new key in Stark Bank dashboard
 ```
 
-#### Erro: "Database is Locked"
-**Causa:** Concorrência no SQLite
+#### Error: "Database is Locked"
+**Cause:** SQLite concurrency issue
 
-**Solução:**
+**Solution:**
 ```python
-# Habilitar WAL mode
+# Enable WAL mode
 conn.execute("PRAGMA journal_mode=WAL")
 
-# Timeout maior
+# Larger timeout
 conn = sqlite3.connect("db.sqlite", timeout=30)
 ```
 
-#### Erro: "Webhook Signature Invalid"
-**Causa:** Public key incorreta ou payload modificado
+#### Error: "Webhook Signature Invalid"
+**Cause:** Incorrect public key or modified payload
 
-**Solução:**
+**Solution:**
 ```python
-# Verificar public key
+# Check public key
 logger.debug(f"Public key: {public_key[:20]}...")
 
-# Logar payload raw
+# Log raw payload
 logger.debug(f"Raw payload: {request.body}")
 ```
 
-#### Scheduler Não Executa
-**Causa:** Thread não iniciada ou exceção silenciosa
+#### Scheduler Not Running
+**Cause:** Thread not started or silent exception
 
-**Solução:**
+**Solution:**
 ```python
-# Adicionar logs
+# Add logs
 logger.info("Scheduler started")
 logger.info(f"Next run: {scheduler.get_jobs()}")
 
-# Verificar exceções
+# Check exceptions
 try:
     scheduler.start()
 except Exception as e:
@@ -1444,7 +1444,7 @@ except Exception as e:
 uvicorn src.main:app --reload --log-level debug
 ```
 
-**Logs Detalhados:**
+**Detailed Logs:**
 ```python
 # Temporary debug logging
 logger.setLevel(logging.DEBUG)
@@ -1464,58 +1464,58 @@ SELECT * FROM events_log ORDER BY timestamp DESC LIMIT 10;
 
 ### 14.1. Short Term (v1.1)
 
-- [ ] PostgreSQL como opção de banco
+- [ ] PostgreSQL as database option
 - [ ] Circuit breaker pattern
-- [ ] Rate limiting em endpoints
-- [ ] Metrics com Prometheus
-- [ ] Dashboard de monitoramento
-- [ ] Retry manual de operações falhadas
+- [ ] Rate limiting on endpoints
+- [ ] Metrics with Prometheus
+- [ ] Monitoring dashboard
+- [ ] Manual retry of failed operations
 
-## 15. Conclusão
+## 15. Conclusion
 
-### 15.1. Destaques da Arquitetura
+### 15.1. Architecture Highlights
 
-1. **Modular:** Fácil de entender, testar e evoluir
-2. **Resiliente:** Retry automático e tratamento de falhas
-3. **Rastreável:** Logging estruturado e auditoria completa
-4. **Seguro:** Validação de assinaturas e API Keys
-5. **Testável:** Cobertura > 85% com testes claros
-6. **Documentado:** Arquitetura e API completamente documentadas
+1. **Modular:** Easy to understand, test, and evolve
+2. **Resilient:** Automatic retry and failure handling
+3. **Traceable:** Structured logging and complete auditing
+4. **Secure:** Signature and API Key validation
+5. **Testable:** Coverage > 85% with clear tests
+6. **Documented:** Architecture and API fully documented
 
-### 15.2. Alinhamento com Requisitos
+### 15.2. Alignment with Requirements
 
-✅ Monolito modular  
+✅ Modular monolith  
 ✅ Event-driven architecture  
-✅ Retry com backoff exponencial  
-✅ Validação de CPF/CNPJ  
-✅ Idempotência de transferências  
-✅ Logging estruturado  
-✅ Segurança (API Key + Assinatura)  
-✅ Python 3.14 sem Pydantic  
+✅ Retry with exponential backoff  
+✅ CPF/CNPJ validation  
+✅ Transfer idempotency  
+✅ Structured logging  
+✅ Security (API Key + Signature)  
+✅ Python 3.14 without Pydantic  
 ✅ FastAPI + SQLite  
-✅ Testes > 85% cobertura  
+✅ Tests > 85% coverage  
 
 ### 15.3. Trade-offs
 
-**Escolhas:**
-- SQLite (simplicidade) vs PostgreSQL (performance)
-- In-memory Event Bus (simplicidade) vs RabbitMQ (escalabilidade)
-- Monolito (deploy simples) vs Microserviços (escalabilidade)
+**Choices:**
+- SQLite (simplicity) vs PostgreSQL (performance)
+- In-memory Event Bus (simplicity) vs RabbitMQ (scalability)
+- Monolith (simple deployment) vs Microservices (scalability)
 - Thread scheduler (single process) vs Process (Railway free tier)
 
-**Justificativa:**
-- MVP focado em demonstrar capacidades técnicas
-- Trade-offs documentados para evolução futura
-- Arquitetura permite migração gradual
+**Justification:**
+- MVP focused on demonstrating technical capabilities
+- Trade-offs documented for future evolution
+- Architecture allows gradual migration
 
-### 15.4. Aprendizados
+### 15.4. Learnings
 
-- Integração com APIs bancárias requer resiliência extrema
-- Event-driven facilita auditoria e debugging
-- Idempotência é crítica para operações financeiras
-- Testes são investimento, não custo
-- Documentação é parte do produto
+- Integration with banking APIs requires extreme resilience
+- Event-driven facilitates auditing and debugging
+- Idempotency is critical for financial operations
+- Tests are an investment, not a cost
+- Documentation is part of the product
 
 ---
 
-**Status:** Documento vivo, atualizado conforme implementação
+**Status:** Living document, updated as implementation progresses

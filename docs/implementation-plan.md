@@ -1,54 +1,54 @@
-# Plano de Implementação Gradual
+# Gradual Implementation Plan
 # Stark Bank Challenge
 
-**Versão:** 1.0  
-**Data:** Fevereiro 2026  
-**Baseado em:** [architecture.md](architecture.md)
+**Version:** 1.0  
+**Date:** February 2026  
+**Based on:** [architecture.md](architecture.md)
 
-## Visão Geral
+## Overview
 
-Este documento descreve o plano de implementação gradual do sistema, organizado em fases incrementais que permitem:
-- ✅ Validação contínua através de testes
-- ✅ Deploy progressivo de funcionalidades
-- ✅ Feedback rápido em cada etapa
-- ✅ Minimização de riscos
+This document describes the gradual implementation plan for the system, organized in incremental phases that enable:
+- ✅ Continuous validation through tests
+- ✅ Progressive feature deployment
+- ✅ Fast feedback at each step
+- ✅ Risk minimization
 
-## Estratégia de Implementação
+## Implementation Strategy
 
-### Princípios
+### Principles
 
-1. **Bottom-Up:** Começar pelos componentes base (shared) e construir módulos de domínio sobre eles
-2. **Incremental:** Cada fase entrega funcionalidade testável e potencialmente deployável
-3. **Test-First:** Testes acompanham a implementação em cada fase
-4. **Integration Early:** Integrar componentes o mais cedo possível para detectar problemas
+1. **Bottom-Up:** Start with the base components (shared) and build domain modules on top of them
+2. **Incremental:** Each phase delivers testable and potentially deployable functionality
+3. **Test-First:** Tests accompany the implementation at each phase
+4. **Integration Early:** Integrate components as early as possible to detect problems
 
-### Critérios de Conclusão por Fase
+### Phase Completion Criteria
 
-Cada fase só é considerada completa quando:
-- ✅ Código implementado conforme arquitetura
-- ✅ Testes unitários com cobertura > 80%
-- ✅ Testes de integração passando
-- ✅ Documentação atualizada
-- ✅ Code review realizado
-- ✅ Deploy em ambiente de dev bem-sucedido
+Each phase is only considered complete when:
+- ✅ Code implemented according to architecture
+- ✅ Unit tests with coverage > 80%
+- ✅ Integration tests passing
+- ✅ Documentation updated
+- ✅ Code review completed
+- ✅ Successful deployment in dev environment
 
 ---
 
-## FASE 0: Setup e Fundação
+## PHASE 0: Setup and Foundation
 
-**Duração Estimada:** 1 dia  
-**Objetivo:** Preparar ambiente de desenvolvimento e estrutura base do projeto
+**Estimated Duration:** 1 day  
+**Objective:** Prepare the development environment and base project structure
 
-### Tarefas
+### Tasks
 
-#### 0.1. Estrutura de Projeto
-- [X] Criar estrutura completa de diretórios conforme [architecture.md](architecture.md#31-estrutura-de-diretórios)
-- [X] Inicializar gerenciador de dependências (Rye/Poetry)
-- [X] Configurar `.gitignore`
-- [X] Criar arquivos `__init__.py` em todos os módulos
+#### 0.1. Project Structure
+- [X] Create complete directory structure as per [architecture.md](architecture.md#31-estrutura-de-diretórios)
+- [X] Initialize dependency manager (Rye/Poetry)
+- [X] Configure `.gitignore`
+- [X] Create `__init__.py` files in all modules
 
-#### 0.2. Dependências
-- [X] Criar `pyproject.toml` com todas as dependências
+#### 0.2. Dependencies
+- [X] Create `pyproject.toml` with all dependencies
   ```toml
   [project]
   name = "stark-bank-challenge"
@@ -75,79 +75,79 @@ Cada fase só é considerada completa quando:
       "mypy>=1.11.0"
   ]
   ```
-- [X] Instalar dependências: `rye sync` ou `poetry install`
+- [X] Install dependencies: `rye sync` or `poetry install`
 
-#### 0.3. Configuração
-- [X] Criar `.env.example` com todas as variáveis necessárias
-- [X] Criar `src/config/settings.py` - Settings dataclass
-- [X] Criar `src/config/constants.py` - Constantes de negócio
-- [X] Documentar variáveis de ambiente no README
+#### 0.3. Configuration
+- [X] Create `.env.example` with all required variables
+- [X] Create `src/config/settings.py` - Settings dataclass
+- [X] Create `src/config/constants.py` - Business constants
+- [X] Document environment variables in README
 
 #### 0.4. Testing Setup
-- [X] Configurar `pytest.ini` ou `pyproject.toml` com configurações pytest
-- [X] Criar `tests/conftest.py` com fixtures base
-- [X] Configurar cobertura de testes (pytest-cov)
-- [x] Criar estrutura de diretórios de testes
+- [X] Configure `pytest.ini` or `pyproject.toml` with pytest settings
+- [X] Create `tests/conftest.py` with base fixtures
+- [X] Configure test coverage (pytest-cov)
+- [x] Create test directory structure
 
 #### 0.5. Linting & Formatting
-- [X] Configurar Ruff no `pyproject.toml`
-- [X] Criar script de lint: `ruff check src/`
-- [X] Criar script de format: `ruff format src/`
-- [X] Configurar pre-commit hooks (opcional)
+- [X] Configure Ruff in `pyproject.toml`
+- [X] Create lint script: `ruff check src/`
+- [X] Create format script: `ruff format src/`
+- [X] Configure pre-commit hooks (optional)
 
-#### 0.6. Documentação Base
-- [X] Criar README.md com instruções de setup
-- [X] Documentar estrutura de projeto
-- [X] Criar CONTRIBUTING.md com workflow de desenvolvimento
+#### 0.6. Base Documentation
+- [X] Create README.md with setup instructions
+- [X] Document project structure
+- [X] Create CONTRIBUTING.md with development workflow
 
-### Entregáveis Fase 0
-- ✅ Projeto estruturado e configurado
-- ✅ Dependências instaladas
-- ✅ Ambiente de testes configurado
-- ✅ Documentação básica criada
+### Phase 0 Deliverables
+- ✅ Project structured and configured
+- ✅ Dependencies installed
+- ✅ Test environment configured
+- ✅ Basic documentation created
 
-### Validação
+### Validation
 ```bash
-# Verificar estrutura
+# Check structure
 tree src/
 
-# Verificar dependências
-rye list  # ou poetry show
+# Check dependencies
+rye list  # or poetry show
 
-# Verificar testes
+# Check tests
 pytest --collect-only
 
-# Verificar linting
+# Check linting
 ruff check src/
 ```
 
 ---
 
-## FASE 1: Shared Components - Foundation
+## PHASE 1: Shared Components - Foundation
 
-**Duração Estimada:** 2-3 dias  
-**Objetivo:** Implementar componentes compartilhados que serão usados por todos os módulos
+**Estimated Duration:** 2-3 days  
+**Objective:** Implement shared components to be used by all modules
 
 ### 1.1. Logger
 
-**Arquivos:**
+**Files:**
 - `src/shared/utils/logger.py`
 
-**Implementação:**
-- [X] Classe `StructuredLogger` com formato JSON
-- [X] Suporte a níveis: DEBUG, INFO, WARNING, ERROR
+**Implementation:**
+- [X] `StructuredLogger` class with JSON format
+- [X] Support for levels: DEBUG, INFO, WARNING, ERROR
 - [X] Context injection (correlation_id, module, event)
-- [X] Output para console e arquivo com rotação
-- [X] Função helper `get_logger(module_name)`
+- [X] Output to console and file with rotation
+- [X] Helper function `get_logger(module_name)`
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/utils/test_logger.py`
-- [X] Validar formato JSON
-- [X] Validar níveis de log
-- [X] Validar context injection
-- [X] Validar rotação de arquivos
+- [X] Validate JSON format
+- [X] Validate log levels
+- [X] Validate context injection
+- [X] Validate file rotation
 
-**Exemplo de uso:**
+**Usage example:**
 ```python
 logger = get_logger("invoices.service")
 logger.info("Invoice created", data={"invoice_id": "123", "amount": 500.00})
@@ -155,507 +155,507 @@ logger.info("Invoice created", data={"invoice_id": "123", "amount": 500.00})
 
 ### 1.2. Custom Exceptions
 
-**Arquivos:**
+**Files:**
 - `src/shared/utils/errors.py`
 
-**Implementação:**
+**Implementation:**
 - [X] `StarkBankError` - Base exception
-- [X] `RetriableError` - Erros que permitem retry
-- [X] `NonRetriableError` - Erros que não permitem retry
-- [X] `ValidationError` - Erros de validação
-- [X] `AuthenticationError` - Erros de autenticação
-- [X] `NotFoundError` - Recurso não encontrado
-- [X] `TimeoutError` - Timeout de operação
-- [X] `RateLimitError` - Rate limit excedido
+- [X] `RetriableError` - Errors that allow retry
+- [X] `NonRetriableError` - Errors that do not allow retry
+- [X] `ValidationError` - Validation errors
+- [X] `AuthenticationError` - Authentication errors
+- [X] `NotFoundError` - Resource not found
+- [X] `TimeoutError` - Operation timeout
+- [X] `RateLimitError` - Rate limit exceeded
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/utils/test_errors.py`
-- [X] Validar hierarquia de exceções
-- [X] Validar mensagens de erro
+- [X] Validate exception hierarchy
+- [X] Validate error messages
 
 ### 1.3. Validators
 
-**Arquivos:**
+**Files:**
 - `src/shared/utils/validators.py`
 
-**Implementação:**
-- [X] `validate_cpf(cpf: str) -> bool` - usando validate-docbr
-- [X] `validate_cnpj(cnpj: str) -> bool` - usando validate-docbr
-- [X] `validate_tax_id(tax_id: str) -> bool` - detecta e valida CPF ou CNPJ
-- [X] `format_cpf(cpf: str) -> str` - formata com pontos e traços
-- [X] `format_cnpj(cnpj: str) -> str` - formata com pontos e traços
-- [X] `clean_tax_id(tax_id: str) -> str` - remove formatação
+**Implementation:**
+- [X] `validate_cpf(cpf: str) -> bool` - using validate-docbr
+- [X] `validate_cnpj(cnpj: str) -> bool` - using validate-docbr
+- [X] `validate_tax_id(tax_id: str) -> bool` - detects and validates CPF or CNPJ
+- [X] `format_cpf(cpf: str) -> str` - formats with dots and dashes
+- [X] `format_cnpj(cnpj: str) -> str` - formats with dots and dashes
+- [X] `clean_tax_id(tax_id: str) -> str` - removes formatting
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/utils/test_validators.py`
-- [X] Testes com CPFs válidos e inválidos
-- [X] Testes com CNPJs válidos e inválidos
-- [X] Testes de formatação
-- [X] Edge cases (None, vazio, caracteres especiais)
+- [X] Tests with valid and invalid CPFs
+- [X] Tests with valid and invalid CNPJs
+- [X] Formatting tests
+- [X] Edge cases (None, empty, special characters)
 
 ### 1.4. Data Generator
 
-**Arquivos:**
+**Files:**
 - `src/shared/utils/data_generator.py`
 
-**Implementação:**
-- [X] Classe `DataGenerator` wrapper do Faker
-- [X] `generate_valid_cpf() -> str` - CPF válido
-- [X] `generate_valid_cnpj() -> str` - CNPJ válido
-- [X] `generate_person_data() -> dict` - nome, CPF, email
-- [X] `generate_company_data() -> dict` - nome, CNPJ, email
+**Implementation:**
+- [X] `DataGenerator` class wrapping Faker
+- [X] `generate_valid_cpf() -> str` - valid CPF
+- [X] `generate_valid_cnpj() -> str` - valid CNPJ
+- [X] `generate_person_data() -> dict` - name, CPF, email
+- [X] `generate_company_data() -> dict` - name, CNPJ, email
 - [X] `generate_customer_data(prefer_cpf: bool = True) -> dict` - 70% CPF, 30% CNPJ
-- [X] Configuração de locale pt_BR
+- [X] pt_BR locale configuration
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/utils/test_data_generator.py`
-- [X] Validar CPFs gerados
-- [X] Validar CNPJs gerados
-- [X] Validar distribuição CPF/CNPJ (estatística)
-- [X] Validar formato de emails
+- [X] Validate generated CPFs
+- [X] Validate generated CNPJs
+- [X] Validate CPF/CNPJ distribution (statistical)
+- [X] Validate email format
 
 ### 1.5. Database Layer
 
-**Arquivos:**
+**Files:**
 - `src/shared/database/connection.py`
 - `src/shared/database/migrations.py`
 - `src/shared/database/base_repository.py`
 - `migrations/001_initial_schema.sql`
 
-**Implementação:**
+**Implementation:**
 
 **connection.py:**
 - [X] `DatabaseConnection` - Singleton pattern
-- [X] Connection pool com SQLite
-- [X] WAL mode habilitado
-- [X] Timeout configurável
-- [X] Context manager para transações
-- [X] Função `get_db() -> sqlite3.Connection`
+- [X] Connection pool with SQLite
+- [X] WAL mode enabled
+- [X] Configurable timeout
+- [X] Context manager for transactions
+- [X] Function `get_db() -> sqlite3.Connection`
 
 **migrations.py:**
-- [X] `MigrationRunner` - executa migrations
-- [X] Tabela `schema_migrations` para controle
-- [X] `run_migrations()` - aplica migrations pendentes
-- [X] `rollback_migration()` - rollback de migration
+- [X] `MigrationRunner` - runs migrations
+- [X] `schema_migrations` table for control
+- [X] `run_migrations()` - applies pending migrations
+- [X] `rollback_migration()` - migration rollback
 
 **001_initial_schema.sql:**
-- [X] Tabela `invoices` - conforme arquitetura
-- [X] Tabela `transfers` - conforme arquitetura
-- [X] Tabela `events_log` - conforme arquitetura
-- [X] Índices necessários
+- [X] `invoices` table - as per architecture
+- [X] `transfers` table - as per architecture
+- [X] `events_log` table - as per architecture
+- [X] Required indexes
 - [X] Constraints (FK, UNIQUE)
 
 **base_repository.py:**
-- [X] `BaseRepository` - classe abstrata
-- [X] Métodos base: `_execute()`, `_fetch_one()`, `_fetch_all()`
-- [X] Context manager para transações
-- [X] Logging de queries
+- [X] `BaseRepository` - abstract class
+- [X] Base methods: `_execute()`, `_fetch_one()`, `_fetch_all()`
+- [X] Context manager for transactions
+- [X] Query logging
 - [X] Exception handling
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/database/test_connection.py`
 - [X] `tests/unit/shared/database/test_migrations.py`
-- [X] Validar singleton pattern
-- [X] Validar WAL mode
-- [X] Validar transações
-- [X] Validar migrations (apply/rollback)
-- [X] Usar in-memory database (`:memory:`)
+- [X] Validate singleton pattern
+- [X] Validate WAL mode
+- [X] Validate transactions
+- [X] Validate migrations (apply/rollback)
+- [X] Use in-memory database (`:memory:`)
 
 ### 1.6. Event Bus
 
-**Arquivos:**
+**Files:**
 - `src/shared/events/bus.py`
 - `src/shared/events/types.py`
 - `src/shared/events/logger.py`
 
-**Implementação:**
+**Implementation:**
 
 **types.py:**
 - [X] Dataclass `Event` - event_id, event_type, payload, metadata, timestamp
-- [X] Enum `EventType` - todos tipos de eventos do sistema
-- [X] Type hints para handlers: `EventHandler = Callable[[Event], None]`
+- [X] Enum `EventType` - all system event types
+- [X] Type hints for handlers: `EventHandler = Callable[[Event], None]`
 
 **bus.py:**
-- [X] Classe `EventBus` - Singleton pattern
+- [X] `EventBus` class - Singleton pattern
 - [X] `subscribe(event_type: str, handler: EventHandler) -> None`
 - [X] `unsubscribe(event_type: str, handler: EventHandler) -> None`
 - [X] `publish(event_type: str, payload: dict, metadata: dict = None) -> None`
-- [X] Registry de handlers: `Dict[str, List[EventHandler]]`
-- [X] Logging de todos eventos publicados
-- [X] Exception handling em handlers (não deve quebrar publicação)
+- [X] Handler registry: `Dict[str, List[EventHandler]]`
+- [X] Logging of all published events
+- [X] Exception handling in handlers (must not break publication)
 
 **logger.py:**
-- [X] `EventLogger` - persiste eventos no banco
-- [X] Subscriber automático de todos eventos
-- [X] Salva em `events_log` table
+- [X] `EventLogger` - persists events in the database
+- [X] Automatic subscriber for all events
+- [X] Saves to `events_log` table
 - [X] `get_events(event_type: str = None, limit: int = 100) -> List[Event]`
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/events/test_bus.py`
 - [X] `tests/unit/shared/events/test_logger.py`
-- [X] Validar subscribe/unsubscribe
-- [X] Validar publish (síncrono)
-- [X] Validar múltiplos handlers para mesmo evento
-- [X] Validar que falha em handler não quebra outros
-- [X] Validar persistência em events_log
-- [X] Mock de handlers
+- [X] Validate subscribe/unsubscribe
+- [X] Validate publish (synchronous)
+- [X] Validate multiple handlers for the same event
+- [X] Validate that handler failure does not break others
+- [X] Validate persistence in events_log
+- [X] Mock handlers
 
-### Entregáveis Fase 1
-- ✅ Logger estruturado funcionando
-- ✅ Validadores de CPF/CNPJ
-- ✅ Gerador de dados fake
-- ✅ Database com migrations
-- ✅ Event Bus operacional
-- ✅ Testes unitários > 80% cobertura
-- ✅ Documentação de APIs
+### Phase 1 Deliverables
+- ✅ Structured logger working
+- ✅ CPF/CNPJ validators
+- ✅ Fake data generator
+- ✅ Database with migrations
+- ✅ Event Bus operational
+- ✅ Unit tests > 80% coverage
+- ✅ API documentation
 
-### Validação Fase 1
+### Phase 1 Validation
 ```bash
-# Testes
+# Tests
 pytest tests/unit/shared/ -v --cov=src/shared
 
-# Validar database
+# Validate database
 python -c "from src.shared.database.migrations import run_migrations; run_migrations()"
 sqlite3 stark_bank.db ".tables"
 
-# Validar event bus
+# Validate event bus
 python -c "from src.shared.events.bus import EventBus; bus = EventBus(); print('OK')"
 ```
 
 ---
 
-## FASE 2: Stark Bank Integration Layer
+## PHASE 2: Stark Bank Integration Layer
 
-**Duração Estimada:** 2-3 dias  
-**Objetivo:** Implementar integração com API do Stark Bank com retry logic
+**Estimated Duration:** 2-3 days  
+**Objective:** Implement integration with Stark Bank API with retry logic
 
 ### 2.1. Retry Logic
 
-**Arquivos:**
+**Files:**
 - `src/shared/stark/retry.py`
 
-**Implementação:**
-- [X] Decorator `@retry_with_backoff` - configurável
-- [X] Parâmetros: `max_attempts`, `delays`, `retriable_exceptions`, `non_retriable_exceptions`
-- [X] Backoff exponencial: [0, 60, 120, 240, 480] segundos
-- [X] Logging de cada tentativa
-- [X] Persistência de retry_count
-- [X] Raise após max_attempts
+**Implementation:**
+- [X] Decorator `@retry_with_backoff` - configurable
+- [X] Parameters: `max_attempts`, `delays`, `retriable_exceptions`, `non_retriable_exceptions`
+- [X] Exponential backoff: [0, 60, 120, 240, 480] seconds
+- [X] Logging of each attempt
+- [X] retry_count persistence
+- [X] Raise after max_attempts
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/stark/test_retry.py`
-- [X] Mock de função que falha N vezes
-- [X] Validar número de tentativas
-- [X] Validar delays entre tentativas
-- [X] Validar exceções retriáveis vs não-retriáveis
-- [X] Validar logging
+- [X] Mock of function that fails N times
+- [X] Validate number of attempts
+- [X] Validate delays between attempts
+- [X] Validate retriable vs non-retriable exceptions
+- [X] Validate logging
 
 ### 2.2. Stark Bank Client Base
 
-**Arquivos:**
+**Files:**
 - `src/shared/stark/client.py`
 
-**Implementação:**
-- [X] Classe `StarkBankClient` - base class
-- [X] Inicialização do SDK starkbank
-- [X] Configuração de ambiente (sandbox/production)
-- [X] Configuração de project_id e private_key
-- [X] Logging de todas chamadas
-- [X] Exception handling e mapeamento para custom exceptions
+**Implementation:**
+- [X] `StarkBankClient` class - base class
+- [X] Initialization of starkbank SDK
+- [X] Environment configuration (sandbox/production)
+- [X] project_id and private_key configuration
+- [X] Logging of all calls
+- [X] Exception handling and mapping to custom exceptions
 - [X] Rate limit handling
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/stark/test_client.py`
-- [X] Mock do SDK starkbank
-- [X] Validar inicialização
-- [X] Validar configuração de ambiente
-- [X] Validar exception handling
+- [X] Mock of starkbank SDK
+- [X] Validate initialization
+- [X] Validate environment configuration
+- [X] Validate exception handling
 
 ### 2.3. Invoice API
 
-**Arquivos:**
+**Files:**
 - `src/shared/stark/invoice_api.py`
 
-**Implementação:**
-- [X] Classe `StarkInvoiceAPI(StarkBankClient)`
-- [X] `create_invoice(amount, tax_id, name, due_date, ...) -> InvoiceResponse` com retry
+**Implementation:**
+- [X] `StarkInvoiceAPI(StarkBankClient)` class
+- [X] `create_invoice(amount, tax_id, name, due_date, ...) -> InvoiceResponse` with retry
 - [X] `get_invoice(invoice_id: str) -> InvoiceResponse`
 - [X] `list_invoices(limit: int, after: str) -> List[InvoiceResponse]`
-- [X] Dataclass `InvoiceResponse` para resposta padronizada
-- [X] Validação de parâmetros
-- [X] Conversão de amount para centavos (int)
-- [X] Logging estruturado
+- [X] Dataclass `InvoiceResponse` for standardized response
+- [X] Parameter validation
+- [X] Amount conversion to cents (int)
+- [X] Structured logging
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/stark/test_invoice_api.py`
 - [ ] `tests/integration/shared/stark/test_invoice_api_integration.py` (sandbox)
-- [X] Mock de starkbank.invoice.create()
-- [X] Validar retry em falhas
-- [X] Validar conversão de valores
-- [X] Validar validação de parâmetros
-- [ ] **Teste real:** criar invoice no sandbox (integration test)
+- [X] Mock of starkbank.invoice.create()
+- [X] Validate retry on failures
+- [X] Validate value conversion
+- [X] Validate parameter validation
+- [ ] **Real test:** create invoice in sandbox (integration test)
 
 ### 2.4. Transfer API
 
-**Arquivos:**
+**Files:**
 - `src/shared/stark/transfer_api.py`
 
-**Implementação:**
-- [X] Classe `StarkTransferAPI(StarkBankClient)`
-- [X] `create_transfer(amount, external_id, bank_code, ...) -> TransferResponse` com retry
+**Implementation:**
+- [X] `StarkTransferAPI(StarkBankClient)` class
+- [X] `create_transfer(amount, external_id, bank_code, ...) -> TransferResponse` with retry
 - [X] `get_transfer(transfer_id: str) -> TransferResponse`
 - [X] `list_transfers(limit: int, after: str) -> List[TransferResponse]`
-- [X] Dataclass `TransferResponse` para resposta padronizada
-- [X] Idempotência via `external_id`
-- [X] Validação de parâmetros
-- [X] Conversão de amount para centavos (int)
-- [X] Logging estruturado
+- [X] Dataclass `TransferResponse` for standardized response
+- [X] Idempotency via `external_id`
+- [X] Parameter validation
+- [X] Amount conversion to cents (int)
+- [X] Structured logging
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/stark/test_transfer_api.py`
 - [ ] `tests/integration/shared/stark/test_transfer_api_integration.py` (sandbox)
-- [X] Mock de starkbank.transfer.create()
-- [X] Validar retry em falhas
-- [X] Validar idempotência (mesmo external_id)
-- [X] Validar conversão de valores
-- [ ] **Teste real:** criar transfer no sandbox (integration test)
+- [X] Mock of starkbank.transfer.create()
+- [X] Validate retry on failures
+- [X] Validate idempotency (same external_id)
+- [X] Validate value conversion
+- [ ] **Real test:** create transfer in sandbox (integration test)
 
-### Entregáveis Fase 2
-- ✅ Retry logic robusto
-- ✅ Cliente Stark Bank base
-- ✅ Invoice API com retry
-- ✅ Transfer API com retry
-- ✅ Testes unitários > 80%
-- ✅ Testes de integração com sandbox passando
-- ✅ Documentação de APIs
+### Phase 2 Deliverables
+- ✅ Robust retry logic
+- ✅ Stark Bank base client
+- ✅ Invoice API with retry
+- ✅ Transfer API with retry
+- ✅ Unit tests > 80%
+- ✅ Integration tests with sandbox passing
+- ✅ API documentation
 
-### Validação Fase 2
+### Phase 2 Validation
 ```bash
-# Testes unitários
+# Unit tests
 pytest tests/unit/shared/stark/ -v
 
-# Testes de integração (requer credenciais sandbox)
+# Integration tests (requires sandbox credentials)
 pytest tests/integration/shared/stark/ -v
 
-# Teste manual
+# Manual test
 python -m examples.test_stark_invoice
 python -m examples.test_stark_transfer
 ```
 
 ---
 
-## FASE 3: Security Layer
+## PHASE 3: Security Layer
 
-**Duração Estimada:** 1-2 dias  
-**Objetivo:** Implementar segurança (API Key e validação de assinatura de webhooks)
+**Estimated Duration:** 1-2 days  
+**Objective:** Implement security (API Key and webhook signature validation)
 
 ### 3.1. API Key Authentication
 
-**Arquivos:**
+**Files:**
 - `src/shared/security/api_key.py`
 
-**Implementação:**
-- [X] Função `verify_api_key(api_key: str) -> bool` - constant-time comparison
-- [X] FastAPI Dependency `get_api_key_dependency` - para uso em endpoints
-- [X] Classe `APIKeyHeader` - extrai header X-API-Key
+**Implementation:**
+- [X] Function `verify_api_key(api_key: str) -> bool` - constant-time comparison
+- [X] FastAPI Dependency `get_api_key_dependency` - for use in endpoints
+- [X] `APIKeyHeader` class - extracts X-API-Key header
 - [X] Exception `InvalidAPIKeyError`
-- [X] Logging de tentativas de autenticação
+- [X] Logging of authentication attempts
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/security/test_api_key.py`
-- [X] Validar API key correta
-- [X] Validar API key incorreta
-- [X] Validar constant-time comparison
-- [X] Validar logging de falhas
+- [X] Validate correct API key
+- [X] Validate incorrect API key
+- [X] Validate constant-time comparison
+- [X] Validate failure logging
 
 ### 3.2. Webhook Signature Validation
 
-**Arquivos:**
+**Files:**
 - `src/shared/security/signature.py`
 
-**Implementação:**
-- [X] Função `validate_webhook_signature(payload: bytes, signature: str, public_key: str) -> bool`
-- [X] Usar ECDSA para validação (conforme documentação Stark Bank)
-- [X] Carregar public key do Stark Bank
+**Implementation:**
+- [X] Function `validate_webhook_signature(payload: bytes, signature: str, public_key: str) -> bool`
+- [X] Use ECDSA for validation (according to Stark Bank documentation)
+- [X] Load Stark Bank public key
 - [X] Exception `InvalidSignatureError`
-- [X] Logging de validações (sucesso/falha)
+- [X] Logging of validations (success/failure)
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/shared/security/test_signature.py`
-- [X] Mock de assinatura válida
-- [X] Mock de assinatura inválida
-- [X] Validar parsing de public key
-- [X] Validar ECDSA verification
+- [X] Mock of valid signature
+- [X] Mock of invalid signature
+- [X] Validate public key parsing
+- [X] Validate ECDSA verification
 
 ### 3.3. Security Constants
 
-**Arquivos:**
+**Files:**
 - `src/shared/security/constants.py`
 
-**Implementação:**
-- [X] Public key do Stark Bank (sandbox e production)
-- [X] Headers de segurança
-- [X] Timeout de requests
+**Implementation:**
+- [X] Stark Bank public key (sandbox and production)
+- [X] Security headers
+- [X] Request timeout
 - [X] Rate limits
 
-### Entregáveis Fase 3
-- ✅ API Key authentication funcionando
+### Phase 3 Deliverables
+- ✅ API Key authentication working
 - ✅ Webhook signature validation
-- ✅ Testes unitários > 90% (segurança é crítica)
-- ✅ Documentação de segurança
+- ✅ Unit tests > 90% (security is critical)
+- ✅ Security documentation
 
-### Validação Fase 3
+### Phase 3 Validation
 ```bash
-# Testes
+# Tests
 pytest tests/unit/shared/security/ -v --cov=src/shared/security
 
-# Validar API Key
+# Validate API Key
 python -c "from src.shared.security.api_key import verify_api_key; print(verify_api_key('test-key'))"
 ```
 
 ---
 
-## FASE 4: Invoices Module
+## PHASE 4: Invoices Module
 
-**Duração Estimada:** 3-4 dias  
-**Objetivo:** Implementar módulo completo de Invoices (geração, persistência, API)
+**Estimated Duration:** 3-4 days  
+**Objective:** Implement the complete Invoices module (generation, persistence, API)
 
 ### 4.1. Invoice Models
 
-**Arquivos:**
+**Files:**
 - `src/modules/invoices/models.py`
 - `src/modules/invoices/events.py`
 
-**Implementação:**
+**Implementation:**
 
 **models.py:**
-- [X] Dataclass `InvoiceModel` - representa invoice no sistema
-- [X] Campos: id, stark_invoice_id, amount, customer_name, customer_tax_id, customer_email, status, created_at, paid_at, fee, net_amount, retry_count, last_retry_at, error_message
-- [X] Métodos: `to_dict()`, `from_dict()`, `calculate_net_amount()`
-- [X] Validação de campos
+- [X] Dataclass `InvoiceModel` - represents an invoice in the system
+- [X] Fields: id, stark_invoice_id, amount, customer_name, customer_tax_id, customer_email, status, created_at, paid_at, fee, net_amount, retry_count, last_retry_at, error_message
+- [X] Methods: `to_dict()`, `from_dict()`, `calculate_net_amount()`
+- [X] Field validation
 
 **events.py:**
-- [X] `InvoiceCreatedEvent` - payload da invoice criada
-- [X] `InvoiceCreationFailedEvent` - payload de falha
-- [X] Constantes de tipos de eventos
+- [X] `InvoiceCreatedEvent` - created invoice payload
+- [X] `InvoiceCreationFailedEvent` - failure payload
+- [X] Event type constants
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/invoices/test_models.py`
-- [X] Validar criação de modelo
-- [X] Validar cálculo de net_amount
-- [X] Validar conversão to_dict/from_dict
-- [X] Validar validação de campos
+- [X] Validate model creation
+- [X] Validate net_amount calculation
+- [X] Validate to_dict/from_dict conversion
+- [X] Validate field validation
 
 ### 4.2. Invoice Repository
 
-**Arquivos:**
+**Files:**
 - `src/modules/invoices/repository.py`
 
-**Implementação:**
-- [X] Classe `InvoiceRepository(BaseRepository)`
+**Implementation:**
+- [X] `InvoiceRepository(BaseRepository)` class
 - [X] `create(invoice: InvoiceModel) -> None`
 - [X] `get_by_id(invoice_id: str) -> Optional[InvoiceModel]`
 - [X] `get_by_stark_id(stark_id: str) -> Optional[InvoiceModel]`
 - [X] `update(invoice: InvoiceModel) -> None`
 - [X] `list(status: Optional[str], limit: int, offset: int) -> List[InvoiceModel]`
 - [X] `count(status: Optional[str]) -> int`
-- [X] Logging de operações
+- [X] Operation logging
 - [X] Exception handling
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/invoices/test_repository.py`
-- [X] Mock de database
-- [X] Validar CRUD operations
-- [X] Validar queries com filtros
-- [X] Validar paginação
+- [X] Mock database
+- [X] Validate CRUD operations
+- [X] Validate queries with filters
+- [X] Validate pagination
 
 ### 4.3. Invoice Generator
 
-**Arquivos:**
+**Files:**
 - `src/modules/invoices/generator.py`
 
-**Implementação:**
-- [X] Classe `InvoiceGenerator`
-- [X] `generate_batch(count: int) -> List[dict]` - gera dados de N invoices
-- [X] `_generate_single() -> dict` - gera dados de 1 invoice
-- [X] Usa `DataGenerator` para dados fake
-- [X] Valida CPF/CNPJ gerados
-- [X] Configuração: min/max amount, due days, CPF/CNPJ ratio
-- [X] Logging de invoices geradas
+**Implementation:**
+- [X] `InvoiceGenerator` class
+- [X] `generate_batch(count: int) -> List[dict]` - generates data for N invoices
+- [X] `_generate_single() -> dict` - generates data for 1 invoice
+- [X] Uses `DataGenerator` for fake data
+- [X] Validates generated CPF/CNPJ
+- [X] Configuration: min/max amount, due days, CPF/CNPJ ratio
+- [X] Logging of generated invoices
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/invoices/test_generator.py`
-- [X] Validar geração de batch (8-12 invoices)
-- [X] Validar valores dentro do range
-- [X] Validar CPF/CNPJ válidos
-- [X] Validar distribuição CPF/CNPJ (70/30)
+- [X] Validate batch generation (8-12 invoices)
+- [X] Validate values within range
+- [X] Validate valid CPF/CNPJ
+- [X] Validate CPF/CNPJ distribution (70/30)
 
 ### 4.4. Invoice Service
 
-**Arquivos:**
+**Files:**
 - `src/modules/invoices/service.py`
 
-**Implementação:**
-- [X] Classe `InvoiceService`
+**Implementation:**
+- [X] `InvoiceService` class
 - [X] `__init__(repository, stark_api, event_bus)`
-- [X] `create_invoice(invoice_data: dict) -> InvoiceModel` - cria invoice completa
-  - [X] Validar dados
-  - [X] Criar no Stark Bank (com retry)
-  - [X] Salvar no banco
-  - [X] Publicar evento `invoice.created`
-  - [X] Exception handling + publicar `invoice.creation_failed`
+- [X] `create_invoice(invoice_data: dict) -> InvoiceModel` - creates complete invoice
+  - [X] Validate data
+  - [X] Create in Stark Bank (with retry)
+  - [X] Save to database
+  - [X] Publish `invoice.created` event
+  - [X] Exception handling + publish `invoice.creation_failed`
 - [X] `get_invoice(invoice_id: str) -> Optional[InvoiceModel]`
 - [X] `list_invoices(status, limit, offset) -> List[InvoiceModel]`
 - [X] `update_invoice_status(invoice_id, status, **kwargs) -> None`
-- [X] Logging estruturado
+- [X] Structured logging
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/invoices/test_service.py`
-- [X] Mock de repository, stark_api, event_bus
-- [X] Validar fluxo completo de criação
-- [X] Validar retry em falhas
-- [X] Validar publicação de eventos
-- [X] Validar exception handling
+- [X] Mock repository, stark_api, event_bus
+- [X] Validate complete creation flow
+- [X] Validate retry on failures
+- [X] Validate event publication
+- [X] Validate exception handling
 
 ### 4.5. Invoice API Endpoints
 
-**Arquivos:**
+**Files:**
 - `src/modules/invoices/api.py`
 
-**Implementação:**
+**Implementation:**
 - [X] FastAPI Router `invoice_router`
-- [X] `POST /invoices` - criar invoice (protegido por API Key)
-- [X] `GET /invoices` - listar invoices (protegido por API Key)
+- [X] `POST /invoices` - create invoice (protected by API Key)
+- [X] `GET /invoices` - list invoices (protected by API Key)
   - Query params: status, limit, offset
-- [X] `GET /invoices/{invoice_id}` - buscar invoice (protegido por API Key)
-- [X] Response models (dict ou dataclass)
+- [X] `GET /invoices/{invoice_id}` - fetch invoice (protected by API Key)
+- [X] Response models (dict or dataclass)
 - [X] Exception handling → HTTP status codes
-- [X] Logging de requests
+- [X] Request logging
 
-**Testes:**
+**Tests:**
 - [X] `tests/integration/modules/invoices/test_api.py`
-- [X] Usar TestClient do FastAPI
-- [X] Mock de service
-- [X] Validar todos endpoints
-- [X] Validar autenticação (com/sem API Key)
-- [X] Validar responses e status codes
+- [X] Use FastAPI TestClient
+- [X] Mock service
+- [X] Validate all endpoints
+- [X] Validate authentication (with/without API Key)
+- [X] Validate responses and status codes
 
-### Entregáveis Fase 4
-- ✅ Módulo de Invoices completo
-- ✅ Repository funcionando
-- ✅ Generator criando invoices válidas
-- ✅ Service com lógica de negócio
-- ✅ API endpoints operacionais
-- ✅ Testes unitários + integração > 85%
-- ✅ Documentação de APIs
+### Phase 4 Deliverables
+- ✅ Complete Invoices module
+- ✅ Repository working
+- ✅ Generator creating valid invoices
+- ✅ Service with business logic
+- ✅ Operational API endpoints
+- ✅ Unit + integration tests > 85%
+- ✅ API documentation
 
-### Validação Fase 4
+### Phase 4 Validation
 ```bash
-# Testes
+# Tests
 pytest tests/unit/modules/invoices/ -v
 pytest tests/integration/modules/invoices/ -v
 
-# Teste manual de API
+# Manual API test
 uvicorn src.main:app --reload
 curl -X POST http://localhost:8000/invoices -H "X-API-Key: dev-key" -d '{...}'
 curl -X GET http://localhost:8000/invoices -H "X-API-Key: dev-key"
@@ -663,165 +663,165 @@ curl -X GET http://localhost:8000/invoices -H "X-API-Key: dev-key"
 
 ---
 
-## FASE 5: Webhooks Module
+## PHASE 5: Webhooks Module
 
-**Duração Estimada:** 3-4 dias  
-**Objetivo:** Implementar recepção e processamento de webhooks (invoices e transfers)
+**Estimated Duration:** 3-4 days  
+**Objective:** Implement reception and processing of webhooks (invoices and transfers)
 
 ### 5.1. Webhook Models
 
-**Arquivos:**
+**Files:**
 - `src/modules/webhooks/models.py`
 - `src/modules/webhooks/events.py`
 
-**Implementação:**
+**Implementation:**
 
 **models.py:**
-- [X] Dataclass `WebhookEvent` - estrutura base de webhook
-- [X] Dataclass `InvoiceWebhookPayload` - parser de payload de invoice
-- [X] Dataclass `TransferWebhookPayload` - parser de payload de transfer
-- [X] Métodos de parsing e validação
+- [X] Dataclass `WebhookEvent` - base webhook structure
+- [X] Dataclass `InvoiceWebhookPayload` - invoice payload parser
+- [X] Dataclass `TransferWebhookPayload` - transfer payload parser
+- [X] Parsing and validation methods
 
 **events.py:**
-- [X] `InvoicePaidEvent` - invoice paga confirmada
-- [X] `TransferProcessingEvent` - transfer em processamento
-- [X] `TransferCompletedEvent` - transfer concluída
-- [X] `TransferFailedEvent` - transfer falhou
-- [X] `WebhookValidationFailedEvent` - assinatura inválida
+- [X] `InvoicePaidEvent` - confirmed paid invoice
+- [X] `TransferProcessingEvent` - transfer being processed
+- [X] `TransferCompletedEvent` - completed transfer
+- [X] `TransferFailedEvent` - failed transfer
+- [X] `WebhookValidationFailedEvent` - invalid signature
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/webhooks/test_models.py`
-- [X] Validar parsing de payloads reais (samples do Stark Bank)
-- [X] Validar campos obrigatórios
-- [X] Validar conversão de tipos
+- [X] Validate parsing of real payloads (Stark Bank samples)
+- [X] Validate required fields
+- [X] Validate type conversion
 
 ### 5.2. Webhook Validator
 
-**Arquivos:**
+**Files:**
 - `src/modules/webhooks/validator.py`
 
-**Implementação:**
-- [X] Classe `WebhookValidator`
+**Implementation:**
+- [X] `WebhookValidator` class
 - [X] `validate_signature(payload: bytes, signature: str) -> bool`
-- [X] Wrapper sobre `security.signature.validate_webhook_signature`
-- [X] Logging de validações
+- [X] Wrapper over `security.signature.validate_webhook_signature`
+- [X] Validation logging
 - [X] Exception handling
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/webhooks/test_validator.py`
-- [X] Mock de signature validation
-- [X] Validar assinatura válida
-- [X] Validar assinatura inválida
-- [X] Validar logging
+- [X] Mock signature validation
+- [X] Validate valid signature
+- [X] Validate invalid signature
+- [X] Validate logging
 
 ### 5.3. Invoice Webhook Processor
 
-**Arquivos:**
+**Files:**
 - `src/modules/webhooks/invoice_processor.py`
 
-**Implementação:**
-- [X] Classe `InvoiceWebhookProcessor`
+**Implementation:**
+- [X] `InvoiceWebhookProcessor` class
 - [X] `__init__(invoice_repository, event_bus)`
 - [X] `process(webhook_payload: InvoiceWebhookPayload) -> None`
-  - [X] Extrair dados (invoice_id, amount, fee, status)
-  - [X] Buscar invoice no banco via stark_invoice_id
-  - [X] Atualizar status da invoice
-  - [X] Calcular net_amount = amount - fee
-  - [X] Atualizar paid_at timestamp
-  - [X] Publicar evento `invoice.paid`
-- [X] Logging estruturado
+  - [X] Extract data (invoice_id, amount, fee, status)
+  - [X] Fetch invoice from database via stark_invoice_id
+  - [X] Update invoice status
+  - [X] Calculate net_amount = amount - fee
+  - [X] Update paid_at timestamp
+  - [X] Publish `invoice.paid` event
+- [X] Structured logging
 - [X] Exception handling
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/webhooks/test_invoice_processor.py`
-- [X] Mock de repository e event_bus
-- [X] Validar processamento de webhook de pagamento
-- [X] Validar cálculo de net_amount
-- [X] Validar atualização de invoice
-- [X] Validar publicação de evento
+- [X] Mock repository and event_bus
+- [X] Validate payment webhook processing
+- [X] Validate net_amount calculation
+- [X] Validate invoice update
+- [X] Validate event publication
 
 ### 5.4. Transfer Webhook Processor
 
-**Arquivos:**
+**Files:**
 - `src/modules/webhooks/transfer_processor.py`
 
-**Implementação:**
-- [X] Classe `TransferWebhookProcessor`
+**Implementation:**
+- [X] `TransferWebhookProcessor` class
 - [X] `__init__(transfer_repository, event_bus)`
 - [X] `process(webhook_payload: TransferWebhookPayload) -> None`
-  - [X] Extrair dados (transfer_id, status, error)
-  - [X] Buscar transfer no banco via stark_transfer_id
-  - [X] Atualizar status da transfer
-  - [X] Atualizar updated_at timestamp
-  - [X] Se status="success": atualizar completed_at, publicar `transfer.completed`
-  - [X] Se status="failed": salvar error_message, publicar `transfer.failed`
-  - [X] Se status="processing": publicar `transfer.processing`
-- [X] Logging estruturado
+  - [X] Extract data (transfer_id, status, error)
+  - [X] Fetch transfer from database via stark_transfer_id
+  - [X] Update transfer status
+  - [X] Update updated_at timestamp
+  - [X] If status="success": update completed_at, publish `transfer.completed`
+  - [X] If status="failed": save error_message, publish `transfer.failed`
+  - [X] If status="processing": publish `transfer.processing`
+- [X] Structured logging
 - [X] Exception handling
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/webhooks/test_transfer_processor.py`
-- [X] Mock de repository e event_bus
-- [X] Validar processamento de status "processing"
-- [X] Validar processamento de status "success"
-- [X] Validar processamento de status "failed"
-- [X] Validar atualização de transfer
-- [X] Validar publicação de eventos
+- [X] Mock repository and event_bus
+- [X] Validate processing of "processing" status
+- [X] Validate processing of "success" status
+- [X] Validate processing of "failed" status
+- [X] Validate transfer update
+- [X] Validate event publication
 
 ### 5.5. Webhook Receiver (API)
 
-**Arquivos:**
+**Files:**
 - `src/modules/webhooks/receiver.py`
 - `src/modules/webhooks/api.py`
 
-**Implementação:**
+**Implementation:**
 
 **receiver.py:**
-- [X] Classe `WebhookReceiver`
+- [X] `WebhookReceiver` class
 - [X] `__init__(validator, invoice_processor, transfer_processor, event_bus)`
 - [X] `receive_invoice_webhook(payload: bytes, signature: str) -> dict`
-  - [X] Validar assinatura
-  - [X] Parsear payload
-  - [X] Processar via InvoiceWebhookProcessor
-  - [X] Retornar {"status": "ok"}
+  - [X] Validate signature
+  - [X] Parse payload
+  - [X] Process via InvoiceWebhookProcessor
+  - [X] Return {"status": "ok"}
 - [X] `receive_transfer_webhook(payload: bytes, signature: str) -> dict`
-  - [X] Validar assinatura
-  - [X] Parsear payload
-  - [X] Processar via TransferWebhookProcessor
-  - [X] Retornar {"status": "ok"}
-- [X] Exception handling robusto (sempre retornar 200 se possível)
+  - [X] Validate signature
+  - [X] Parse payload
+  - [X] Process via TransferWebhookProcessor
+  - [X] Return {"status": "ok"}
+- [X] Robust exception handling (always return 200 if possible)
 
 **api.py:**
 - [X] FastAPI Router `webhook_router`
-- [X] `POST /webhooks/invoice` - recebe webhook de invoice (público, validado por assinatura)
-- [X] `POST /webhooks/transfer` - recebe webhook de transfer (público, validado por assinatura)
-- [X] Exception handling → sempre retornar 200 (exceto validation fatal)
-- [X] Logging de todos webhooks recebidos
+- [X] `POST /webhooks/invoice` - receive invoice webhook (public, validated by signature)
+- [X] `POST /webhooks/transfer` - receive transfer webhook (public, validated by signature)
+- [X] Exception handling → always return 200 (except fatal validation)
+- [X] Logging of all received webhooks
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/webhooks/test_receiver.py`
 - [X] `tests/integration/modules/webhooks/test_api.py`
-- [X] Mock de processors
-- [X] Validar fluxo completo de webhook
-- [X] Validar validação de assinatura
-- [X] Validar exception handling
-- [X] Validar responses HTTP
+- [X] Mock processors
+- [X] Validate complete webhook flow
+- [X] Validate signature validation
+- [X] Validate exception handling
+- [X] Validate HTTP responses
 
-### Entregáveis Fase 5
-- ✅ Webhooks de invoice processados
-- ✅ Webhooks de transfer processados
-- ✅ Validação de assinatura funcionando
-- ✅ API endpoints operacionais
-- ✅ Testes unitários + integração > 85%
-- ✅ Documentação de webhooks
+### Phase 5 Deliverables
+- ✅ Invoice webhooks processed
+- ✅ Transfer webhooks processed
+- ✅ Signature validation working
+- ✅ Operational API endpoints
+- ✅ Unit + integration tests > 85%
+- ✅ Webhook documentation
 
-### Validação Fase 5
+### Phase 5 Validation
 ```bash
-# Testes
+# Tests
 pytest tests/unit/modules/webhooks/ -v
 pytest tests/integration/modules/webhooks/ -v
 
-# Teste manual (simular webhook)
+# Manual test (simulate webhook)
 curl -X POST http://localhost:8000/webhooks/invoice \
   -H "Content-Type: application/json" \
   -H "Digital-Signature: <signature>" \
@@ -832,236 +832,236 @@ curl -X POST http://localhost:8000/webhooks/invoice \
 
 ## FASE 6: Transfers Module
 
-**Duração Estimada:** 3-4 dias  
-**Objetivo:** Implementar módulo de transferências (criação automática ao receber pagamento)
+**Estimated Duration:** 3-4 days  
+**Objective:** Implement transfers module (automatic creation upon payment receipt)
 
 ### 6.1. Transfer Models
 
-**Arquivos:**
+**Files:**
 - `src/modules/transfers/models.py`
 - `src/modules/transfers/events.py`
 
-**Implementação:**
+**Implementation:**
 
 **models.py:**
-- [X] Dataclass `TransferModel` - representa transfer no sistema
-- [X] Campos: id, invoice_id, stark_transfer_id, external_id, amount, status, created_at, updated_at, completed_at, retry_count, last_retry_at, error_message
-- [X] Métodos: `to_dict()`, `from_dict()`
-- [X] Validação de campos
+- [X] Dataclass `TransferModel` - represents transfer in the system
+- [X] Fields: id, invoice_id, stark_transfer_id, external_id, amount, status, created_at, updated_at, completed_at, retry_count, last_retry_at, error_message
+- [X] Methods: `to_dict()`, `from_dict()`
+- [X] Field validation
 
 **events.py:**
-- [X] `TransferInitiatedEvent` - transfer iniciada
-- [X] `TransferProcessingEvent` - transfer em processamento
-- [X] `TransferCompletedEvent` - transfer concluída
-- [X] `TransferFailedEvent` - transfer falhou
+- [X] `TransferInitiatedEvent` - transfer initiated
+- [X] `TransferProcessingEvent` - transfer in processing
+- [X] `TransferCompletedEvent` - transfer completed
+- [X] `TransferFailedEvent` - transfer failed
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/transfers/test_models.py`
-- [X] Validar criação de modelo
-- [X] Validar conversão to_dict/from_dict
-- [X] Validar status transitions
+- [X] Validate model creation
+- [X] Validate to_dict/from_dict conversion
+- [X] Validate status transitions
 
 ### 6.2. Transfer Repository
 
-**Arquivos:**
+**Files:**
 - `src/modules/transfers/repository.py`
 
-**Implementação:**
-- [X] Classe `TransferRepository(BaseRepository)`
+**Implementation:**
+- [X] Class `TransferRepository(BaseRepository)`
 - [X] `create(transfer: TransferModel) -> None`
 - [X] `get_by_id(transfer_id: str) -> Optional[TransferModel]`
 - [X] `get_by_stark_id(stark_id: str) -> Optional[TransferModel]`
-- [X] `get_by_external_id(external_id: str) -> Optional[TransferModel]` - para idempotência
+- [X] `get_by_external_id(external_id: str) -> Optional[TransferModel]` - for idempotency
 - [X] `get_by_invoice_id(invoice_id: str) -> Optional[TransferModel]`
 - [X] `update(transfer: TransferModel) -> None`
 - [X] `list(status: Optional[str], limit: int, offset: int) -> List[TransferModel]`
 - [X] `count(status: Optional[str]) -> int`
-- [X] Logging de operações
+- [X] Operation logging
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/transfers/test_repository.py`
-- [X] Mock de database
-- [X] Validar CRUD operations
-- [X] Validar queries com filtros
-- [X] Validar busca por external_id (idempotência)
+- [X] Database mock
+- [X] Validate CRUD operations
+- [X] Validate queries with filters
+- [X] Validate search by external_id (idempotency)
 
 ### 6.3. Transfer Service
 
-**Arquivos:**
+**Files:**
 - `src/modules/transfers/service.py`
 
-**Implementação:**
-- [X] Classe `TransferService`
+**Implementation:**
+- [X] Class `TransferService`
 - [X] `__init__(repository, stark_api, event_bus, config)`
-- [X] `create_transfer(invoice: InvoiceModel) -> TransferModel` - cria transfer
-  - [X] Gerar external_id = f"invoice-{invoice.id}"
-  - [X] Verificar se transfer já existe (idempotência)
-  - [X] Calcular amount = invoice.net_amount
-  - [X] Montar payload com conta destino do Stark Bank (constants)
-  - [X] Criar via StarkTransferAPI (com retry)
-  - [X] Salvar no banco com status="created"
-  - [X] Publicar evento `transfer.initiated`
-  - [X] Exception handling + publicar `transfer.failed`
+- [X] `create_transfer(invoice: InvoiceModel) -> TransferModel` - creates transfer
+  - [X] Generate external_id = f"invoice-{invoice.id}"
+  - [X] Check if transfer already exists (idempotency)
+  - [X] Calculate amount = invoice.net_amount
+  - [X] Build payload with Stark Bank destination account (constants)
+  - [X] Create via StarkTransferAPI (with retry)
+  - [X] Save to database with status="created"
+  - [X] Publish event `transfer.initiated`
+  - [X] Exception handling + publish `transfer.failed`
 - [X] `get_transfer(transfer_id: str) -> Optional[TransferModel]`
 - [X] `list_transfers(status, limit, offset) -> List[TransferModel]`
 - [X] `update_transfer_status(transfer_id, status, **kwargs) -> None`
-- [X] Logging estruturado
+- [X] Structured logging
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/transfers/test_service.py`
-- [X] Mock de repository, stark_api, event_bus
-- [X] Validar fluxo completo de criação
-- [X] Validar idempotência (mesma invoice)
-- [X] Validar retry em falhas
-- [X] Validar publicação de eventos
-- [X] Validar conta destino (Stark Bank)
+- [X] repository, stark_api, event_bus mock
+- [X] Validate complete creation flow
+- [X] Validate idempotency (same invoice)
+- [X] Validate retry on failures
+- [X] Validate event publishing
+- [X] Validate destination account (Stark Bank)
 
 ### 6.4. Transfer Handler (Event Subscriber)
 
-**Arquivos:**
+**Files:**
 - `src/modules/transfers/handler.py`
 
-**Implementação:**
-- [X] Classe `TransferHandler`
+**Implementation:**
+- [X] Class `TransferHandler`
 - [X] `__init__(service, invoice_repository)`
-- [X] `handle_invoice_paid(event: Event) -> None` - subscriber de `invoice.paid`
-  - [X] Extrair invoice_id do evento
-  - [X] Carregar invoice do banco
-  - [X] Validar se invoice está paga
-  - [X] Chamar TransferService.create_transfer()
-  - [X] Logging estruturado
-  - [X] Exception handling (não deve quebrar event bus)
-- [X] Registrar handler no EventBus na inicialização
+- [X] `handle_invoice_paid(event: Event) -> None` - subscriber for `invoice.paid`
+  - [X] Extract invoice_id from event
+  - [X] Load invoice from database
+  - [X] Validate if invoice is paid
+  - [X] Call TransferService.create_transfer()
+  - [X] Structured logging
+  - [X] Exception handling (should not break event bus)
+- [X] Register handler in EventBus on initialization
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/modules/transfers/test_handler.py`
-- [X] Mock de service, repository, event_bus
-- [X] Validar processamento de evento `invoice.paid`
-- [X] Validar chamada a TransferService
-- [X] Validar exception handling
+- [X] service, repository, event_bus mock
+- [X] Validate event processing `invoice.paid`
+- [X] Validate TransferService call
+- [X] Validate exception handling
 
 ### 6.5. Transfer API Endpoints
 
-**Arquivos:**
+**Files:**
 - `src/modules/transfers/api.py`
 
-**Implementação:**
+**Implementation:**
 - [X] FastAPI Router `transfer_router`
-- [X] `GET /transfers` - listar transfers (protegido por API Key)
+- [X] `GET /transfers` - list transfers (protected by API Key)
   - Query params: status, limit, offset
-- [X] `GET /transfers/{transfer_id}` - buscar transfer (protegido por API Key)
-- [X] `GET /transfers/invoice/{invoice_id}` - buscar transfer por invoice (protegido por API Key)
+- [X] `GET /transfers/{transfer_id}` - get transfer (protected by API Key)
+- [X] `GET /transfers/invoice/{invoice_id}` - get transfer by invoice (protected by API Key)
 - [X] Response models
 - [X] Exception handling → HTTP status codes
-- [X] Logging de requests
+- [X] Request logging
 
-**Testes:**
+**Tests:**
 - [X] `tests/integration/modules/transfers/test_api.py`
-- [X] Usar TestClient do FastAPI
-- [X] Mock de service
-- [X] Validar todos endpoints
-- [X] Validar autenticação
-- [X] Validar responses e status codes
+- [X] Use FastAPI TestClient
+- [X] Service mock
+- [X] Validate all endpoints
+- [X] Validate authentication
+- [X] Validate responses and status codes
 
-### Entregáveis Fase 6
-- ✅ Módulo de Transfers completo
-- ✅ Criação automática ao receber pagamento
-- ✅ Idempotência garantida
-- ✅ Event handler funcionando
-- ✅ API endpoints operacionais
-- ✅ Testes unitários + integração > 85%
-- ✅ Documentação de APIs
+### Phase 6 Deliverables
+- ✅ Complete Transfers module
+- ✅ Automatic creation upon payment receipt
+- ✅ Guaranteed idempotency
+- ✅ Event handler working
+- ✅ Operational API endpoints
+- ✅ Unit + integration tests > 85%
+- ✅ API documentation
 
-### Validação Fase 6
+### Phase 6 Validation
 ```bash
-# Testes
+# Tests
 pytest tests/unit/modules/transfers/ -v
 pytest tests/integration/modules/transfers/ -v
 
-# Teste E2E (simular fluxo completo)
-# 1. Criar invoice
-# 2. Simular webhook de pagamento
-# 3. Verificar transfer criada automaticamente
+# E2E Test (simulate complete flow)
+# 1. Create invoice
+# 2. Simulate payment webhook
+# 3. Verify transfer created automatically
 ```
 
 ---
 
 ## FASE 7: Scheduler & Main Application
 
-**Duração Estimada:** 2-3 dias  
-**Objetivo:** Implementar scheduler de geração de invoices e integrar todos módulos
+**Estimated Duration:** 2-3 days  
+**Objective:** Implement invoice generation scheduler and integrate all modules
 
 ### 7.1. Scheduler
 
-**Arquivos:**
+**Files:**
 - `src/scheduler.py`
 
-**Implementação:**
-- [X] Função `run_scheduler()` - entry point
-- [X] Configurar APScheduler com IntervalTrigger
+**Implementation:**
+- [X] Function `run_scheduler()` - entry point
+- [X] Configure APScheduler with IntervalTrigger
 - [X] Job: `generate_invoices_job()`
-  - [X] Usar InvoiceGenerator para gerar batch
-  - [X] Usar InvoiceService para criar cada invoice
-  - [X] Logging de execução
+  - [X] Use InvoiceGenerator to generate batch
+  - [X] Use InvoiceService to create each invoice
+  - [X] Execution logging
   - [X] Exception handling
-- [X] Configuração: intervalo (3h), duração (24h = 8 ciclos)
-- [X] Shutdown graceful
-- [X] Opção de rodar em thread ou processo separado
+- [X] Configuration: interval (3h), duration (24h = 8 cycles)
+- [X] Graceful shutdown
+- [X] Option to run in separate thread or process
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/test_scheduler.py`
-- [X] Mock de InvoiceService
-- [X] Validar agendamento
-- [X] Validar execução de job
-- [X] Validar shutdown
+- [X] InvoiceService mock
+- [X] Validate scheduling
+- [X] Validate job execution
+- [X] Validate shutdown
 
 ### 7.2. FastAPI Main Application
 
-**Arquivos:**
+**Files:**
 - `src/main.py`
 
-**Implementação:**
+**Implementation:**
 - [X] FastAPI app instance
 - [X] Lifespan events:
   - [X] `startup`:
-    - [X] Inicializar database (run migrations)
-    - [X] Inicializar EventBus
-    - [X] Registrar event handlers (TransferHandler)
-    - [X] Iniciar scheduler em thread (se configurado)
-    - [X] Logging de startup
+    - [X] Initialize database (run migrations)
+    - [X] Initialize EventBus
+    - [X] Register event handlers (TransferHandler)
+    - [X] Start scheduler in thread (if configured)
+    - [X] Startup logging
   - [X] `shutdown`:
-    - [X] Parar scheduler
-    - [X] Fechar database connections
-    - [X] Logging de shutdown
-- [X] Incluir routers:
-  - [X] `invoice_router` com prefix `/invoices`
-  - [X] `transfer_router` com prefix `/transfers`
-  - [X] `webhook_router` com prefix `/webhooks`
-- [X] Endpoint raiz: `GET /` - redirect para `/docs`
+    - [X] Stop scheduler
+    - [X] Close database connections
+    - [X] Shutdown logging
+- [X] Include routers:
+  - [X] `invoice_router` with prefix `/invoices`
+  - [X] `transfer_router` with prefix `/transfers`
+  - [X] `webhook_router` with prefix `/webhooks`
+- [X] Root endpoint: `GET /` - redirect to `/docs`
 - [X] Health check: `GET /health`
-- [X] Exception handlers globais
-- [X] CORS configuration (se necessário)
+- [X] Global exception handlers
+- [X] CORS configuration (if necessary)
 - [X] Logging middleware
 
-**Testes:**
+**Tests:**
 - [X] `tests/integration/test_main.py`
-- [X] Usar TestClient
-- [X] Validar startup/shutdown
-- [X] Validar health check
-- [X] Validar integração de routers
+- [X] Use TestClient
+- [X] Validate startup/shutdown
+- [X] Validate health check
+- [X] Validate router integration
 
 ### 7.3. Health Check
 
-**Arquivos:**
+**Files:**
 - `src/health.py`
 
-**Implementação:**
-- [X] Função `check_health() -> dict`
-- [X] Verificar:
-  - [X] Database (executar query simples)
-  - [X] Stark Bank API (opcional - pode ser lento)
+**Implementation:**
+- [X] Function `check_health() -> dict`
+- [X] Check:
+  - [X] Database (execute simple query)
+  - [X] Stark Bank API (optional - may be slow)
   - [X] EventBus
-- [X] Retornar:
+- [X] Return:
   ```json
   {
     "status": "healthy",
@@ -1075,18 +1075,18 @@ pytest tests/integration/modules/transfers/ -v
   }
   ```
 
-**Testes:**
+**Tests:**
 - [X] `tests/unit/test_health.py`
-- [X] Validar health check com tudo OK
-- [X] Validar health check com database falha
+- [X] Validate health check with everything OK
+- [X] Validate health check with database failure
 
 ### 7.4. Dependency Injection Setup
 
-**Arquivos:**
+**Files:**
 - `src/dependencies.py`
 
-**Implementação:**
-- [X] Factory functions para FastAPI Depends():
+**Implementation:**
+- [X] Factory functions for FastAPI Depends():
   - [X] `get_db() -> sqlite3.Connection`
   - [X] `get_event_bus() -> EventBus`
   - [X] `get_invoice_repository() -> InvoiceRepository`
@@ -1094,28 +1094,28 @@ pytest tests/integration/modules/transfers/ -v
   - [X] `get_transfer_repository() -> TransferRepository`
   - [X] `get_transfer_service() -> TransferService`
   - [X] `get_webhook_validator() -> WebhookValidator`
-- [X] Singletons onde apropriado (EventBus, Database)
+- [X] Singletons where appropriate (EventBus, Database)
 
-### Entregáveis Fase 7
-- ✅ Scheduler gerando invoices a cada 3h
-- ✅ FastAPI app completa e integrada
-- ✅ Health check operacional
-- ✅ Todos módulos integrados
-- ✅ Testes de integração > 80%
-- ✅ Sistema rodando end-to-end
+### Phase 7 Deliverables
+- ✅ Scheduler generating invoices every 3h
+- ✅ Complete and integrated FastAPI app
+- ✅ Operational health check
+- ✅ All modules integrated
+- ✅ Integration tests > 80%
+- ✅ System running end-to-end
 
-### Validação Fase 7
+### Phase 7 Validation
 ```bash
-# Rodar aplicação completa
+# Run complete application
 uvicorn src.main:app --reload
 
-# Verificar health
+# Check health
 curl http://localhost:8000/health
 
-# Verificar scheduler logs (deve criar invoices a cada 3h)
+# Check scheduler logs (should create invoices every 3h)
 tail -f logs/app.log
 
-# Verificar docs
+# Check docs
 open http://localhost:8000/docs
 ```
 
@@ -1123,39 +1123,147 @@ open http://localhost:8000/docs
 
 ## FASE 8: End-to-End Tests
 
-**Duração Estimada:** 2-3 dias  
-**Objetivo:** Implementar testes E2E que validam fluxos completos
+**Estimated Duration:** 2-3 days  
+**Objective:** Implement E2E tests that validate complete flows
 
-**Plano detalhado:** [e2e-tests.md](e2e-tests.md)
+**Detailed plan:** [e2e-tests.md](e2e-tests.md)
 
-### Resumo
+### Summary
 
-| Seção | Descrição | Status |
+| Section | Description | Status |
 |-------|-----------|--------|
-| 8.1 E2E Test Infrastructure | Fixtures, helpers, mocks | ✅ Implementado |
-| 8.2 E2E Test: Invoice Creation Flow | 4 testes do fluxo de criação | ✅ Implementado |
-| 8.3 E2E Test: Payment to Transfer Flow | 4 testes do fluxo pagamento → transfer | 🔧 Código existe |
-| 8.4 E2E Test: Transfer Status Updates | Lifecycle de status de transfers | ⬜ Não implementado |
-| 8.5 E2E Test: Query Endpoints | Endpoints de consulta com filtros | ⬜ Não implementado |
-| 8.6 E2E Test: Error Scenarios | Cenários de erro e resiliência | ⬜ Não implementado |
+| 8.1 E2E Test Infrastructure | Fixtures, helpers, mocks | ✅ Implemented |
+| 8.2 E2E Test: Invoice Creation Flow | 4 tests for creation flow | ✅ Implemented |
+| 8.3 E2E Test: Payment to Transfer Flow | 4 tests for payment → transfer flow | 🔧 Code exists |
+| 8.4 E2E Test: Transfer Status Updates | Transfer status lifecycle | ⬜ Not implemented |
+| 8.5 E2E Test: Query Endpoints | Query endpoints with filters | ⬜ Not implemented |
+| 8.6 E2E Test: Error Scenarios | Error and resilience scenarios | ⬜ Not implemented |
 
-### Entregáveis Fase 8
-- ✅ Testes E2E cobrindo fluxos principais
-- ✅ Validação de idempotência
-- ✅ Validação de retry logic
-- ✅ Validação de error handling
-- ✅ Cobertura E2E > 70%
-- ✅ Documentação de scenarios
+**Files:**
+- `tests/e2e/conftest.py`
+- `tests/e2e/helpers.py`
 
-### Validação Fase 8
+**Implementation:**
+- [X] E2E Fixtures:
+  - [X] `e2e_app` - FastAPI TestClient with real/in-memory database
+  - [X] `e2e_db` - Isolated database for each test
+  - [X] `mock_stark_api` - Stark Bank API mock for E2E
+  - [X] `sample_invoices` - Sample invoices
+- [X] Helpers:
+  - [X] `create_test_invoice()` - creates invoice via API
+  - [X] `simulate_webhook()` - simulates webhook with signature
+  - [X] `wait_for_event()` - waits for event to be published
+  - [X] `assert_transfer_created()` - validates created transfer
+
+### 8.2. E2E Test: Invoice Creation Flow
+
+**Files:**
+- `tests/e2e/test_invoice_creation_flow.py`
+
+**Tests:**
+- [X] `test_invoice_creation_success`
+  - [X] Scheduler triggers generation
+  - [X] Invoices created in Stark Bank (mock)
+  - [X] Invoices saved in database
+  - [X] Events `invoice.created` published
+  - [X] Validate all invoices with status="created"
+
+### 8.3. E2E Test: Payment to Transfer Flow
+
+**Files:**
+- `tests/e2e/test_payment_to_transfer_flow.py`
+
+**Tests:**
+- [X] `test_complete_payment_flow`
+  - [X] Create invoice via API
+  - [X] Simulate payment webhook
+  - [X] Validate invoice with status="paid"
+  - [X] Validate transfer created automatically
+  - [X] Validate transfer with correct external_id
+  - [X] Validate published events
+  - [X] Validate logs
+- [X] `test_idempotency_multiple_webhooks`
+  - [X] Create invoice
+  - [X] Simulate payment webhook 3 times
+  - [X] Validate only 1 transfer created
+- [X] `test_payment_flow_with_retry`
+  - [X] Create invoice
+  - [X] Simulate temporary failure in Stark Bank API
+  - [X] Simulate payment webhook
+  - [X] Validate automatic retry
+  - [X] Validate transfer created after retry
+
+### 8.4. E2E Test: Transfer Status Updates
+
+**Files:**
+- `tests/e2e/test_transfer_status_flow.py`
+
+**Tests:**
+- [X] `test_transfer_processing_to_success`
+  - [X] Create invoice and simulate payment
+  - [X] Transfer created with status="created"
+  - [X] Simulate webhook transfer status="processing"
+  - [X] Validate updated status
+  - [X] Simulate webhook transfer status="success"
+  - [X] Validate status="success" and completed_at filled
+- [X] `test_transfer_failed`
+  - [X] Create invoice and simulate payment
+  - [X] Transfer created
+  - [X] Simulate webhook transfer status="failed"
+  - [X] Validate error_message saved
+  - [X] Validate event `transfer.failed` published
+
+### 8.5. E2E Test: Query Endpoints
+
+**Files:**
+- `tests/e2e/test_query_endpoints.py`
+
+**Tests:**
+- [X] `test_list_invoices_with_filters`
+  - [X] Create multiple invoices
+  - [X] Test GET /invoices with filters
+  - [X] Validate pagination
+  - [X] Validate authentication
+- [X] `test_get_invoice_by_id`
+- [X] `test_list_transfers_with_filters`
+- [X] `test_get_transfer_by_invoice_id`
+
+### 8.6. E2E Test: Error Scenarios
+
+**Files:**
+- `tests/e2e/test_error_scenarios.py`
+
+**Tests:**
+- [X] `test_invalid_webhook_signature`
+  - [X] Simulate webhook with invalid signature
+  - [X] Validate rejection
+  - [X] Validate event `webhook.validation_failed`
+- [X] `test_stark_api_timeout`
+  - [X] Simulate timeout in Stark Bank API
+  - [X] Validate automatic retry
+  - [X] Validate failure after max attempts
+- [X] `test_database_error_recovery`
+  - [X] Simulate database error
+  - [X] Validate exception handling
+  - [X] Validate error logging
+
+### Phase 8 Deliverables
+- ✅ E2E tests covering main flows
+- ✅ Idempotency validation
+- ✅ Retry logic validation
+- ✅ Error handling validation
+- ✅ E2E coverage > 70%
+- ✅ Scenario documentation
+
+### Phase 8 Validation
 ```bash
-# Rodar todos E2E tests
+# Run all E2E tests
 pytest tests/e2e/ -v --tb=short
 
-# Rodar com cobertura total
+# Run with full coverage
 pytest tests/ --cov=src --cov-report=html
 
-# Verificar cobertura
+# Check coverage
 open htmlcov/index.html
 ```
 
@@ -1163,16 +1271,16 @@ open htmlcov/index.html
 
 ## FASE 9: Documentation & Polish
 
-**Duração Estimada:** 2 dias  
-**Objetivo:** Documentar sistema completo e preparar para produção
+**Estimated Duration:** 2 days  
+**Objective:** Document complete system and prepare for production
 
 ### 9.1. API Documentation
 
-**Arquivos:**
+**Files:**
 - `docs/api.md`
 
-**Conteúdo:**
-- [X] Listar todos endpoints
+**Content:**
+- [X] List all endpoints
 - [X] Request/Response examples
 - [X] Authentication headers
 - [X] Status codes
@@ -1181,44 +1289,44 @@ open htmlcov/index.html
 
 ### 9.2. README.md
 
-**Arquivo:**
+**File:**
 - `README.md`
 
-**Conteúdo:**
-- [X] Descrição do projeto
-- [X] Features implementadas
-- [X] Stack tecnológico
-- [X] Requisitos (Python 3.14)
+**Content:**
+- [X] Project description
+- [X] Implemented features
+- [X] Technology stack
+- [X] Requirements (Python 3.14)
 - [X] Setup instructions:
   - [X] Clone repo
   - [X] Install dependencies
   - [X] Configure .env
   - [X] Run migrations
   - [X] Start app
-- [X] Como testar
+- [X] How to test
 - [X] Deploy instructions (Railway)
-- [X] Licença
+- [X] License
 
 ### 9.3. Environment Configuration
 
-**Arquivos:**
+**Files:**
 - `.env.example`
 - `docs/configuration.md`
 
-**Conteúdo:**
-- [X] Todas variáveis documentadas
-- [X] Valores default
-- [X] Como obter credenciais Stark Bank
-- [X] Configuração para desenvolvimento vs produção
+**Content:**
+- [X] All variables documented
+- [X] Default values
+- [X] How to obtain Stark Bank credentials
+- [X] Configuration for development vs production
 
 ### 9.4. Deployment Guide
 
-**Arquivos:**
+**Files:**
 - `docs/deployment.md`
 - `Procfile`
-- `railway.toml` (ou similar)
+- `railway.toml` (or similar)
 
-**Conteúdo:**
+**Content:**
 - [X] Railway setup instructions
 - [X] Environment variables configuration
 - [X] Database persistence
@@ -1227,63 +1335,63 @@ open htmlcov/index.html
 
 ### 9.5. Code Quality
 
-**Tarefas:**
-- [X] Rodar linting em todo código: `ruff check src/`
-- [X] Rodar linting em todo código: `ruff check tests/`
-- [X] Rodar formatting: `ruff format src/`
-- [X] Rodar formatting: `ruff format tests/`
-- [X] Rodar type checking: `mypy src/` (se configurado)
-- [X] Rodar type checking: `mypy tests/` (se configurado)
-- [X] Revisar TODOs e FIXMEs
-- [X] Revisar comentários
-- [X] Remover código morto
-- [X] Validar docstrings
+**Tasks:**
+- [X] Run linting on all code: `ruff check src/`
+- [X] Run linting on all code: `ruff check tests/`
+- [X] Run formatting: `ruff format src/`
+- [X] Run formatting: `ruff format tests/`
+- [X] Run type checking: `mypy src/` (if configured)
+- [X] Run type checking: `mypy tests/` (if configured)
+- [X] Review TODOs and FIXMEs
+- [X] Review comments
+- [X] Remove dead code
+- [X] Validate docstrings
 
 
-### Entregáveis Fase 9
-- ✅ Documentação completa
-- ✅ README detalhado
-- ✅ Guia de deployment
-- ✅ Código limpo e formatado
-- ✅ Sistema pronto para produção
+### Phase 9 Deliverables
+- ✅ Complete documentation
+- ✅ Detailed README
+- ✅ Deployment guide
+- ✅ Clean and formatted code
+- ✅ System ready for production
 
-### Validação Fase 9
+### Phase 9 Validation
 ```bash
-# Validar documentação
-# Ler README e seguir instruções do zero
+# Validate documentation
+# Read README and follow instructions from scratch
 
-# Validar código
+# Validate code
 ruff check src/
 ruff format --check src/
 
-# Validar testes
+# Validate tests
 pytest tests/ --cov=src --cov-report=term
 
-# Validar deploy (Railway)
-# Seguir docs/deployment.md
+# Validate deployment (Railway)
+# Follow docs/deployment.md
 ```
 
 ---
 
-## FASE 10: Deployment & Monitoring
+## FASE 10: Deployment & Monitoring - Not implemented
 
-**Duração Estimada:** 1-2 dias  
-**Objetivo:** Deploy em Railway e configurar monitoring
+**Estimated Duration:** 1-2 days  
+**Objective:** Deploy on Railway and configure monitoring
 
 ### 10.1. Railway Setup
 
-**Tarefas:**
-- [ ] Criar conta Railway
-- [ ] Conectar repositório GitHub
-- [ ] Configurar variáveis de ambiente
-- [ ] Configurar Procfile
-- [ ] Configurar volume para database (se disponível)
-- [ ] Fazer primeiro deploy
-- [ ] Validar aplicação rodando
+**Tasks:**
+- [ ] Create Railway account
+- [ ] Connect GitHub repository
+- [ ] Configure environment variables
+- [ ] Configure Procfile
+- [ ] Configure volume for database (if available)
+- [ ] Make first deploy
+- [ ] Validate running application
 
 ### 10.2. Environment Variables (Production)
 
-**Configurar no Railway:**
+**Configure in Railway:**
 ```
 STARK_BANK_ENVIRONMENT=sandbox
 STARK_BANK_PROJECT_ID=<from-stark-bank>
@@ -1298,259 +1406,222 @@ SCHEDULER_DURATION_HOURS=24
 
 ### 10.3. Database Persistence
 
-**Tarefas:**
-- [ ] Configurar volume no Railway (se disponível)
-- [ ] Ou migrar para PostgreSQL (Railway oferece free tier)
-- [ ] Testar persistência após redeploy
-- [ ] Configurar backups (manual ou automático)
+**Tasks:**
+- [ ] Configure volume in Railway (if available)
+- [ ] Or migrate to PostgreSQL (Railway offers free tier)
+- [ ] Test persistence after redeploy
+- [ ] Configure backups (manual or automatic)
 
 ### 10.4. Monitoring
 
-**Tarefas:**
-- [ ] Configurar Railway dashboard
-- [ ] Monitorar logs
-- [ ] Monitorar CPU/Memory usage
-- [ ] Configurar alertas (se disponível)
-- [ ] Testar health check endpoint
+**Tasks:**
+- [ ] Configure Railway dashboard
+- [ ] Monitor logs
+- [ ] Monitor CPU/Memory usage
+- [ ] Configure alerts (if available)
+- [ ] Test health check endpoint
 
 ### 10.5. Webhook Registration
 
-**Tarefas:**
-- [ ] Obter URL do Railway: `https://<app>.railway.app`
-- [ ] Registrar webhooks no Stark Bank:
+**Tasks:**
+- [ ] Obtain Railway URL: `https://<app>.railway.app`
+- [ ] Register webhooks in Stark Bank:
   - [ ] Invoice webhook: `https://<app>.railway.app/webhooks/invoice`
   - [ ] Transfer webhook: `https://<app>.railway.app/webhooks/transfer`
-- [ ] Validar recepção de webhooks
+- [ ] Validate webhook reception
 
 ### 10.6. Production Testing
 
-**Tarefas:**
-- [ ] Aguardar scheduler criar invoices (3h)
-- [ ] Monitorar logs de criação
-- [ ] Simular pagamento de invoice (Stark Bank sandbox)
-- [ ] Validar webhook recebido
-- [ ] Validar transfer criada
-- [ ] Validar logs completos do fluxo
+**Tasks:**
+- [ ] Wait for scheduler to create invoices (3h)
+- [ ] Monitor creation logs
+- [ ] Simulate invoice payment (Stark Bank sandbox)
+- [ ] Validate received webhook
+- [ ] Validate created transfer
+- [ ] Validate complete flow logs
 
-### Entregáveis Fase 10
-- ✅ Aplicação deployed no Railway
-- ✅ Database persistindo dados
-- ✅ Webhooks registrados e funcionando
-- ✅ Monitoring configurado
-- ✅ Sistema rodando em produção 24h
+### Phase 10 Deliverables
+- ✅ Application deployed on Railway
+- ✅ Database persisting data
+- ✅ Webhooks registered and working
+- ✅ Monitoring configured
+- ✅ System running in production for 24h
 
-### Validação Fase 10
+### Phase 10 Validation
 ```bash
-# Verificar deploy
+# Check deployment
 curl https://<app>.railway.app/health
 
-# Verificar docs
+# Check docs
 open https://<app>.railway.app/docs
 
-# Monitorar logs
+# Monitor logs
 railway logs --tail
 
-# Verificar scheduler
-# Aguardar 3h e verificar logs de criação de invoices
+# Check scheduler
+# Wait 3h and check invoice creation logs
 
-# Testar webhook (usar ferramenta Stark Bank)
+# Test webhook (use Stark Bank tool)
 ```
 
 ---
 
 ## FASE 11: Final Review & Documentation
 
-**Duração Estimada:** 1 dia  
-**Objetivo:** Revisar sistema completo e preparar entrega
+**Estimated Duration:** 1 day  
+**Objective:** Review complete system and prepare delivery
 
 ### 11.1. Code Review
 
-**Tarefas:**
-- [ ] Revisar código de cada módulo
-- [ ] Validar conformidade com arquitetura
-- [ ] Validar tratamento de erros
-- [ ] Validar logging
-- [ ] Validar testes
-- [ ] Validar documentação
+**Tasks:**
+- [ ] Review code of each module
+- [ ] Validate architecture compliance
+- [ ] Validate error handling
+- [ ] Validate logging
+- [ ] Validate tests
+- [ ] Validate documentation
 
 ### 11.2. Test Coverage Review
 
-**Tarefas:**
-- [ ] Rodar cobertura completa
-- [ ] Validar > 85% cobertura total
-- [ ] Identificar gaps críticos
-- [ ] Adicionar testes faltantes
+**Tasks:**
+- [ ] Run full coverage
+- [ ] Validate > 85% total coverage
+- [ ] Identify critical gaps
+- [ ] Add missing tests
 
 ### 11.3. Final Documentation
 
-**Tarefas:**
-- [ ] Atualizar [architecture.md](architecture.md) se necessário
-- [ ] Atualizar README.md
-- [ ] Criar CHANGELOG.md
-- [ ] Documentar decisões técnicas importantes
-- [ ] Documentar trade-offs e limitações
-- [ ] Documentar próximos passos (future improvements)
+**Tasks:**
+- [ ] Update [architecture.md](architecture.md) if necessary
+- [ ] Update README.md
+- [ ] Create CHANGELOG.md
+- [ ] Document important technical decisions
+- [ ] Document trade-offs and limitations
+- [ ] Document next steps (future improvements)
 
-### 11.4. Demo Preparation
 
-**Tarefas:**
-- [ ] Preparar script de demo
-- [ ] Preparar screenshots/gifs
-- [ ] Preparar video demo (opcional)
-- [ ] Preparar apresentação (opcional)
+### 11.4. Submission Checklist
 
-### 11.5. Submission Checklist
+**Validate:**
+- [ ] ✅ Code on GitHub with complete README
+- [ ] ✅ Application deployed and accessible
+- [ ] ✅ Webhooks working
+- [ ] ✅ Scheduler generating invoices
+- [ ] ✅ Tests with > 85% coverage
+- [ ] ✅ Complete documentation
+- [ ] ✅ Structured logs
+- [ ] ✅ Security implemented
+- [ ] ✅ Robust error handling
+- [ ] ✅ Guaranteed idempotency
 
-**Validar:**
-- [ ] ✅ Código no GitHub com README completo
-- [ ] ✅ Aplicação deployed e acessível
-- [ ] ✅ Webhooks funcionando
-- [ ] ✅ Scheduler gerando invoices
-- [ ] ✅ Testes com > 85% cobertura
-- [ ] ✅ Documentação completa
-- [ ] ✅ Logs estruturados
-- [ ] ✅ Segurança implementada
-- [ ] ✅ Tratamento de erros robusto
-- [ ] ✅ Idempotência garantida
-
-### Entregáveis Fase 11
-- ✅ Sistema completo revisado
-- ✅ Documentação finalizada
-- ✅ Demo preparada
-- ✅ Pronto para entrega
+### Phase 11 Deliverables
+- ✅ Complete system reviewed
+- ✅ Documentation finalized
+- ✅ Ready for delivery
 
 ---
-
-## Timeline Estimado
-
-### Resumo por Fase
-
-| Fase | Descrição | Duração | Dependências |
-|------|-----------|---------|--------------|
-| 0 | Setup e Fundação | 1 dia | - |
-| 1 | Shared Components - Foundation | 2-3 dias | Fase 0 |
-| 2 | Stark Bank Integration Layer | 2-3 dias | Fase 1 |
-| 3 | Security Layer | 1-2 dias | Fase 1 |
-| 4 | Invoices Module | 3-4 dias | Fases 1, 2, 3 |
-| 5 | Webhooks Module | 3-4 dias | Fases 1, 3, 4 |
-| 6 | Transfers Module | 3-4 dias | Fases 1, 2, 5 |
-| 7 | Scheduler & Main App | 2-3 dias | Fases 4, 5, 6 |
-| 8 | End-to-End Tests | 2-3 dias | Fase 7 |
-| 9 | Documentation & Polish | 2 dias | Fase 8 |
-| 10 | Deployment & Monitoring | 1-2 dias | Fase 9 |
-| 11 | Final Review | 1 dia | Fase 10 |
-
-**Total Estimado:** 20-30 dias (dependendo da velocidade e experiência)
 
 ### Critical Path
 
 ```
-Fase 0 → Fase 1 → Fase 2 → Fase 4 → Fase 5 → Fase 6 → Fase 7 → Fase 10
+Phase 0 → Phase 1 → Phase 2 → Phase 4 → Phase 5 → Phase 6 → Phase 7 → Phase 10
          ↓
-       Fase 3 (paralelo com Fase 2)
+       Phase 3 (parallel with Phase 2)
 ```
 
-### Sprints Sugeridos (Scrum)
 
-**Sprint 1 (1 semana):** Fases 0, 1, 2, 3  
-**Sprint 2 (1 semana):** Fases 4, 5  
-**Sprint 3 (1 semana):** Fases 6, 7  
-**Sprint 4 (1 semana):** Fases 8, 9, 10, 11  
+## Risks and Mitigations
 
----
+### Risk 1: Stark Bank API Integration
 
-## Riscos e Mitigações
+**Risk:** Unstable sandbox API or incomplete documentation  
+**Mitigation:**
+- Implement robust retry from the beginning
+- Extensive mocking in tests
+- Contact Stark Bank support if necessary
 
-### Risco 1: Integração com Stark Bank API
+### Risk 2: Railway Persistence
 
-**Risco:** API sandbox instável ou documentação incompleta  
-**Mitigação:**
-- Implementar retry robusto desde o início
-- Mock extensivo em testes
-- Contato com suporte Stark Bank se necessário
+**Risk:** Railway free tier does not persist files (SQLite)  
+**Mitigation:**
+- Option 1: Use mounted volume
+- Option 2: Migrate to PostgreSQL (Railway offers free tier)
+- Prepare code to be database-agnostic
 
-### Risco 2: Persistência no Railway
+### Risk 3: Scheduler on Free Tier
 
-**Risco:** Railway free tier não persiste arquivos (SQLite)  
-**Mitigação:**
-- Opção 1: Usar volume montado
-- Opção 2: Migrar para PostgreSQL (Railway oferece free tier)
-- Preparar código para ser database-agnostic
+**Risk:** Railway free tier allows only 1 process  
+**Mitigation:**
+- Run scheduler in thread within the FastAPI process
+- Code prepared to extract to a separate process in the future
 
-### Risco 3: Scheduler em Free Tier
+### Risk 4: Test Coverage
 
-**Risco:** Railway free tier permite apenas 1 processo  
-**Mitigação:**
-- Rodar scheduler em thread dentro do processo FastAPI
-- Código preparado para extrair para processo separado no futuro
+**Risk:** Difficulty in achieving 85% coverage  
+**Mitigation:**
+- Start tests from phase 1
+- Test-driven development where possible
+- Focus on critical code (webhooks, transfers)
 
-### Risco 4: Cobertura de Testes
+### Risk 5: Deadline
 
-**Risco:** Dificuldade em atingir 85% cobertura  
-**Mitigação:**
-- Começar testes desde fase 1
-- Test-driven development onde possível
-- Focar em código crítico (webhooks, transfers)
-
-### Risco 5: Deadline
-
-**Risco:** Não completar todas fases no prazo  
-**Mitigação:**
-- Priorizar MVP: Fases 0-7 e 10 são críticas
-- Fases 8, 9, 11 podem ser reduzidas se necessário
-- Comunicar progresso continuamente
+**Risk:** Not completing all phases on time  
+**Mitigation:**
+- Prioritize MVP: Phases 0-7 and 10 are critical
+- Phases 8, 9, 11 can be reduced if necessary
+- Continuously communicate progress
 
 ---
 
-## Critérios de Sucesso
+## Success Criteria
 
-### Funcionais
+### Functional
 
-- ✅ Gera invoices automaticamente a cada 3h por 24h
-- ✅ Processa webhooks de pagamento corretamente
-- ✅ Cria transferências automáticas ao receber pagamento
-- ✅ Transferências são idempotentes
-- ✅ Processa webhooks de status de transfer
-- ✅ APIs de consulta funcionando
+- ✅ Generates invoices automatically every 3h for 24h
+- ✅ Processes payment webhooks correctly
+- ✅ Creates automatic transfers upon payment receipt
+- ✅ Transfers are idempotent
+- ✅ Processes transfer status webhooks
+- ✅ Query APIs working
 
-### Não-Funcionais
+### Non-Functional
 
-- ✅ Testes com > 85% cobertura
-- ✅ Logging estruturado em JSON
-- ✅ Retry automático com backoff exponencial
-- ✅ Validação de assinaturas digitais
-- ✅ Tratamento de erros robusto
-- ✅ Documentação completa
-- ✅ Código limpo e bem estruturado
+- ✅ Tests with > 85% coverage
+- ✅ Structured logging in JSON
+- ✅ Automatic retry with exponential backoff
+- ✅ Digital signature validation
+- ✅ Robust error handling
+- ✅ Complete documentation
+- ✅ Clean and well-structured code
 
-### Técnicos
+### Technical
 
-- ✅ Arquitetura modular conforme especificação
-- ✅ Event-driven architecture implementada
-- ✅ Python 3.14 sem Pydantic
+- ✅ Modular architecture as per specification
+- ✅ Event-driven architecture implemented
+- ✅ Python 3.14 without Pydantic
 - ✅ FastAPI + SQLite
-- ✅ Deploy funcionando no Railway
-- ✅ Webhooks registrados e recebendo eventos
+- ✅ Deploy working on Railway
+- ✅ Webhooks registered and receiving events
 
 ---
 
-## Próximos Passos após v1.0
+## Next Steps after v1.0
 
 ### Short Term (v1.1)
 
 - Circuit breaker pattern
-- PostgreSQL como opção de banco
-- Metrics com Prometheus
-- Rate limiting em endpoints
-- Dashboard de monitoramento
-- Retry manual de operações falhadas
+- PostgreSQL as database option
+- Metrics with Prometheus
+- Rate limiting on endpoints
+- Monitoring dashboard
+- Manual retry of failed operations
 
 ### Medium Term (v2.0)
 
-- Microserviços (separar módulos)
+- Microservices (separate modules)
 - Message queue (RabbitMQ/SQS)
 - Distributed tracing
-- Autenticação OAuth2
+- OAuth2 authentication
 - Multi-tenant support
 - API versioning
 
@@ -1560,23 +1631,21 @@ Fase 0 → Fase 1 → Fase 2 → Fase 4 → Fase 5 → Fase 6 → Fase 7 → Fas
 - Auto-scaling
 - Multi-region
 - Real-time dashboard
-- Analytics e BI
-- Machine learning para detecção de fraudes
+- Analytics and BI
+- Machine learning for fraud detection
 
 ---
 
-## Conclusão
+## Conclusion
 
-Este plano de implementação gradual garante:
+This gradual implementation plan ensures:
 
-1. **Progresso Incremental:** Cada fase entrega valor e pode ser validada
-2. **Redução de Riscos:** Problemas são detectados cedo
-3. **Qualidade:** Testes acompanham implementação
-4. **Flexibilidade:** Fases podem ser ajustadas conforme necessário
-5. **Documentação:** Sistema sempre documentado
-
-**Próximo Passo:** Iniciar Fase 0 - Setup e Fundação
+1. **Incremental Progress:** Each phase delivers value and can be validated
+2. **Risk Reduction:** Problems are detected early
+3. **Quality:** Tests accompany implementation
+4. **Flexibility:** Phases can be adjusted as needed
+5. **Documentation:** System always documented
 
 ---
 
-**Documento vivo - atualizar conforme implementação progride**
+**Living document - update as implementation progresses**

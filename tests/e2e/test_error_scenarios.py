@@ -169,7 +169,8 @@ class TestErrorScenarios:
         transfer = transfer_repo.get_by_id(transfer.id)
         assert transfer is not None, "Transfer should still exist"
         assert transfer.status == initial_transfer_status, (
-            f"Transfer status should remain {initial_transfer_status}, got {transfer.status}"
+            f"Transfer status should remain {initial_transfer_status}, "
+            f"got {transfer.status}"
         )
 
     def test_stark_api_timeout(self, e2e_app, e2e_db, api_key_header, mock_stark_api):
@@ -235,7 +236,8 @@ class TestErrorScenarios:
         ]
 
         assert len(created_invoices) == 0, (
-            f"No CREATED invoice should exist in database, found {len(created_invoices)}"
+            "No CREATED invoice should exist in database, "
+            f"found {len(created_invoices)}"
         )
 
         # Optionally verify that a FAILED invoice was recorded for tracking
@@ -327,7 +329,8 @@ class TestErrorScenarios:
             # Step 4: Verify webhook returns 200 (graceful error handling)
             # -------------------------------------------------------------
             assert response.status_code == 200, (
-                f"Webhook should return 200 even with internal error, got {response.status_code}"
+                "Webhook should return 200 even with internal error, "
+                f"got {response.status_code}"
             )
 
             response_json = response.json()
@@ -384,7 +387,8 @@ class TestErrorScenarios:
         )
         assert invoice.fee == 1.5, f"Fee should be 1.5 (R$), got {invoice.fee}"
         assert invoice.net_amount == 348.5, (
-            f"Net amount should be 348.5 (R$ 350.00 - R$ 1.50), got {invoice.net_amount}"
+            "Net amount should be 348.5 (R$ 350.00 - R$ 1.50), "
+            f"got {invoice.net_amount}"
         )
 
         # Verify transfer was created
@@ -429,7 +433,8 @@ class TestErrorScenarios:
 
         # Verify system doesn't crash - should return 200
         assert response.status_code == 200, (
-            f"Webhook should return 200 even for unknown invoice, got {response.status_code}"
+            "Webhook should return 200 even for unknown invoice, "
+            f"got {response.status_code}"
         )
 
         response_json = response.json()
