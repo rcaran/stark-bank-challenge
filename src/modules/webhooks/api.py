@@ -14,7 +14,6 @@ from src.modules.webhooks.receiver import WebhookReceiver
 from src.modules.webhooks.transfer_processor import TransferWebhookProcessor
 from src.modules.webhooks.validator import WebhookValidator
 from src.config.settings import settings
-from src.shared.database.connection import get_db_connection
 from src.shared.events.bus import EventBus
 from src.shared.security.signature import InvalidSignatureError
 from src.shared.utils.logger import get_logger
@@ -42,7 +41,7 @@ def _get_webhook_receiver() -> WebhookReceiver:
     event_bus = EventBus()
 
     # Initialize invoice processor
-    invoice_repository = InvoiceRepository(get_db_connection())
+    invoice_repository = InvoiceRepository()
     invoice_processor = InvoiceWebhookProcessor(
         invoice_repository=invoice_repository,
         event_bus=event_bus,
@@ -54,7 +53,7 @@ def _get_webhook_receiver() -> WebhookReceiver:
     try:
         from src.modules.transfers.repository import TransferRepository
 
-        transfer_repository = TransferRepository(get_db_connection())
+        transfer_repository = TransferRepository()
     except ImportError:
         # Transfer module not yet implemented - use placeholder
         transfer_repository = None

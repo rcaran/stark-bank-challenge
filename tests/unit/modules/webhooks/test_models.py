@@ -402,6 +402,8 @@ class TestWebhookEventType:
 
     def test_transfer_event_types(self):
         """Test transfer-related event types exist."""
+        # TRANSFER_CREATED == "created" is intentional: Stark Bank sends "created"
+        # for both invoice and transfer creations. Routing is done via 'subscription'.
         assert WebhookEventType.TRANSFER_CREATED == "created"
         assert WebhookEventType.TRANSFER_PROCESSING == "processing"
         assert WebhookEventType.TRANSFER_SUCCESS == "success"

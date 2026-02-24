@@ -126,6 +126,9 @@ class WebhookReceiver:
                 error=str(e),
                 error_type=type(e).__name__,
             )
+            self._publish_validation_failed_event(
+                webhook_type="invoice", payload=payload, error=str(e)
+            )
             # Return success anyway to prevent Stark Bank retries
             # The error is logged and can be monitored/alerted
             return {"status": "ok", "error": "processing_error"}
@@ -196,6 +199,9 @@ class WebhookReceiver:
                 "Error processing transfer webhook",
                 error=str(e),
                 error_type=type(e).__name__,
+            )
+            self._publish_validation_failed_event(
+                webhook_type="transfer", payload=payload, error=str(e)
             )
             # Return success anyway to prevent Stark Bank retries
             # The error is logged and can be monitored/alerted

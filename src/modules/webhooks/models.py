@@ -22,6 +22,9 @@ class WebhookEventType(StrEnum):
     INVOICE_EXPIRED = "expired"
 
     # Transfer events
+    # NOTE: Stark Bank sends "created" for both invoice and transfer creations.
+    # TRANSFER_CREATED is intentionally an alias of INVOICE_CREATED.
+    # Routing between invoice/transfer is done via the 'subscription' field.
     TRANSFER_CREATED = "created"
     TRANSFER_PROCESSING = "processing"
     TRANSFER_SUCCESS = "success"
