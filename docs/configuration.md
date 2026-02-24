@@ -165,6 +165,13 @@ curl http://localhost:8000/health
   - Only use `production` when ready for real transactions
   - Production requires different credentials and approval from Stark Bank
 
+#### Webhook Signature Public Key (automatic)
+- **Description**: The ECDSA public key used to validate webhook signatures is **not configured manually**. The application fetches it automatically from the Stark Bank API at startup and caches the result in memory.
+- **Sandbox endpoint**: `https://sandbox.api.starkbank.com/v2/public-key`
+- **Production endpoint**: `https://api.starkbank.com/v2/public-key`
+- The endpoint used is determined by `STARKBANK_ENVIRONMENT`.
+- **No action required** — this happens transparently. Ensure the application has outbound internet access to reach the Stark Bank API.
+
 ---
 
 ### Database Configuration
@@ -504,6 +511,21 @@ SCHEDULER_ENABLED=false
 3. Ensure no extra spaces or newlines in the key
 4. Verify you're using sandbox credentials with `STARKBANK_ENVIRONMENT=sandbox`
 5. Generate new credentials if needed
+
+### Issue: "Webhook Signature Validation Failed" (Invalid key)
+
+**Symptoms:**
+- Logs show `Failed to load public key: Invalid key` or `Signature validation failed`
+- Webhooks from Stark Bank are rejected with 401/403
+
+**Solutions:**
+1. Ensure the application has outbound internet access to reach the Stark Bank public-key API
+2. Verify `STARKBANK_ENVIRONMENT` is set correctly (`sandbox` or `production`)
+3. If running behind a proxy or firewall, ensure `https://sandbox.api.starkbank.com` (or `https://api.starkbank.com`) is reachable
+4. Restart the application to clear the in-memory key cache and force a fresh fetch
+5. Manually test connectivity: `curl https://sandbox.api.starkbank.com/v2/public-key`
+
+---
 
 ### Issue: "Database Locked" (SQLite)
 

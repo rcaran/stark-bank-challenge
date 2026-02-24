@@ -3,7 +3,6 @@ Application constants.
 
 This module contains configuration constants that are not environment-specific.
 For environment variables, see settings.py.
-For security constants, see shared/security/constants.py.
 For event types, see shared/events/types.py.
 """
 

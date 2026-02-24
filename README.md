@@ -9,7 +9,7 @@ Developed as part of the Stark Bank selection process, demonstrating the ability
 - ✅ **Automatic Invoice Generation**: Scheduler that creates 8-12 invoices every 3 hours for 24h
 - ✅ **Data Validation**: Generation of valid CPF/CNPJ with 70/30 distribution
 - ✅ **Webhook Processing**: Secure reception and processing of Stark Bank webhooks
-- ✅ **Digital Signature Validation**: ECDSA verification of webhooks to ensure authenticity
+- ✅ **Digital Signature Validation**: ECDSA verification of webhooks using the public key fetched dynamically from the Stark Bank API
 - ✅ **Automatic Transfers**: Automatic transfer creation upon receiving invoice payments
 - ✅ **Retry Logic**: Exponential retry system for Stark Bank API calls
 - ✅ **Idempotency**: Guarantee of no transfer duplication
@@ -374,7 +374,7 @@ The system uses **event-driven architecture** with the following main components
 1. **Scheduler** generates invoices every 3h
 2. Invoices are created in the **Stark Bank API**
 3. When paid, a **webhook** notifies the system
-4. System validates ECDSA signature
+4. System fetches Stark Bank public key from the API and validates the ECDSA signature
 5. **Event Bus** publishes `invoice.paid` event
 6. **Transfer Handler** listens to the event and creates a transfer
 7. Transfer is executed in Stark Bank
@@ -382,7 +382,7 @@ The system uses **event-driven architecture** with the following main components
 
 ## 🔒 Security
 
-- ECDSA digital signature validation on all webhooks
+- ECDSA digital signature validation on all webhooks (public key fetched dynamically from `https://sandbox.api.starkbank.com/v2/public-key` and cached)
 - API Key authentication for private endpoints
 - Input data validation with Pydantic
 - Logging of all sensitive operations

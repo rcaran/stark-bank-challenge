@@ -2,24 +2,10 @@
 Security constants for the application.
 
 This module contains security-related constants including:
-- Stark Bank public keys for webhook signature validation
 - Security headers
 - Timeout configurations
 - Rate limits
 """
-
-# Stark Bank ECDSA Public Keys for webhook signature validation
-# Source: https://starkbank.com/docs/api#webhooks
-
-STARKBANK_PUBLIC_KEY_SANDBOX = """-----BEGIN PUBLIC KEY-----
-MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEePyTKPDGwzXGTz7t7vD4pDH0g3nJjCJj
-6p5pGqLjM5Db5lBJK11HhpL6mGLKBBYTMJ9GqBjZ5qCVR5sZHVKqGA==
------END PUBLIC KEY-----"""
-
-STARKBANK_PUBLIC_KEY_PRODUCTION = """-----BEGIN PUBLIC KEY-----
-MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEePyTKPDGwzXGTz7t7vD4pDH0g3nJjCJj
-6p5pGqLjM5Db5lBJK11HhpL6mGLKBBYTMJ9GqBjZ5qCVR5sZHVKqGA==
------END PUBLIC KEY-----"""
 
 # Security Headers
 SECURITY_HEADERS = {

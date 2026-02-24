@@ -10,12 +10,9 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 
-from src.shared.security.constants import (
-    STARKBANK_PUBLIC_KEY_PRODUCTION,
-    STARKBANK_PUBLIC_KEY_SANDBOX,
-)
 from src.shared.security.signature import (
     InvalidSignatureError,
+    _fetch_public_key_pem,
     _get_public_key_pem,
     _load_public_key,
     compute_payload_hash,
@@ -49,22 +46,30 @@ class TestGetPublicKeyPem:
     """Tests for _get_public_key_pem function."""
 
     def test_get_public_key_sandbox(self):
-        """Test that sandbox public key is returned for sandbox environment."""
-        with patch("src.shared.security.signature.settings") as mock_settings:
+        """Test that the sandbox public key is fetched for sandbox environment."""
+        with patch("src.shared.security.signature.settings") as mock_settings, patch(
+            "src.shared.security.signature._fetch_public_key_pem"
+        ) as mock_fetch:
             mock_settings.starkbank_environment = "sandbox"
+            mock_fetch.return_value = "sandbox-key-pem"
 
             result = _get_public_key_pem()
 
-            assert result == STARKBANK_PUBLIC_KEY_SANDBOX
+            mock_fetch.assert_called_once_with("sandbox")
+            assert result == "sandbox-key-pem"
 
     def test_get_public_key_production(self):
-        """Test that production public key is returned for production environment."""
-        with patch("src.shared.security.signature.settings") as mock_settings:
+        """Test that the production public key is fetched for production environment."""
+        with patch("src.shared.security.signature.settings") as mock_settings, patch(
+            "src.shared.security.signature._fetch_public_key_pem"
+        ) as mock_fetch:
             mock_settings.starkbank_environment = "production"
+            mock_fetch.return_value = "production-key-pem"
 
             result = _get_public_key_pem()
 
-            assert result == STARKBANK_PUBLIC_KEY_PRODUCTION
+            mock_fetch.assert_called_once_with("production")
+            assert result == "production-key-pem"
 
 
 class TestLoadPublicKey:

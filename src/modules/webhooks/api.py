@@ -13,6 +13,7 @@ from src.modules.webhooks.invoice_processor import InvoiceWebhookProcessor
 from src.modules.webhooks.receiver import WebhookReceiver
 from src.modules.webhooks.transfer_processor import TransferWebhookProcessor
 from src.modules.webhooks.validator import WebhookValidator
+from src.config.settings import settings
 from src.shared.database.connection import get_db_connection
 from src.shared.events.bus import EventBus
 from src.shared.security.signature import InvalidSignatureError
@@ -133,6 +134,7 @@ async def receive_invoice_webhook(
         logger.debug(
             "Invoice webhook body received",
             body_size=len(body),
+            body=body.decode("utf-8", errors="replace") if settings.log_level.upper() == "DEBUG" else None,
         )
 
         # Process webhook
@@ -232,6 +234,7 @@ async def receive_transfer_webhook(
         logger.debug(
             "Transfer webhook body received",
             body_size=len(body),
+            body=body.decode("utf-8", errors="replace") if settings.log_level.upper() == "DEBUG" else None,
         )
 
         # Process webhook

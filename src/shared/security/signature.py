@@ -7,23 +7,26 @@ to ensure authenticity and integrity of webhook payloads.
 
 import base64
 import hashlib
+from functools import lru_cache
 
+import httpx
 from cryptography.exceptions import (
     InvalidSignature as CryptoInvalidSignature,
 )
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 
-from src.config.constants import STARKBANK_ENV_SANDBOX
 from src.config.settings import settings
-from src.shared.security.constants import (
-    STARKBANK_PUBLIC_KEY_PRODUCTION,
-    STARKBANK_PUBLIC_KEY_SANDBOX,
-)
 from src.shared.utils.errors import ValidationError
 from src.shared.utils.logger import get_logger
 
 logger = get_logger("security.signature")
+
+# Stark Bank public key API endpoints per environment
+STARKBANK_PUBLIC_KEY_URLS: dict[str, str] = {
+    "sandbox": "https://sandbox.api.starkbank.com/v2/public-key",
+    "production": "https://api.starkbank.com/v2/public-key",
+}
 
 
 class InvalidSignatureError(ValidationError):
@@ -33,16 +36,47 @@ class InvalidSignatureError(ValidationError):
         super().__init__(message)
 
 
+@lru_cache(maxsize=2)
+def _fetch_public_key_pem(environment: str) -> str:
+    """
+    Fetch the Stark Bank public key from the API for the given environment.
+
+    Results are cached per environment so the HTTP request is only made once.
+
+    Args:
+        environment: The Stark Bank environment ("sandbox" or "production")
+
+    Returns:
+        The PEM-encoded public key string
+
+    Raises:
+        ValueError: If the public key cannot be fetched or the response is invalid
+    """
+    url = STARKBANK_PUBLIC_KEY_URLS.get(environment)
+    if url is None:
+        raise ValueError(f"Unknown Stark Bank environment: {environment}")
+
+    try:
+        response = httpx.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data["publicKeys"][0]["content"]
+    except Exception as e:
+        logger.error(f"Failed to fetch public key for environment '{environment}': {e}")
+        raise ValueError(f"Could not retrieve Stark Bank public key: {e}") from e
+
+
 def _get_public_key_pem() -> str:
     """
-    Get the appropriate Stark Bank public key based on environment.
+    Get the Stark Bank public key for the current environment.
+
+    Fetches the key from the official Stark Bank API endpoint and caches
+    the result to avoid repeated HTTP calls.
 
     Returns:
         The PEM-encoded public key string
     """
-    if settings.starkbank_environment == STARKBANK_ENV_SANDBOX:
-        return STARKBANK_PUBLIC_KEY_SANDBOX
-    return STARKBANK_PUBLIC_KEY_PRODUCTION
+    return _fetch_public_key_pem(settings.starkbank_environment)
 
 
 def _load_public_key(public_key_pem: str) -> ec.EllipticCurvePublicKey:
