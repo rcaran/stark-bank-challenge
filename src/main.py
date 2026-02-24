@@ -63,13 +63,15 @@ async def lifespan(_app: FastAPI):
         logger.info("EventBus and event handlers initialized")
 
         # 3. Start scheduler in background thread (if enabled)
-        if settings.app_env != "test":
+        if settings.scheduler_enabled and settings.app_env != "test":
             logger.info("Starting invoice generation scheduler")
             _scheduler_thread = Thread(
                 target=run_scheduler, daemon=True, name="SchedulerThread"
             )
             _scheduler_thread.start()
             logger.info("Scheduler started in background thread")
+        elif not settings.scheduler_enabled:
+            logger.info("Scheduler disabled via SCHEDULER_ENABLED=false")
         else:
             logger.info("Scheduler disabled in test environment")
 

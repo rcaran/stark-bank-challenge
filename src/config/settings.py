@@ -32,6 +32,7 @@ class Settings:
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./starkbank.db")
 
     # Scheduler
+    scheduler_enabled: bool = os.getenv("SCHEDULER_ENABLED", "true").lower() not in ("false", "0", "no")
     scheduler_interval_hours: int = int(os.getenv("SCHEDULER_INTERVAL_HOURS", "3"))
     invoice_generation_min: int = int(os.getenv("INVOICE_GENERATION_MIN", "8"))
     invoice_generation_max: int = int(os.getenv("INVOICE_GENERATION_MAX", "12"))
