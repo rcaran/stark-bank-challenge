@@ -59,39 +59,39 @@ The system implements an automated integration with the Stark Bank platform to:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     STARK BANK CHALLENGE                     │
+│                     STARK BANK CHALLENGE                    │
 ├─────────────────────────────────────────────────────────────┤
-│                                                               │
+│                                                             │
 │  ┌─────────────┐              ┌──────────────┐              │
 │  │   FastAPI   │◄────────────►│  Scheduler   │              │
 │  │  Web Server │              │ (APScheduler)│              │
 │  └──────┬──────┘              └──────┬───────┘              │
-│         │                             │                       │
-│         │         ┌──────────────────┘                       │
-│         │         │                                           │
-│         ▼         ▼                                           │
-│  ┌─────────────────────────────────────────┐                │
-│  │          DOMAIN MODULES                  │                │
-│  ├──────────────┬──────────────┬───────────┤                │
-│  │   Invoices   │  Webhooks    │ Transfers │                │
-│  │   Module     │   Module     │  Module   │                │
-│  └──────┬───────┴──────┬───────┴─────┬─────┘                │
-│         │              │             │                       │
-│         └──────────────┼─────────────┘                       │
-│                        ▼                                      │
-│         ┌─────────────────────────────┐                      │
-│         │    SHARED COMPONENTS         │                      │
-│         ├────────────┬────────────────┤                      │
-│         │ Event Bus  │ Stark Bank API │                      │
-│         │  Logger    │   Security     │                      │
-│         │ Database   │   Retry Logic  │                      │
-│         └────────────┴────────────────┘                      │
-│                        │                                      │
-└────────────────────────┼──────────────────────────────────────┘
+│         │                            │                      │
+│         │         ┌──────────────────┘                      │
+│         │         │                                         │
+│         ▼         ▼                                         │
+│  ┌───────────────────────────────────────────────────┐      │
+│  │          DOMAIN MODULES                           │      │
+│  ├──────────────┬──────────────┬───────────┬─────────┤      │
+│  │   Invoices   │  Webhooks    │ Transfers │   Logs  │      │
+│  │   Module     │   Module     │  Module   │  Module │      │
+│  └──────┬───────┴──────┬───────┴─────┬─────┴─────────┘      │
+│         │              │             │                      │
+│         └──────────────┼─────────────┘                      │
+│                        ▼                                    │
+│         ┌─────────────────────────────┐                     │
+│         │    SHARED COMPONENTS        │                     │
+│         ├────────────┬────────────────┤                     │
+│         │ Event Bus  │ Stark Bank API │                     │
+│         │  Logger    │   Security     │                     │
+│         │ Database   │   Retry Logic  │                     │
+│         └────────────┴────────────────┘                     │
+│                        │                                    │
+└────────────────────────┼────────────────────────────────────┘
                          ▼
               ┌──────────────────┐
-              │  Stark Bank API   │
-              │    (Sandbox)      │
+              │  Stark Bank API  │
+              │    (Sandbox)     │
               └──────────────────┘
 ```
 
@@ -107,6 +107,7 @@ The system implements an automated integration with the Stark Bank platform to:
   - `GET /invoices/{id}` - Query specific invoice
   - `GET /transfers` - List transfers
   - `GET /transfers/{id}` - Query specific transfer
+  - `GET /events-log` - Query internal event audit log
   - `GET /health` - Health check
   - `GET /docs` - Swagger UI
 
@@ -151,14 +152,21 @@ stark-bank-challenge/
 │   │   │   ├── events.py         # Event definitions
 │   │   │   └── api.py            # REST endpoints
 │   │   │
-│   │   └── transfers/             # Transfer Module
+│   │   ├── transfers/             # Transfer Module
+│   │   │   ├── __init__.py
+│   │   │   ├── service.py         # Business logic
+│   │   │   ├── handler.py         # Event handler
+│   │   │   ├── repository.py      # Database access
+│   │   │   ├── models.py          # Data models
+│   │   │   ├── events.py          # Event definitions
+│   │   │   └── api.py             # REST endpoints
+│   │   │
+│   │   └── events_log/            # Events Log Module
 │   │       ├── __init__.py
 │   │       ├── service.py         # Business logic
-│   │       ├── handler.py         # Event handler
 │   │       ├── repository.py      # Database access
-│   │       ├── models.py          # Data models
-│   │       ├── events.py          # Event definitions
-│   │       └── api.py             # REST endpoints
+│   │       ├── models.py          # Pydantic response models
+│   │       └── api.py             # REST endpoint (GET /events-log)
 │   │
 │   ├── shared/                    # Shared Components
 │   │   ├── __init__.py
@@ -210,7 +218,11 @@ stark-bank-challenge/
 ├── docs/                          # Documentation
 │   ├── challenge.md              # Business requirements
 │   ├── architecture.md           # This document
-│   └── api.md                    # API specification
+│   ├── api.md                    # API specification
+│   ├── configuration.md          # Configuration guide
+│   ├── deployment.md             # Deployment guide
+│   ├── implementation-plan.md    # Development plan
+│   └── e2e-details.md            # End-to-end test details
 │
 ├── migrations/                    # Database migrations
 │   └── 001_initial_schema.sql
@@ -286,6 +298,23 @@ stark-bank-challenge/
 **Published Events:**
 - `TransferCompleted`: Transfer completed
 - `TransferFailed`: Transfer failure
+
+#### 3.2.4. Events Log Module
+
+**Responsibilities:**
+- Persist all internal events into a queryable `events_log` table
+- Provide a read-only API for auditing and debugging
+- Support filtering by event type and date range with pagination
+
+**Components:**
+- `EventLogService`: Orchestrates queries over the repository
+- `EventLogRepository`: Reads from the `events_log` table with optional filters
+- `EventLogAPI`: REST endpoint (`GET /events-log`)
+
+**Exposes:**
+- `GET /events-log` — returns paginated list of all system events
+
+**Note:** Events are written to this table by `src/shared/events/logger.py`, which is registered as a global handler on the Event Bus at application startup.
 
 ### 3.3. Shared Components
 

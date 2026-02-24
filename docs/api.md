@@ -21,6 +21,7 @@ This document provides comprehensive documentation for the Stark Bank Challenge 
   - [Health Check](#health-check)
   - [Invoices](#invoices)
   - [Transfers](#transfers)
+  - [Events Log](#events-log)
   - [Webhooks](#webhooks)
 
 ---
@@ -563,6 +564,98 @@ curl -X GET http://localhost:8000/transfers/invoice/01JCXA2B3C4D5E6F7G8H9J0K1 \
 
 ---
 
+## Events Log
+
+### `GET /events-log`
+
+List all internal events recorded in the audit log, with optional filters and pagination.
+
+**Authentication:** Required (API Key)
+
+**Query Parameters:**
+- `event_type` (string, optional): Filter by event type (see [Event Type Values](#event-type-values))
+- `start_date` (string, optional): Include only events on or after this datetime (ISO 8601 UTC)
+- `end_date` (string, optional): Include only events on or before this datetime (ISO 8601 UTC)
+- `limit` (integer, optional): Maximum number of results (1-500, default: 50)
+- `offset` (integer, optional): Pagination offset (default: 0)
+
+**Response:** `200 OK`
+
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "event_id": "b3d2c1a0-1234-5678-abcd-ef0123456789",
+      "event_type": "invoice.paid",
+      "payload": {
+        "invoice_id": "01JCXA2B3C4D5E6F7G8H9J0K1",
+        "amount": 10000,
+        "fee": 50
+      },
+      "metadata": null,
+      "timestamp": "2026-02-16T11:00:00.123456",
+      "processed": true
+    }
+  ],
+  "total": 42,
+  "limit": 50,
+  "offset": 0
+}
+```
+
+**Response Fields:**
+- `items`: Array of event log objects
+  - `id`: Auto-incremented row ID
+  - `event_id`: Unique UUID for the event
+  - `event_type`: Event type string (see [Event Type Values](#event-type-values))
+  - `payload`: Event payload as a JSON object
+  - `metadata`: Optional metadata as a JSON object (may be null)
+  - `timestamp`: Event timestamp (ISO 8601, UTC)
+  - `processed`: Whether the event was successfully processed by all handlers
+- `total`: Total number of events matching the filter
+- `limit`: Maximum results per page
+- `offset`: Current pagination offset
+
+**Example:**
+```bash
+# List all events
+curl -X GET http://localhost:8000/events-log \
+  -H "X-API-Key: dev-key-12345"
+
+# Filter by event type
+curl -X GET "http://localhost:8000/events-log?event_type=invoice.paid&limit=20" \
+  -H "X-API-Key: dev-key-12345"
+
+# Filter by date range
+curl -X GET "http://localhost:8000/events-log?start_date=2026-02-16T00:00:00Z&end_date=2026-02-16T23:59:59Z" \
+  -H "X-API-Key: dev-key-12345"
+```
+
+**Possible Errors:**
+- `401 Unauthorized`: Missing or invalid API key
+- `422 Unprocessable Entity`: Invalid query parameter format
+
+---
+
+### Event Type Values
+
+| Event Type | Description |
+|------------|-------------|
+| `invoice.created` | Invoice successfully created in Stark Bank |
+| `invoice.creation_failed` | Invoice creation failed |
+| `invoice.paid` | Invoice payment confirmed via webhook |
+| `transfer.created` | Transfer successfully created in Stark Bank |
+| `transfer.processing` | Stark Bank is processing the transfer |
+| `transfer.completed` | Transfer completed successfully |
+| `transfer.failed` | Transfer failed |
+| `webhook.received` | Webhook received from Stark Bank |
+| `webhook.validation_failed` | Webhook signature validation failed |
+| `scheduler.tick` | Scheduler cycle executed |
+| `system.error` | Unhandled system error |
+
+---
+
 ## Webhooks
 
 ### `POST /webhooks/invoice`
@@ -761,6 +854,10 @@ For issues or questions, please refer to:
 ---
 
 ## Changelog
+
+### Version 1.1.0 (2026-02-24)
+- Added `GET /events-log` endpoint for querying the internal event audit log
+- Added event type filter, date range filter, and pagination support to events log
 
 ### Version 1.0.0 (2026-02-16)
 - Initial API release

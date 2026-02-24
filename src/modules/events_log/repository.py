@@ -1,53 +1,31 @@
-"""Event logging and history tracking."""
+"""Repository for querying the events_log table."""
 
 import json
 from datetime import datetime
 
 from src.shared.database.base_repository import BaseRepository
-from src.shared.events.types import Event, EventType
 from src.shared.utils.logger import get_logger
 
-logger = get_logger("shared.events.event_logger")
+logger = get_logger("modules.events_log.repository")
 
 
-class EventLogger(BaseRepository):
-    def log_event(self, event: Event) -> None:
-        """Persists an event to the events_log table."""
-        try:
-            query = """
-                INSERT INTO events_log
-                (event_id, event_type, payload, metadata, timestamp)
-                VALUES (?, ?, ?, ?, ?)
-            """
-
-            payload_json = json.dumps(event.payload, default=str)
-            metadata_json = (
-                json.dumps(event.metadata, default=str) if event.metadata else None
-            )
-
-            self._execute(
-                query,
-                (
-                    event.event_id,
-                    event.event_type.value,
-                    payload_json,
-                    metadata_json,
-                    event.timestamp.isoformat(),
-                ),
-            )
-            logger.debug(f"Event {event.event_id} persisted to database")
-        except Exception as e:
-            logger.error(f"Failed to persist event {event.event_id}: {e!s}")
+class EventLogRepository(BaseRepository):
+    """Repository for reading events from the events_log table."""
 
     def get_events(
         self,
         event_type: str | None = None,
-        limit: int = 100,
+        limit: int = 50,
         offset: int = 0,
         start_date: datetime | None = None,
         end_date: datetime | None = None,
-    ) -> list[Event]:
-        """Retrieves events from the events_log table with optional filters."""
+    ) -> list[dict]:
+        """
+        Retrieves raw event rows from events_log with optional filters.
+
+        Returns a list of dicts with keys:
+            id, event_id, event_type, payload, metadata, timestamp, processed
+        """
         try:
             query = "SELECT * FROM events_log"
             params: list = []
@@ -72,20 +50,9 @@ class EventLogger(BaseRepository):
             params.extend([limit, offset])
 
             rows = self._fetchall(query, tuple(params))
-
-            events = []
-            for row in rows:
-                event = Event(
-                    event_id=row["event_id"],
-                    event_type=EventType(row["event_type"]),
-                    payload=json.loads(row["payload"]),
-                    metadata=json.loads(row["metadata"]) if row["metadata"] else None,
-                    timestamp=datetime.fromisoformat(row["timestamp"]),
-                )
-                events.append(event)
-            return events
+            return [self._row_to_dict(row) for row in rows]
         except Exception as e:
-            logger.error(f"Failed to fetch events: {e!s}")
+            logger.error(f"Failed to fetch event logs: {e!s}")
             return []
 
     def count_events(
@@ -118,10 +85,18 @@ class EventLogger(BaseRepository):
             row = self._fetchone(query, tuple(params))
             return row["total"] if row else 0
         except Exception as e:
-            logger.error(f"Failed to count events: {e!s}")
+            logger.error(f"Failed to count event logs: {e!s}")
             return 0
 
-
-def event_logger_handler(event: Event) -> None:
-    repository = EventLogger()
-    repository.log_event(event)
+    @staticmethod
+    def _row_to_dict(row) -> dict:
+        """Converts a sqlite3.Row to a plain dict with parsed JSON fields."""
+        return {
+            "id": row["id"],
+            "event_id": row["event_id"],
+            "event_type": row["event_type"],
+            "payload": json.loads(row["payload"]),
+            "metadata": json.loads(row["metadata"]) if row["metadata"] else None,
+            "timestamp": row["timestamp"],
+            "processed": bool(row["processed"]),
+        }

@@ -17,6 +17,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from src.config.settings import settings
 from src.dependencies import cleanup, initialize_event_handlers
 from src.health import check_health
+from src.modules.events_log.api import events_log_router
 from src.modules.invoices.api import invoice_router
 from src.modules.transfers.api import transfer_router
 from src.modules.webhooks.api import webhook_router
@@ -239,6 +240,7 @@ async def log_requests(request: Request, call_next):
 app.include_router(invoice_router)
 app.include_router(transfer_router)
 app.include_router(webhook_router)
+app.include_router(events_log_router)
 
 
 # Root endpoints

@@ -21,6 +21,8 @@ from src.modules.webhooks.transfer_processor import TransferWebhookProcessor
 from src.modules.webhooks.validator import WebhookValidator
 from src.shared.database.connection import DatabaseConnection
 from src.shared.events.bus import EventBus
+from src.shared.events.logger import event_logger_handler
+from src.shared.events.types import EventType
 from src.shared.stark.client import StarkBankClient
 from src.shared.stark.invoice_api import StarkInvoiceAPI
 from src.shared.stark.transfer_api import StarkTransferAPI
@@ -208,6 +210,11 @@ def initialize_event_handlers() -> None:
     event_bus = get_event_bus()
     invoice_repository = get_invoice_repository()
     transfer_service = get_transfer_service()
+
+    # Subscribe event_logger_handler to ALL event types so every event
+    # published anywhere in the application is persisted to events_log.
+    for event_type in EventType:
+        event_bus.subscribe(event_type.value, event_logger_handler)
 
     # Initialize and register TransferHandler
     transfer_handler = TransferHandler(

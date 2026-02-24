@@ -15,6 +15,7 @@ Developed as part of the Stark Bank selection process, demonstrating the ability
 - ✅ **Idempotency**: Guarantee of no transfer duplication
 - ✅ **Event Bus**: Event-driven architecture for module decoupling
 - ✅ **RESTful API**: API Key-protected endpoints for querying invoices and transfers
+- ✅ **Events Log**: Queryable audit log of all internal events with filtering and pagination
 - ✅ **Structured Logging**: Detailed logs in JSON format for monitoring
 - ✅ **Health Check**: Application health verification endpoint
 - ✅ **Persistence**: SQLite database with automatic migrations
@@ -41,7 +42,8 @@ stark-bank-challenge/
 │   ├── modules/           # Domain modules
 │   │   ├── invoices/      # Invoice generation and management
 │   │   ├── webhooks/      # Webhook processing
-│   │   └── transfers/     # Transfer execution
+│   │   ├── transfers/     # Transfer execution
+│   │   └── events_log/    # Event audit log
 │   │
 │   ├── shared/            # Shared components
 │   │   ├── database/      # Data layer
@@ -114,28 +116,23 @@ APP_ENV=development
 LOG_LEVEL=INFO
 
 # Stark Bank Credentials
-STARK_BANK_PROJECT_ID=your-project-id-here
-STARK_BANK_PRIVATE_KEY=-----BEGIN EC PRIVATE KEY-----\nYour\nPrivate\nKey\nHere\n-----END EC PRIVATE KEY-----
-STARK_BANK_ENVIRONMENT=sandbox
+STARKBANK_PROJECT_ID=your-project-id-here
+STARKBANK_PRIVATE_KEY_CONTENT=-----BEGIN EC PRIVATE KEY-----\nYour\nPrivate\nKey\nHere\n-----END EC PRIVATE KEY-----
+STARKBANK_ENVIRONMENT=sandbox
 
 # API Security
-API_KEY=dev-key-insecure-change-in-production
+ADMIN_API_KEY=dev-key-insecure-change-in-production
 
 # Database
-DATABASE_PATH=./data/stark_bank.db
+DATABASE_URL=sqlite:///./starkbank.db
 
 # Scheduler
 SCHEDULER_ENABLED=true
 SCHEDULER_INTERVAL_HOURS=3
-SCHEDULER_DURATION_HOURS=24
 
 # Invoice Generation
-INVOICE_MIN_COUNT=8
-INVOICE_MAX_COUNT=12
-INVOICE_MIN_AMOUNT=100
-INVOICE_MAX_AMOUNT=10000
-INVOICE_DUE_DAYS_MIN=1
-INVOICE_DUE_DAYS_MAX=7
+INVOICE_GENERATION_MIN=8
+INVOICE_GENERATION_MAX=12
 ```
 
 **How to obtain Stark Bank credentials:**
@@ -232,9 +229,9 @@ curl -X POST http://localhost:8000/invoices \
   -H "Content-Type: application/json" \
   -d '{
     "amount": 1000,
-    "tax_id": "012.345.678-90",
-    "name": "John Smith",
-    "due": "2026-02-20"
+    "customer_name": "John Smith",
+    "customer_tax_id": "01234567890",
+    "customer_email": "john.smith@example.com"
   }'
 ```
 
@@ -249,6 +246,12 @@ curl -X GET "http://localhost:8000/invoices?status=created&limit=10" \
 4. **Check Created Transfer:**
 ```bash
 curl -X GET http://localhost:8000/transfers \
+  -H "X-API-Key: dev-key"
+```
+
+5. **Query Event Log:**
+```bash
+curl -X GET "http://localhost:8000/events-log?limit=20" \
   -H "X-API-Key: dev-key"
 ```
 
@@ -279,14 +282,15 @@ curl -X GET http://localhost:8000/transfers \
    ```
    APP_ENV=production
    LOG_LEVEL=INFO
-   STARK_BANK_PROJECT_ID=<your-project-id>
-   STARK_BANK_PRIVATE_KEY=<your-private-key>
-   STARK_BANK_ENVIRONMENT=sandbox
-   API_KEY=<generate-a-strong-key>
-   DATABASE_PATH=/app/data/stark_bank.db
+   STARKBANK_PROJECT_ID=<your-project-id>
+   STARKBANK_PRIVATE_KEY_CONTENT=<your-private-key>
+   STARKBANK_ENVIRONMENT=sandbox
+   ADMIN_API_KEY=<generate-a-strong-key>
+   DATABASE_URL=sqlite:////app/data/starkbank.db
    SCHEDULER_ENABLED=true
    SCHEDULER_INTERVAL_HOURS=3
-   SCHEDULER_DURATION_HOURS=24
+   INVOICE_GENERATION_MIN=8
+   INVOICE_GENERATION_MAX=12
    ```
 
 3. **Configure the Start Command:**
