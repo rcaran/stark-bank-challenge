@@ -36,6 +36,30 @@ def get_event_log_service() -> EventLogService:
 
 
 @events_log_router.get(
+    "/invoice/{invoice_id}",
+    response_model=EventLogListResponse,
+    summary="List event logs by invoice ID",
+    description=(
+        "Returns a paginated list of all events (invoice and transfer) "
+        "associated with the given invoice_id."
+    ),
+)
+def list_event_logs_by_invoice_id(
+    invoice_id: str,
+    limit: int = Query(50, ge=1, le=500, description="Maximum number of results"),
+    offset: int = Query(0, ge=0, description="Number of results to skip"),
+    _api_key: str = Depends(get_api_key_header),
+    service: EventLogService = Depends(get_event_log_service),
+) -> EventLogListResponse:
+    """Query all event logs (invoices and transfers) related to a specific invoice."""
+    return service.list_events_by_invoice_id(
+        invoice_id=invoice_id,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@events_log_router.get(
     "",
     response_model=EventLogListResponse,
     summary="List event logs",

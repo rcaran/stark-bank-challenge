@@ -67,3 +67,45 @@ class EventLogService:
             limit=limit,
             offset=offset,
         )
+
+    def list_events_by_invoice_id(
+        self,
+        invoice_id: str,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> EventLogListResponse:
+        """
+        Returns all event log entries (invoices and transfers) related to
+        a specific invoice_id, ordered from most recent to oldest.
+
+        Args:
+            invoice_id: The invoice UUID to filter by
+            limit:      Maximum number of results to return (default 50)
+            offset:     Number of results to skip for pagination (default 0)
+
+        Returns:
+            EventLogListResponse with items, total, limit, and offset
+        """
+        logger.debug(
+            "Listing event logs by invoice_id",
+            invoice_id=invoice_id,
+            limit=limit,
+            offset=offset,
+        )
+
+        rows = self._repository.get_events_by_invoice_id(
+            invoice_id=invoice_id,
+            limit=limit,
+            offset=offset,
+        )
+
+        total = self._repository.count_events_by_invoice_id(invoice_id=invoice_id)
+
+        items = [EventLogResponse(**row) for row in rows]
+
+        return EventLogListResponse(
+            items=items,
+            total=total,
+            limit=limit,
+            offset=offset,
+        )

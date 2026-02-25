@@ -25,7 +25,7 @@ class InvoiceGenerator:
     """
 
     # Default configuration
-    DEFAULT_MIN_AMOUNT = 100.0  # R$ 1,00 in cents
+    DEFAULT_MIN_AMOUNT = 1000.0  # R$ 10,00 in cents
     DEFAULT_MAX_AMOUNT = 100000.0  # R$ 1.000,00 in cents
     DEFAULT_DUE_DAYS_MIN = 1
     DEFAULT_DUE_DAYS_MAX = 30
