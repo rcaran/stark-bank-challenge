@@ -108,6 +108,7 @@ The system implements an automated integration with the Stark Bank platform to:
   - `GET /transfers` - List transfers
   - `GET /transfers/{id}` - Query specific transfer
   - `GET /events-log` - Query internal event audit log
+  - `GET /events-log/invoice/{invoice_id}` - Query events by invoice id 
   - `GET /health` - Health check
   - `GET /docs` - Swagger UI
 
@@ -305,14 +306,16 @@ stark-bank-challenge/
 - Persist all internal events into a queryable `events_log` table
 - Provide a read-only API for auditing and debugging
 - Support filtering by event type and date range with pagination
+- Enable full lifecycle tracing of an invoice by aggregating all related events via `invoice_id`
 
 **Components:**
 - `EventLogService`: Orchestrates queries over the repository
-- `EventLogRepository`: Reads from the `events_log` table with optional filters
-- `EventLogAPI`: REST endpoint (`GET /events-log`)
+- `EventLogRepository`: Reads from the `events_log` table with optional filters; uses SQLite `json_extract` to query the JSON payload column
+- `EventLogAPI`: REST endpoints (`GET /events-log`, `GET /events-log/invoice/{invoice_id}`)
 
 **Exposes:**
-- `GET /events-log` — returns paginated list of all system events
+- `GET /events-log` — returns paginated list of all system events with optional `event_type` and date range filters
+- `GET /events-log/invoice/{invoice_id}` — returns all events (invoice and transfer) whose payload contains the given `invoice_id`, ordered from most recent to oldest; enables complete lifecycle auditing of a single invoice
 
 **Note:** Events are written to this table by `src/shared/events/logger.py`, which is registered as a global handler on the Event Bus at application startup.
 
@@ -412,6 +415,8 @@ CREATE INDEX idx_transfers_invoice ON transfers(invoice_id);
 CREATE INDEX idx_transfers_external_id ON transfers(external_id);
 CREATE INDEX idx_events_type ON events_log(event_type);
 CREATE INDEX idx_events_timestamp ON events_log(timestamp);
+-- Note: invoice_id lookups use json_extract(payload, '$.invoice_id') — no separate index
+-- (SQLite does not support indexes on JSON expressions without generated columns)
 ```
 
 #### 3.3.3. Stark Bank Integration

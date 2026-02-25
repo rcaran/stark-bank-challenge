@@ -638,6 +638,101 @@ curl -X GET "http://localhost:8000/events-log?start_date=2026-02-16T00:00:00Z&en
 
 ---
 
+### `GET /events-log/invoice/{invoice_id}`
+
+List all event log entries (invoice and transfer events) associated with a specific invoice ID.
+
+**Authentication:** Required (API Key)
+
+**Path Parameters:**
+- `invoice_id` (string, required): The internal invoice ID (ULID format)
+
+**Query Parameters:**
+- `limit` (integer, optional): Maximum number of results (1-500, default: 50)
+- `offset` (integer, optional): Pagination offset (default: 0)
+
+**Response:** `200 OK`
+
+```json
+{
+  "items": [
+    {
+      "id": 5,
+      "event_id": "e1f2a3b4-0000-1111-2222-333344445555",
+      "event_type": "transfer.completed",
+      "payload": {
+        "invoice_id": "01JCXA2B3C4D5E6F7G8H9J0K1",
+        "transfer_id": "01JCXB2C3D4E5F6G7H8J9K0L1",
+        "stark_transfer_id": "6234567890123456",
+        "amount": 9950.0,
+        "completed_at": "2026-02-16T11:05:00.123456"
+      },
+      "metadata": null,
+      "timestamp": "2026-02-16T11:05:00.123456",
+      "processed": true
+    },
+    {
+      "id": 3,
+      "event_id": "a0b1c2d3-aaaa-bbbb-cccc-ddddeeeeffff",
+      "event_type": "invoice.paid",
+      "payload": {
+        "invoice_id": "01JCXA2B3C4D5E6F7G8H9J0K1",
+        "stark_invoice_id": "5123456789123456",
+        "amount": 10000.0,
+        "fee": 50.0,
+        "net_amount": 9950.0,
+        "customer_tax_id": "12345678900",
+        "paid_at": "2026-02-16T11:00:00.123456"
+      },
+      "metadata": null,
+      "timestamp": "2026-02-16T11:00:00.123456",
+      "processed": true
+    },
+    {
+      "id": 1,
+      "event_id": "b3d2c1a0-1234-5678-abcd-ef0123456789",
+      "event_type": "invoice.created",
+      "payload": {
+        "invoice_id": "01JCXA2B3C4D5E6F7G8H9J0K1",
+        "stark_invoice_id": "5123456789123456",
+        "amount": 10000.0,
+        "customer_name": "João Silva",
+        "customer_tax_id": "12345678900",
+        "customer_email": "joao.silva@example.com",
+        "created_at": "2026-02-16T10:30:00.123456"
+      },
+      "metadata": null,
+      "timestamp": "2026-02-16T10:30:00.123456",
+      "processed": true
+    }
+  ],
+  "total": 3,
+  "limit": 50,
+  "offset": 0
+}
+```
+
+**Notes:**
+- Returns events from all types that carry the given `invoice_id` in their payload (e.g. `invoice.created`, `invoice.paid`, `transfer.created`, `transfer.processing`, `transfer.completed`, `transfer.failed`)
+- Results are ordered from most recent to oldest
+- Uses SQLite `json_extract` to match the `invoice_id` field inside the JSON payload column
+
+**Example:**
+```bash
+# List all events for a specific invoice
+curl -X GET http://localhost:8000/events-log/invoice/01JCXA2B3C4D5E6F7G8H9J0K1 \
+  -H "X-API-Key: dev-key-12345"
+
+# With pagination
+curl -X GET "http://localhost:8000/events-log/invoice/01JCXA2B3C4D5E6F7G8H9J0K1?limit=10&offset=0" \
+  -H "X-API-Key: dev-key-12345"
+```
+
+**Possible Errors:**
+- `401 Unauthorized`: Missing or invalid API key
+
+---
+
 ### Event Type Values
 
 | Event Type | Description |
@@ -854,6 +949,10 @@ For issues or questions, please refer to:
 ---
 
 ## Changelog
+
+### Version 1.2.0 (2026-02-25)
+- Added `GET /events-log/invoice/{invoice_id}` endpoint to retrieve all events (invoice and transfer) related to a specific invoice
+- Uses `json_extract` on the payload column to match `invoice_id` across all event types
 
 ### Version 1.1.0 (2026-02-24)
 - Added `GET /events-log` endpoint for querying the internal event audit log
