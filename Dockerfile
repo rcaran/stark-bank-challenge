@@ -52,5 +52,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Start application (use shell form to support $PORT env variable from Railway/Heroku)
-CMD uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Start application (shell form enables $PORT expansion from Railway/Heroku)
+CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
