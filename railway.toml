@@ -14,7 +14,7 @@ nixPkgs = ["python314"]
 numReplicas = 1
 
 # Start command (will use PORT environment variable from Railway)
-startCommand = "uvicorn src.main:app --host 0.0.0.0 --port 8000"
+startCommand = "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}"
 
 # Restart policy: restart on failure
 restartPolicyType = "ON_FAILURE"

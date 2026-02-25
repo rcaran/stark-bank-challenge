@@ -44,13 +44,13 @@ USER appuser
 # Expose port (Railway/Heroku will override with $PORT)
 EXPOSE 8000
 
-# Health check
+# Health check (uses PORT env variable, falls back to 8000)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+    CMD python -c "import os, urllib.request; urllib.request.urlopen(f'http://localhost:{os.getenv(\"PORT\", \"8000\")}/health')"
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Start application
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start application (use shell form to support $PORT env variable from Railway/Heroku)
+CMD uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}
