@@ -12,18 +12,18 @@ services:
     environment:
       # Application
       - APP_NAME=stark-bank-challenge
-      - APP_ENV=development
-      - LOG_LEVEL=DEBUG
-      - API_PORT=8000
-      - API_HOST=0.0.0.0
+      - APP_ENV=${APP_ENV}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - API_PORT=${API_PORT}
+      - API_HOST=${API_HOST}
 
       # Security
-      - ADMIN_API_KEY=dev-api-key-change-in-production
+      - ADMIN_API_KEY=${ADMIN_API_KEY}
 
       # Stark Bank (set your credentials)
       - STARKBANK_PRIVATE_KEY_CONTENT=${STARKBANK_PRIVATE_KEY_CONTENT}
       - STARKBANK_PROJECT_ID=${STARKBANK_PROJECT_ID}
-      - STARKBANK_ENVIRONMENT=sandbox
+      - STARKBANK_ENVIRONMENT=${STARKBANK_ENVIRONMENT}
 
       # Database
       - DATABASE_URL=sqlite:////app/data/starkbank.db
