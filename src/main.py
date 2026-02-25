@@ -26,7 +26,11 @@ from src.shared.database.migrations import run_migrations
 from src.shared.security.api_key import InvalidAPIKeyError
 from src.shared.security.signature import InvalidSignatureError
 from src.shared.utils.errors import StarkBankError
-from src.shared.utils.logger import get_logger
+from src.shared.utils.logger import get_logger, setup_logging
+
+# Configure all loggers (root + uvicorn) to emit JSON to stdout so Railway's
+# log instrumentation can parse every line as structured data.
+setup_logging()
 
 logger = get_logger("api")
 
@@ -75,6 +79,12 @@ async def lifespan(_app: FastAPI):
             logger.info("Scheduler disabled via SCHEDULER_ENABLED=false")
         else:
             logger.info("Scheduler disabled in test environment")
+
+        # Log security status (sem expor o valor da chave)
+        if settings.admin_api_key:
+            logger.info("ADMIN_API_KEY configured successfully")
+        else:
+            logger.warning("ADMIN_API_KEY is NOT configured — protected endpoints will reject all requests")
 
         logger.info(f"{settings.app_name} started successfully")
 

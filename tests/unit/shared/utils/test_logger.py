@@ -2,7 +2,7 @@ import json
 import logging
 from io import StringIO
 
-from src.shared.utils.logger import StructuredLogger, get_logger
+from src.shared.utils.logger import JsonFormatter, StructuredLogger, get_logger
 
 
 def test_structured_logger_format():
@@ -12,9 +12,7 @@ def test_structured_logger_format():
     # clear existing handlers to capture output in our stream
     logger.logger.handlers = []
 
-    # recreate formatter setup from class
-    formatter = logger.JsonFormatter()
-    handler.setFormatter(formatter)
+    handler.setFormatter(JsonFormatter())
     logger.logger.addHandler(handler)
     logger.logger.setLevel(logging.INFO)
 
@@ -37,7 +35,7 @@ def test_context_binding():
     handler = logging.StreamHandler(stream)
     logger = StructuredLogger("test_context", correlation_id="123")
     logger.logger.handlers = []
-    handler.setFormatter(logger.JsonFormatter())
+    handler.setFormatter(JsonFormatter())
     logger.logger.addHandler(handler)
     logger.logger.setLevel(logging.INFO)
 

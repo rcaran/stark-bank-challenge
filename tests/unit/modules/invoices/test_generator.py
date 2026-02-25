@@ -29,7 +29,7 @@ class TestInvoiceGenerator:
 
     def test_generator_initialization_defaults(self, generator):
         """Test generator initialization with defaults."""
-        assert generator.min_amount == 100.0
+        assert generator.min_amount == 1000.0
         assert generator.max_amount == 100000.0
         assert generator.due_days_min == 1
         assert generator.due_days_max == 30
